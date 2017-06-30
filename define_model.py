@@ -92,17 +92,17 @@ for max_depth in max_depth_list:
 def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
                  k_optimizer='rmsprop', k_init='glorot_uniform',
                  k_loss='mean_squared_error'):
-	# create model
-	model = Sequential()
+    # create model
+    model = Sequential()
     model.add(Dense(k_n_units, activation='relu', kernel_initializer=k_init, input_dim=551))
     model.add(Dropout(k_dropout))
     for l in range(k_n_layers):
         model.add(Dense(k_n_units, activation='relu', kernel_initializer=k_init))
         model.add(Dropout(k_dropout))
     model.add(Dense(1, activation='linear', kernel_initializer=k_init))
-	# Compile model
-	model.compile(loss=k_loss, optimizer=k_optimizer)
-	return model
+    # Compile model
+    model.compile(loss=k_loss, optimizer=k_optimizer)
+    return model
 # test zipped combinations
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 rms = 'rmsprop'
