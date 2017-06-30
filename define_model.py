@@ -21,15 +21,15 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 n_jobs = 28
 n_est = 100
 reg_first_layer = [ ( "RF0", RandomForestRegressor(n_estimators=n_est, criterion="mse", n_jobs=n_jobs) ),
-                    ( "XGB0", XGBRegressor(n_estimators=n_est*2, objective='reg:logistic', gamma=0, reg_lambda=1,
+                    ( "XGB0", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
                                             min_child_weight=2, learning_rate=0.05, subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
-                    ( "XGB1", XGBRegressor(n_estimators=n_est*2, objective='reg:logistic', gamma=0, reg_lambda=1,
+                    ( "XGB1", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
                                             min_child_weight=4, learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs) ),
-                    ( "XGB2", XGBRegressor(n_estimators=n_est*2, objective='reg:logistic', gamma=0, reg_lambda=1,
+                    ( "XGB2", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
                                             min_child_weight=4, learning_rate=0.05, subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
-                    ( "XGB3", XGBRegressor(n_estimators=n_est*2, objective='reg:logistic', gamma=0, reg_lambda=1,
+                    ( "XGB3", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
                                             min_child_weight=2, learning_rate=0.02, subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
-                    ( "XGB4", XGBRegressor(n_estimators=n_est*2, objective='reg:logistic', gamma=0, reg_lambda=1,
+                    ( "XGB4", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
                                             min_child_weight=2, learning_rate=0.08, subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
                     ( "LGBM", lgb.LGBMRegressor(objective='regression', n_estimators=n_est*2, num_leaves=31,
                                                  subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
@@ -54,7 +54,7 @@ reg_first_layer = [ ( "RF0", RandomForestRegressor(n_estimators=n_est, criterion
 
 
 ##### Final layer classifier
-reg_final_layer = XGBRegressor(n_estimators=1000, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+reg_final_layer = XGBRegressor(n_estimators=1000, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
 #reg_final_layer = AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs),
 #                                    n_estimators=5, learning_rate=0.8)
