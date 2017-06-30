@@ -87,7 +87,7 @@ for max_depth in max_depth_list:
                                                                      nthread=n_jobs) ) )
             ix += 1
 
-"""### mlp
+### mlp
 # function for model
 def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
                  k_optimizer='rmsprop', k_init='glorot_uniform',
@@ -119,7 +119,7 @@ in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_li
     reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, nb_epoch=100, batch_size=32,
                                                          k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                          k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                         k_init=k_init, verbose=0) ) )"""
+                                                         k_init=k_init, verbose=0) ) )
 
 ### svr
 kernel_list = ('linear', 'poly', 'rbf', 'sigmoid')
