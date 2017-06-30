@@ -46,7 +46,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         X_valtrain, X_valtest = X_train[valtrain_index], X_train[valtest_index]
         y_valtrain, y_valtest = y_train[valtrain_index], y_train[valtest_index]
         # fit classifiers
-        reg_list = copy.deepcopy(define_model.reg_first_layer)
+        reg_list = [copy.deepcopy(mdl) if "MLP" not in mdl[0] else mdl for mdl in define_model.reg_first_layer]
         X2_valpred = []
         for reg in reg_list:
             if verbose >= 2:
@@ -65,7 +65,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     X2_train = np.vstack(X2_train)
     # refit classifiers on all training data
     print("Refitting 1st layer on all training data...")
-    reg_list = copy.deepcopy(define_model.reg_first_layer)
+    reg_list = [copy.deepcopy(mdl) if "MLP" not in mdl[0] else mdl for mdl in define_model.reg_first_layer]
     for reg in reg_list:
         if verbose >= 2:
             print("%s ... "%reg[0], end='')
