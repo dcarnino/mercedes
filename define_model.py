@@ -116,7 +116,7 @@ k_init_list = (glo, he, glo, he, glo, glo, glo, glo, glo, he, glo, glo, glo, he,
 # loop
 for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
 in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
-    reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, nb_epoch=100, batch_size=32,
+    reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, nb_epoch=1000, batch_size=32,
                                                          k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                          k_dropout=k_dropout, k_optimizer=k_optimizer,
                                                          k_init=k_init, verbose=0) ) )
