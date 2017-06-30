@@ -32,15 +32,13 @@ def main(verbose=1):
     test_csv_name = "../data/mercedes/test.csv"
     df_train = pd.read_csv(train_csv_name)
     df_test = pd.read_csv(train_csv_name)
-    categorical_columns = ["X%d"%cid for cid in range(8)]
-    binary_columns = ["X%d"%cid for cid in range(8,386)]
     id_train = df_train["ID"].values
     y_train = df_train["y"].values
-    Xc_train = df_train[categorical_columns].values
-    Xb_train = df_train[binary_columns].values
-    id_test = df_train["ID"].values
-    Xc_test = df_test[categorical_columns].values
-    Xb_test = df_test[binary_columns].values
+    Xc_train = df_train.iloc[:,2:10].values
+    Xb_train = df_train.iloc[:,10:].values
+    id_test = df_test["ID"].values
+    Xc_test = df_test.iloc[:,1:9].values
+    Xb_test = df_test.iloc[:,9:].values
     if verbose >= 3:
         print("\tid_train shape: ", id_train.shape)
         print("\ty_train shape: ", y_train.shape)
