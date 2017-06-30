@@ -6,6 +6,8 @@
 # ===========================
 # Modules
 # ===========================
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 import lightgbm as lgb
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor, AdaBoostRegressor, BaggingRegressor
 from sklearn.linear_model import SGDRegressor, LassoCV, LarsCV, RidgeCV, ElasticNetCV, ARDRegression, BayesianRidge
@@ -14,47 +16,144 @@ from xgboost import XGBRegressor
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
+from keras.wrappers.scikit_learn import KerasRegressor
+from keras import backend as K
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation
+from keras.optimizers import SGD
 
 # ===========================
 # Layers
 # ===========================
 n_jobs = 28
-n_est = 100
-reg_first_layer = [ ( "RF0", RandomForestRegressor(n_estimators=n_est, criterion="mse", n_jobs=n_jobs) ),
-                    ( "XGB0", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
-                                            min_child_weight=2, learning_rate=0.05, subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
-                    ( "XGB1", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
-                                            min_child_weight=4, learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs) ),
-                    ( "XGB2", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
-                                            min_child_weight=4, learning_rate=0.05, subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
-                    ( "XGB3", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
-                                            min_child_weight=2, learning_rate=0.02, subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
-                    ( "XGB4", XGBRegressor(n_estimators=n_est*2, objective='reg:linear', gamma=0, reg_lambda=1,
-                                            min_child_weight=2, learning_rate=0.08, subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
-                    ( "LGBM", lgb.LGBMRegressor(objective='regression', n_estimators=n_est*2, num_leaves=31,
-                                                 subsample=0.5, colsample_bytree=0.6, max_depth=4, nthread=n_jobs) ),
-                    ( "MLP0", MLPRegressor(hidden_layer_sizes=(100,100,100), activation='relu', learning_rate='adaptive',
-                                            early_stopping=True, validation_fraction=0.1, alpha=0.001, solver='adam') ),
-                    ( "MLP1", MLPRegressor(hidden_layer_sizes=(1000,1000), activation='relu', learning_rate='adaptive',
-                                            early_stopping=True, validation_fraction=0.1, alpha=0.01, solver='adam') ),
-                    ( "MLP2", MLPRegressor(hidden_layer_sizes=(50,50,50,50), activation='relu', learning_rate='adaptive',
-                                            early_stopping=True, validation_fraction=0.1, alpha=1e-05, solver='adam') ),
-                    #( "BaggingSVR", BaggingRegressor(SVR(C=1.0, kernel='rbf', gamma='auto', shrinking=True, tol=0.001),
-                    #                                 n_estimators=n_est//2, max_samples=4./(n_est//2), bootstrap=True, n_jobs=n_jobs) ),
-                    ( "kNN", KNeighborsRegressor(n_neighbors=5, weights='uniform', algorithm='auto', n_jobs=n_jobs) ),
-                    ( "ExtraTrees0",  ExtraTreesRegressor(n_estimators=n_est, criterion='mse', bootstrap=False, n_jobs=n_jobs) ),
-                    ( "ExtraTrees1",  ExtraTreesRegressor(n_estimators=n_est, criterion='mse', bootstrap=True, n_jobs=n_jobs) ),
-                    ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.5,
-                                                        criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=4) ),
-                    ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//2, n_jobs=n_jobs),
-                                                      n_estimators=n_est//10, learning_rate=0.9) ),
-                    ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=False, n_jobs=n_jobs),
-                                                              n_estimators=n_est//10, learning_rate=0.9) )
-                    ]
+n_est = 224
+
+reg_first_layer = []
+
+### random forest
+# test all combinations
+# test zipped combinations
+max_depth_list = (None, None, None, None, None, None, None, None, 2, 4, 10, 30)
+min_samples_split_list = (2, 2, 2, 2, 2, 8, 0.01, 0.1, 2, 2, 2, 2)
+criterion_list = ('mse', 'mae', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse')
+bootstrap_list = (True, True, False, True, True, True, True, True, True, True, True)
+max_features_list = ('auto', 'auto', 'auto' ,'sqrt', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto')
+min_samples_leaf_list = (10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+for ix, (max_depth, min_samples_split, criterion, bootstrap, max_features, min_samples_leaf) \
+in enumerate(zip(max_depth_list, min_samples_split_list, criterion_list, bootstrap_list, max_features_list, min_samples_leaf_list)):
+    reg_first_layer.append( ( "RF%d"%ix, RandomForestRegressor(n_estimators=n_est*2, max_depth=max_depth,
+                                                               min_samples_split=min_samples_split, criterion=criterion,
+                                                               bootstrap=bootstrap, max_features=max_features,
+                                                               min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
+    reg_first_layer.append( ( "ExtraTrees%d"%ix, ExtraTreesRegressor(n_estimators=n_est*2, max_depth=max_depth,
+                                                                     min_samples_split=min_samples_split, criterion=criterion,
+                                                                     bootstrap=bootstrap, max_features=max_features,
+                                                                     min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
+
+### xgboost
+# test all combinations
+max_depth_list = (4, 6, 8, 10)
+subsample_list = (.6, .8)
+colsample_bytree_list = (.6, .8)
+learning_rate_list = (0.02, 0.05, 0.08, 0.2)
+min_child_weight_list = (1, 2, 4)
+# test zipped combinations
+ix = 0
+for max_depth in max_depth_list:
+    for subsample in subsample_list:
+        for colsample_bytree in colsample_bytree_list:
+            for learning_rate in learning_rate_list:
+                for min_child_weight in min_child_weight_list:
+                    reg_first_layer.append( ( "XGB%d"%ix, XGBRegressor(n_estimators=n_est, objective='reg:linear',
+                                                                       gamma=0, reg_lambda=1, min_child_weight=min_child_weight,
+                                                                       learning_rate=learning_rate, subsample=subsample,
+                                                                       colsample_bytree=colsample_bytree, max_depth=max_depth,
+                                                                       nthread=n_jobs) ) )
+                    ix += 1
+
+### lgbm
+# test all combinations
+max_depth_list = (5, 7, 9)
+subsample_list = (.5, .7, .9)
+colsample_bytree_list = (.5, .7, .9)
+# test zipped combinations
+ix = 0
+for max_depth in max_depth_list:
+    for subsample in subsample_list:
+        for colsample_bytree in colsample_bytree_list:
+            reg_first_layer.append( ( "LGBM%d"%ix, lgb.LGBMRegressor(objective='regression', n_estimators=n_est,
+                                                                     num_leaves=31, subsample=subsample,
+                                                                     colsample_bytree=colsample_bytree, max_depth=max_depth,
+                                                                     nthread=n_jobs) ) )
+            ix += 1
+
+### mlp
+# function for model
+def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
+                 k_optimizer='rmsprop', k_init='glorot_uniform',
+                 k_loss='mean_squared_error'):
+	# create model
+	model = Sequential()
+    model.add(Dense(k_n_units, activation='relu', kernel_initializer=k_init, input_dim=551))
+    model.add(Dropout(k_dropout))
+    for l in range(k_n_layers):
+        model.add(Dense(k_n_units, activation='relu', kernel_initializer=k_init))
+        model.add(Dropout(k_dropout))
+    model.add(Dense(1, activation='linear', kernel_initializer=k_init))
+	# Compile model
+	model.compile(loss=k_loss, optimizer=k_optimizer)
+	return model
+# test zipped combinations
+sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+rms = 'rmsprop'
+glo = 'glorot_uniform'
+he = 'he_normal'
+k_n_layers_list = (1, 1, 1, 2, 2, 2, 4, 4, 10, 1, 1, 1, 2, 2, 2, 4, 4, 10)
+k_n_units_list = (2048, 1024, 1024, 512, 256, 256, 128, 128, 64, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64)
+k_dropout_list = (0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75)
+k_optimizer_list = (rms, rms, sgd, rms, rms, sgd, rms, sgd, rms, rms, rms, sgd, rms, rms, sgd, rms, sgd, rms)
+k_init_list = (glo, he, glo, he, glo, glo, glo, glo, glo, he, glo, glo, glo, he, glo, glo, glo, glo)
+# loop
+for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
+in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
+    reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, nb_epoch=100, batch_size=32,
+                                                         k_n_layers=k_n_layers, k_n_units=k_n_units,
+                                                         k_dropout=k_dropout, k_optimizer=k_optimizer,
+                                                         k_init=k_init, verbose=0) ) )
+
+### svr
+kernel_list = ('linear', 'poly', 'rbf', 'sigmoid')
+for ix, kernel in enumerate(kernel_list):
+    reg_first_layer.append( ( "SVR%d"%ix, SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001) ) )
+    reg_first_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
+                                     n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )
+
+### knn
+# test all combinations
+n_neighbors_list = (1, 3, 5, 9)
+weights_list = ('uniform', 'distance')
+p_list = (1, 2, 3)
+ix = 0
+for n_neighbors in n_neighbors_list:
+    for weights in weights_list:
+        for p in p_list:
+            reg_first_layer.append( ( "kNN%d"%ix, KNeighborsRegressor(n_neighbors=n_neighbors, weights=weights, p=p,
+                                                                      algorithm='auto', n_jobs=n_jobs) ) )
+            ix += 1
+
+### gbr
+reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.5,
+                                                           criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=4) ) )
+
+### adaboost
+reg_first_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
+                                                          n_estimators=n_est//10, learning_rate=0.9) ) )
+reg_first_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est, bootstrap=True, n_jobs=n_jobs),
+                                                                  n_estimators=n_est//10, learning_rate=0.9) ) )
 
 
 ##### Final layer classifier
-reg_final_layer = XGBRegressor(n_estimators=1000, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
+reg_final_layer = XGBRegressor(n_estimators=11200, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
 #reg_final_layer = AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs),
 #                                    n_estimators=5, learning_rate=0.8)
