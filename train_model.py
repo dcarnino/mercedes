@@ -10,9 +10,10 @@ import sys
 import os
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
+from collections import defaultdict
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.feature_selection import VarianceThreshold
-from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.ensemble import
 #==============================================
 #                   Files
 #==============================================
@@ -28,16 +29,23 @@ def main(verbose=1):
 
     ### Import data
     if verbose >= 1: print("Import data...")
+    # train
     train_csv_name = "../data/mercedes/train.csv"
-    test_csv_name = "../data/mercedes/test.csv"
     df_train = pd.read_csv(train_csv_name)
-    df_test = pd.read_csv(train_csv_name)
     id_train = df_train["ID"].values
     y_train = df_train["y"].values
-    Xc_train = df_train.iloc[:,2:10].values
+    Xc_train = df_train.iloc[:,2:10]
+    label_dict = defaultdict(LabelEncoder)
+    Xc_train.apply(lambda x: label_dict[x.name].fit_transform(x))
+    Xc_train = Xc_train.values
     Xb_train = df_train.iloc[:,10:].values
+    # test
+    test_csv_name = "../data/mercedes/test.csv"
+    df_test = pd.read_csv(train_csv_name)
     id_test = df_test["ID"].values
-    Xc_test = df_test.iloc[:,1:9].values
+    Xc_test = df_test.iloc[:,1:9]
+    Xc_test.apply(lambda x: label_dict[x.name].transform(x))
+    Xc_test = Xc_test.values
     Xb_test = df_test.iloc[:,9:].values
     if verbose >= 3:
         print("\tid_train shape: ", id_train.shape)
