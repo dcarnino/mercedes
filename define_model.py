@@ -35,10 +35,10 @@ reg_first_layer = []
 # test zipped combinations
 max_depth_list = (None, None, None, None, None, None, None, None, 2, 4, 10, 30)
 min_samples_split_list = (2, 2, 2, 2, 2, 8, 0.01, 0.1, 2, 2, 2, 2)
-criterion_list = ('mse', 'mae', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse')
+criterion_list = ('mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse')
 bootstrap_list = (True, True, False, True, True, True, True, True, True, True, True)
 max_features_list = ('auto', 'auto', 'auto' ,'sqrt', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto')
-min_samples_leaf_list = (10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+min_samples_leaf_list = (10, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 for ix, (max_depth, min_samples_split, criterion, bootstrap, max_features, min_samples_leaf) \
 in enumerate(zip(max_depth_list, min_samples_split_list, criterion_list, bootstrap_list, max_features_list, min_samples_leaf_list)):
     reg_first_layer.append( ( "RF%d"%ix, RandomForestRegressor(n_estimators=n_est*2, max_depth=max_depth,
