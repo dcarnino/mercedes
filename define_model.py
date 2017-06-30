@@ -59,7 +59,7 @@ k_optimizer_list = (rms, rms, rms, rms, rms, rms, rms, rms, rms, sgd, sgd, sgd, 
 k_init_list = (glo, he, glo, glo, he, glo, he, glo, glo, glo, he, glo, glo, he, glo, he, glo, glo)
 nb_epoch_list = (k_n_layers_list * k_n_units_list / 200.).astype(int)
 # loop
-for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init, k_nb_epoch) \
+for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init, nb_epoch) \
 in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list, nb_epoch_list)):
     reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, nb_epoch=nb_epoch, batch_size=32,
                                                          k_n_layers=k_n_layers, k_n_units=k_n_units,
