@@ -6,6 +6,7 @@
 # ===========================
 # Modules
 # ===========================
+import numpy as np
 import os
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 import lightgbm as lgb
