@@ -64,7 +64,7 @@ def main(verbose=1):
     Xohe_train = ohe.transform(Xc_train)
     Xohe_test = ohe.transform(Xc_test)
     # merge all binary features
-    print(Xohe.shape, Xb_train.shape)
+    print(Xohe_train.shape, Xb_train.shape)
     X_train = np.hstack([Xohe_train, Xb_train])
     X_test = np.hstack([Xohe_test, Xb_test])
     # remove constant
