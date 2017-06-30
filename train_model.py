@@ -55,7 +55,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             reg[1].fit(X_valtrain, y_valtrain)
             y_valpred = reg[1].predict(X_valtest)
             X2_valpred.append(y_valpred.reshape((-1,1)))
-            if verbose >= 3: print("(%.02f) "%(metrics.mean_squared_error(y_valtest, y_valpred)*100.), end='')
+            if verbose >= 3: print("(%.02f) "%(metrics.r2_score(y_valtest, y_valpred)*100.), end='')
         if verbose >= 2: print("")
         # append to new features
         X_oritrain.append(X_valtest)
@@ -155,11 +155,11 @@ def main(verbose=1):
     # encode categorical
     ohe = OneHotEncoder(handle_unknown='ignore')
     ohe.fit(Xc_train)
-    Xohe_train = ohe.transform(Xc_train)
-    Xohe_test = ohe.transform(Xc_test)
+    Xohe_train = ohe.transform(Xc_train).toarray()
+    Xohe_test = ohe.transform(Xc_test).toarray()
     # merge all binary features
-    X_train = sparse.hstack([Xohe_train, Xb_train])
-    X_test = sparse.hstack([Xohe_test, Xb_test])
+    X_train = np.hstack([Xohe_train, Xb_train])
+    X_test = np.hstack([Xohe_test, Xb_test])
     # remove constant
     vt = VarianceThreshold()
     vt.fit(X_train)
