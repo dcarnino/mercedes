@@ -41,7 +41,7 @@ def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
     model.add(Dense(k_n_units, activation='relu', kernel_initializer=k_init, input_dim=551))
     model.add(Dropout(k_dropout))
     for nl in range(k_n_layers):
-        model.add(Dense(k_n_units//nl, activation='relu', kernel_initializer=k_init))
+        model.add(Dense(k_n_units//nl+1, activation='relu', kernel_initializer=k_init))
         model.add(Dropout(k_dropout))
     model.add(Dense(1, activation='linear', kernel_initializer=k_init))
     # Compile model
