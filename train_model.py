@@ -54,6 +54,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
                 sys.stdout.flush()
             reg[1].fit(X_valtrain, y_valtrain)
             y_valpred = reg[1].predict(X_valtest)
+            y_valpred[np.isnan(y_valpred)] = 100.
             X2_valpred.append(y_valpred.reshape((-1,1)))
             if verbose >= 3: print("(%.04f) "%(metrics.r2_score(y_valtest, y_valpred)), end='')
         if verbose >= 2: print("")
