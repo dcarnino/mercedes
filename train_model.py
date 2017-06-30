@@ -14,6 +14,7 @@ from collections import defaultdict
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.ensemble import ExtraTreesRegressor
+from scipy import sparse
 #==============================================
 #                   Files
 #==============================================
@@ -65,9 +66,9 @@ def main(verbose=1):
     Xohe_test = ohe.transform(Xc_test)
     # merge all binary features
     print(Xohe_train.shape, Xb_train.shape)
-    X_train = np.hstack([Xohe_train, Xb_train])
+    X_train = sparse.hstack([Xohe_train, Xb_train])
     print(X_train.shape)
-    X_test = np.hstack([Xohe_test, Xb_test])
+    X_test = sparse.hstack([Xohe_test, Xb_test])
     # remove constant
     vt = VarianceThreshold()
     vt.fit(X_train)
