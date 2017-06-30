@@ -65,9 +65,7 @@ def main(verbose=1):
     Xohe_train = ohe.transform(Xc_train)
     Xohe_test = ohe.transform(Xc_test)
     # merge all binary features
-    print(Xohe_train.shape, Xb_train.shape)
     X_train = sparse.hstack([Xohe_train, Xb_train])
-    print(X_train.shape)
     X_test = sparse.hstack([Xohe_test, Xb_test])
     # remove constant
     vt = VarianceThreshold()
@@ -80,7 +78,7 @@ def main(verbose=1):
 
     ### Train model
     if verbose >= 1: print("Train model...")
-    reg = ExtraTreesRegressor(n_estimators=1000, n_jobs=-1)
+    reg = ExtraTreesRegressor(n_estimators=1000, n_jobs=-1, verbose=1)
     reg.fit(X_train, y_train)
 
     ### Predict with model
@@ -90,7 +88,7 @@ def main(verbose=1):
     ### Save predictions
     if verbose >= 1: print("Save predictions...")
     pred_csv_name = "../data/mercedes/pred.csv"
-    pred_df = pd.DataFrame([id_test, y_pred], columns=["ID", "y"])
+    pred_df = pd.DataFrame(zip(id_test, y_pred), columns=["ID", "y"])
     pred_df.to_csv(pred_csv_name, index=False)
 
 
