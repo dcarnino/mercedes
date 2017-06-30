@@ -89,6 +89,7 @@ def main(verbose=1):
     if verbose >= 1: print("Save predictions...")
     pred_csv_name = "../data/mercedes/pred.csv"
     pred_df = pd.DataFrame(np.array([id_test, y_pred]).T, columns=["ID", "y"])
+    pred_df["ID"] = pred_df["ID"].astype(int)
     pred_df.to_csv(pred_csv_name, index=False)
 
 
@@ -101,4 +102,4 @@ def main(verbose=1):
 #                   Main
 #==============================================
 if __name__ == '__main__':
-    main(3)
+    main(1)
