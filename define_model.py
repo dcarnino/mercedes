@@ -30,63 +30,6 @@ n_est = 224
 
 reg_first_layer = []
 
-### random forest
-# test all combinations
-# test zipped combinations
-max_depth_list = (None, None, None, None, None, None, None, None, 2, 4, 10, 30)
-min_samples_split_list = (2, 2, 2, 2, 2, 8, 0.01, 0.1, 2, 2, 2, 2)
-criterion_list = ('mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse')
-bootstrap_list = (True, True, False, True, True, True, True, True, True, True, True)
-max_features_list = ('auto', 'auto', 'auto' ,'sqrt', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto')
-min_samples_leaf_list = (10, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-for ix, (max_depth, min_samples_split, criterion, bootstrap, max_features, min_samples_leaf) \
-in enumerate(zip(max_depth_list, min_samples_split_list, criterion_list, bootstrap_list, max_features_list, min_samples_leaf_list)):
-    reg_first_layer.append( ( "RF%d"%ix, RandomForestRegressor(n_estimators=n_est*2, max_depth=max_depth,
-                                                               min_samples_split=min_samples_split, criterion=criterion,
-                                                               bootstrap=bootstrap, max_features=max_features,
-                                                               min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
-    reg_first_layer.append( ( "ExtraTrees%d"%ix, ExtraTreesRegressor(n_estimators=n_est*2, max_depth=max_depth,
-                                                                     min_samples_split=min_samples_split, criterion=criterion,
-                                                                     bootstrap=bootstrap, max_features=max_features,
-                                                                     min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
-
-### xgboost
-# test all combinations
-max_depth_list = (4, 6, 8, 10)
-subsample_list = (.6, .8)
-colsample_bytree_list = (.6, .8)
-learning_rate_list = (0.02, 0.05, 0.08, 0.2)
-min_child_weight_list = (1, 2, 4)
-# test zipped combinations
-ix = 0
-for max_depth in max_depth_list:
-    for subsample in subsample_list:
-        for colsample_bytree in colsample_bytree_list:
-            for learning_rate in learning_rate_list:
-                for min_child_weight in min_child_weight_list:
-                    reg_first_layer.append( ( "XGB%d"%ix, XGBRegressor(n_estimators=n_est, objective='reg:linear',
-                                                                       gamma=0, reg_lambda=1, min_child_weight=min_child_weight,
-                                                                       learning_rate=learning_rate, subsample=subsample,
-                                                                       colsample_bytree=colsample_bytree, max_depth=max_depth,
-                                                                       nthread=n_jobs) ) )
-                    ix += 1
-
-### lgbm
-# test all combinations
-max_depth_list = (5, 7, 9)
-subsample_list = (.5, .7, .9)
-colsample_bytree_list = (.5, .7, .9)
-# test zipped combinations
-ix = 0
-for max_depth in max_depth_list:
-    for subsample in subsample_list:
-        for colsample_bytree in colsample_bytree_list:
-            reg_first_layer.append( ( "LGBM%d"%ix, lgb.LGBMRegressor(objective='regression', n_estimators=n_est,
-                                                                     num_leaves=31, subsample=subsample,
-                                                                     colsample_bytree=colsample_bytree, max_depth=max_depth,
-                                                                     nthread=n_jobs) ) )
-            ix += 1
-
 ### mlp
 # function for model
 def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
@@ -150,6 +93,63 @@ reg_first_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomF
                                                           n_estimators=n_est//10, learning_rate=0.9) ) )
 reg_first_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est, bootstrap=True, n_jobs=n_jobs),
                                                                   n_estimators=n_est//10, learning_rate=0.9) ) )
+
+### random forest
+# test all combinations
+# test zipped combinations
+max_depth_list = (None, None, None, None, None, None, None, None, 2, 4, 10, 30)
+min_samples_split_list = (2, 2, 2, 2, 2, 8, 0.01, 0.1, 2, 2, 2, 2)
+criterion_list = ('mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse')
+bootstrap_list = (True, True, False, True, True, True, True, True, True, True, True)
+max_features_list = ('auto', 'auto', 'auto' ,'sqrt', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto')
+min_samples_leaf_list = (10, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+for ix, (max_depth, min_samples_split, criterion, bootstrap, max_features, min_samples_leaf) \
+in enumerate(zip(max_depth_list, min_samples_split_list, criterion_list, bootstrap_list, max_features_list, min_samples_leaf_list)):
+    reg_first_layer.append( ( "RF%d"%ix, RandomForestRegressor(n_estimators=n_est*2, max_depth=max_depth,
+                                                               min_samples_split=min_samples_split, criterion=criterion,
+                                                               bootstrap=bootstrap, max_features=max_features,
+                                                               min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
+    reg_first_layer.append( ( "ExtraTrees%d"%ix, ExtraTreesRegressor(n_estimators=n_est*2, max_depth=max_depth,
+                                                                     min_samples_split=min_samples_split, criterion=criterion,
+                                                                     bootstrap=bootstrap, max_features=max_features,
+                                                                     min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
+
+### xgboost
+# test all combinations
+max_depth_list = (4, 6, 8, 10)
+subsample_list = (.6, .8)
+colsample_bytree_list = (.6, .8)
+learning_rate_list = (0.02, 0.05, 0.08, 0.2)
+min_child_weight_list = (1, 2, 4)
+# test zipped combinations
+ix = 0
+for max_depth in max_depth_list:
+    for subsample in subsample_list:
+        for colsample_bytree in colsample_bytree_list:
+            for learning_rate in learning_rate_list:
+                for min_child_weight in min_child_weight_list:
+                    reg_first_layer.append( ( "XGB%d"%ix, XGBRegressor(n_estimators=n_est, objective='reg:linear',
+                                                                       gamma=0, reg_lambda=1, min_child_weight=min_child_weight,
+                                                                       learning_rate=learning_rate, subsample=subsample,
+                                                                       colsample_bytree=colsample_bytree, max_depth=max_depth,
+                                                                       nthread=n_jobs) ) )
+                    ix += 1
+
+### lgbm
+# test all combinations
+max_depth_list = (5, 7, 9)
+subsample_list = (.5, .7, .9)
+colsample_bytree_list = (.5, .7, .9)
+# test zipped combinations
+ix = 0
+for max_depth in max_depth_list:
+    for subsample in subsample_list:
+        for colsample_bytree in colsample_bytree_list:
+            reg_first_layer.append( ( "LGBM%d"%ix, lgb.LGBMRegressor(objective='regression', n_estimators=n_est,
+                                                                     num_leaves=31, subsample=subsample,
+                                                                     colsample_bytree=colsample_bytree, max_depth=max_depth,
+                                                                     nthread=n_jobs) ) )
+            ix += 1
 
 
 ##### Final layer classifier
