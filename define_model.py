@@ -51,15 +51,15 @@ sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 rms = 'rmsprop'
 glo = 'glorot_uniform'
 he = 'he_normal'
-k_n_layers_list = (1, 1, 1, 2, 2, 2, 4, 4, 10, 1, 1, 1, 2, 2, 2, 4, 4, 10)
-k_n_units_list = (2048, 1024, 1024, 512, 256, 256, 128, 128, 64, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64)
+k_n_layers_list = (1, 1, 1, 2, 2, 2, 4, 4, 10, 1, 1, 1, 2, 2, 2, 4, 4, 10) * 2
+k_n_units_list = (2048, 1024, 1024, 512, 256, 256, 128, 128, 64, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64) * 2
 k_dropout_list = (0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75)
 k_optimizer_list = (rms, rms, sgd, rms, rms, sgd, rms, sgd, rms, rms, rms, sgd, rms, rms, sgd, rms, sgd, rms)
 k_init_list = (glo, he, glo, he, glo, glo, glo, glo, glo, he, glo, glo, glo, he, glo, glo, glo, glo)
 # loop
 for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
 in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
-    reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, nb_epoch=1000, batch_size=32,
+    reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, nb_epoch=100, batch_size=32,
                                                          k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                          k_dropout=k_dropout, k_optimizer=k_optimizer,
                                                          k_init=k_init, verbose=0) ) )
@@ -100,9 +100,9 @@ reg_first_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator
 max_depth_list = (None, None, None, None, None, None, None, None, 2, 4, 10, 30)
 min_samples_split_list = (2, 2, 2, 2, 2, 8, 0.01, 0.1, 2, 2, 2, 2)
 criterion_list = ('mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse', 'mse')
-bootstrap_list = (True, True, False, True, True, True, True, True, True, True, True)
+bootstrap_list = (True, True, True, True, True, True, True, True, True, True, True)
 max_features_list = ('auto', 'auto', 'auto' ,'sqrt', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto')
-min_samples_leaf_list = (10, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+min_samples_leaf_list = (21, 11, 5, 1, 1, 1, 1, 1, 1, 1, 1)
 for ix, (max_depth, min_samples_split, criterion, bootstrap, max_features, min_samples_leaf) \
 in enumerate(zip(max_depth_list, min_samples_split_list, criterion_list, bootstrap_list, max_features_list, min_samples_leaf_list)):
     reg_first_layer.append( ( "RF%d"%ix, RandomForestRegressor(n_estimators=n_est*2, max_depth=max_depth,
