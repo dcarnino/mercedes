@@ -59,7 +59,7 @@ def main(verbose=1):
     ### Extract features
     if verbose >= 1: print("Extract features...")
     # encode categorical
-    ohe = OneHotEncoder()
+    ohe = OneHotEncoder(handle_unknown='ignore')
     ohe.fit(Xc_train)
     Xohe_train = ohe.transform(Xc_train)
     Xohe_test = ohe.transform(Xc_test)
