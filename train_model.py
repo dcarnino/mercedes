@@ -45,10 +45,8 @@ def main(verbose=1):
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
     pd.concat([Xc_train,Xc_test]).apply(lambda x: label_dict[x.name].fit(x))
-    Xc_train.apply(lambda x: label_dict[x.name].transform(x))
-    Xc_train = Xc_train.values
-    Xc_test.apply(lambda x: label_dict[x.name].transform(x))
-    Xc_test = Xc_test.values
+    Xc_train = Xc_train.apply(lambda x: label_dict[x.name].transform(x)).values
+    Xc_test = Xc_test.apply(lambda x: label_dict[x.name].transform(x)).values
     if verbose >= 3:
         print("\tid_train shape: ", id_train.shape)
         print("\ty_train shape: ", y_train.shape)
