@@ -34,21 +34,21 @@ def main(verbose=1):
     df_train = pd.read_csv(train_csv_name)
     id_train = df_train["ID"].values
     y_train = df_train["y"].values
-    Xc_train = df_train.iloc[:,2:10]
-    print(set(Xc_train["X0"]))
-    label_dict = defaultdict(LabelEncoder)
-    Xc_train.apply(lambda x: label_dict[x.name].fit_transform(x))
-    Xc_train = Xc_train.values
     Xb_train = df_train.iloc[:,10:].values
+    Xc_train = df_train.iloc[:,2:10]
     # test
     test_csv_name = "../data/mercedes/test.csv"
     df_test = pd.read_csv(test_csv_name)
     id_test = df_test["ID"].values
+    Xb_test = df_test.iloc[:,9:].values
     Xc_test = df_test.iloc[:,1:9]
-    print(set(Xc_test["X0"]))
+    # string to numerical
+    label_dict = defaultdict(LabelEncoder)
+    pd.concat([Xc_train,Xc_test]).apply(lambda x: label_dict[x.name].fit(x))
+    Xc_train.apply(lambda x: label_dict[x.name].transform(x))
+    Xc_train = Xc_train.values
     Xc_test.apply(lambda x: label_dict[x.name].transform(x))
     Xc_test = Xc_test.values
-    Xb_test = df_test.iloc[:,9:].values
     if verbose >= 3:
         print("\tid_train shape: ", id_train.shape)
         print("\ty_train shape: ", y_train.shape)
