@@ -78,7 +78,7 @@ def main(verbose=1):
 
     ### Train model
     if verbose >= 1: print("Train model...")
-    reg = ExtraTreesRegressor(n_estimators=1000, n_jobs=-1, verbose=1)
+    reg = ExtraTreesRegressor(n_estimators=1000, n_jobs=-1, verbose=verbose)
     reg.fit(X_train, y_train)
 
     ### Predict with model
@@ -88,7 +88,7 @@ def main(verbose=1):
     ### Save predictions
     if verbose >= 1: print("Save predictions...")
     pred_csv_name = "../data/mercedes/pred.csv"
-    pred_df = pd.DataFrame(zip(id_test, y_pred), columns=["ID", "y"])
+    pred_df = pd.DataFrame(np.array([id_test, y_pred]).T, columns=["ID", "y"])
     pred_df.to_csv(pred_csv_name, index=False)
 
 
