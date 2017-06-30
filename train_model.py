@@ -50,12 +50,11 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         X2_valpred = []
         for reg in reg_list:
             if verbose >= 2:
-                print("%s ... "%reg[0],)
-                sys.stdout.flush()
+                print("%s ... "%reg[0], end='')
             reg[1].fit(X_valtrain, y_valtrain)
             y_valpred = reg[1].predict(X_valtest)
             X2_valpred.append(y_valpred.reshape((-1,1)))
-            if verbose >= 3: print("(%.02f) "%(metrics.mean_squared_error(y_valtest, y_valpred)*100.),)
+            if verbose >= 3: print("(%.02f) "%(metrics.mean_squared_error(y_valtest, y_valpred)*100.), end='')
         if verbose >= 2: print("")
         # append to new features
         X_oritrain.append(X_valtest)
@@ -68,8 +67,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     reg_list = copy.deepcopy(define_model.reg_first_layer)
     for reg in reg_list:
         if verbose >= 2:
-            print("%s ... "%reg[0],)
-            sys.stdout.flush()
+            print("%s ... "%reg[0], end='')
         reg[1].fit(X_oritrain, y2_train)
     if verbose >= 2: print("")
 
