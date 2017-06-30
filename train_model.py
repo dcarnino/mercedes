@@ -51,6 +51,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         for reg in reg_list:
             if verbose >= 2:
                 print("%s ... "%reg[0], end='')
+                sys.stdout.flush()
             reg[1].fit(X_valtrain, y_valtrain)
             y_valpred = reg[1].predict(X_valtest)
             X2_valpred.append(y_valpred.reshape((-1,1)))
@@ -68,6 +69,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     for reg in reg_list:
         if verbose >= 2:
             print("%s ... "%reg[0], end='')
+            sys.stdout.flush()
         reg[1].fit(X_oritrain, y2_train)
     if verbose >= 2: print("")
 
