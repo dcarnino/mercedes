@@ -40,8 +40,8 @@ def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
     model = Sequential()
     model.add(Dense(k_n_units, activation='relu', kernel_initializer=k_init, input_dim=551))
     model.add(Dropout(k_dropout))
-    for l in range(k_n_layers):
-        model.add(Dense(k_n_units, activation='relu', kernel_initializer=k_init))
+    for nl in range(k_n_layers):
+        model.add(Dense(k_n_units//(nl**2)+1, activation='relu', kernel_initializer=k_init))
         model.add(Dropout(k_dropout))
     model.add(Dense(1, activation='linear', kernel_initializer=k_init))
     # Compile model
@@ -55,7 +55,7 @@ he = 'he_normal'
 k_n_layers_list = np.array((1, 1, 1, 2, 2, 2, 4, 4, 10, 1, 1, 1, 2, 2, 2, 4, 4, 10)) * 2
 k_n_units_list = np.array((2048, 1024, 1024, 512, 256, 256, 128, 128, 64, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64)) * 2
 #k_dropout_list = (0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-k_dropout_list = (0.8,)*18
+k_dropout_list = (0.6,)*18
 k_optimizer_list = (rms, rms, rms, rms, rms, rms, rms, rms, rms, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd)
 k_init_list = (glo, he, glo, glo, he, glo, he, glo, glo, glo, he, glo, glo, he, glo, he, glo, glo)
 nb_epoch_list = (k_n_layers_list * k_n_units_list / 100.).astype(int)
