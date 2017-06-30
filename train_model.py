@@ -35,6 +35,7 @@ def main(verbose=1):
     id_train = df_train["ID"].values
     y_train = df_train["y"].values
     Xc_train = df_train.iloc[:,2:10]
+    print(Xc_train.head())
     label_dict = defaultdict(LabelEncoder)
     Xc_train.apply(lambda x: label_dict[x.name].fit_transform(x))
     Xc_train = Xc_train.values
@@ -44,6 +45,7 @@ def main(verbose=1):
     df_test = pd.read_csv(train_csv_name)
     id_test = df_test["ID"].values
     Xc_test = df_test.iloc[:,1:9]
+    print(Xc_test.head())
     Xc_test.apply(lambda x: label_dict[x.name].transform(x))
     Xc_test = Xc_test.values
     Xb_test = df_test.iloc[:,9:].values
