@@ -236,17 +236,16 @@ def main(verbose=1):
             pca.fit(np.hstack(X_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
             Xpca_valtest = pca.transform(np.hstack(X_valtest))
+            X_valtrain.append(Xpca_valtrain)
+            X_valtest.append(Xpca_valtest)
 
-            ### ICA
+            """### ICA
             ica = FastICA()
             ica.fit(np.hstack(X_valtrain))
             Xica_valtrain = ica.transform(np.hstack(X_valtrain))
             Xica_valtest = ica.transform(np.hstack(X_valtest))
-
-            X_valtrain.append(Xpca_valtrain)
-            X_valtest.append(Xpca_valtest)
             X_valtrain.append(Xica_valtrain)
-            X_valtest.append(Xica_valtest)
+            X_valtest.append(Xica_valtest)"""
 
             ##### Merge
 
@@ -260,14 +259,15 @@ def main(verbose=1):
             X_valtrain = vt.transform(X_valtrain)
             X_valtest = vt.transform(X_valtest)
 
-            # drop correlations
+            """# drop correlations
             X_valtrain = pd.DataFrame(X_valtrain)
             X_valtest = pd.DataFrame(X_valtest)
             to_drop = drop_correlations(X_valtrain)
             X_valtrain = X_valtrain.drop(X_valtrain.columns[to_drop], axis=1).values
-            X_valtest = X_valtest.drop(X_valtest.columns[to_drop], axis=1).values
+            X_valtest = X_valtest.drop(X_valtest.columns[to_drop], axis=1).values"""
 
             # select features
+            n_jobs = 28
             selector = SelectFromModel(XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                                        learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs),
                                        threshold='1.25*median')
