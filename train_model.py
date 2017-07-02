@@ -46,7 +46,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         X_valtrain, X_valtest = X_train[valtrain_index], X_train[valtest_index]
         y_valtrain, y_valtest = y_train[valtrain_index], y_train[valtest_index]
         # fit classifiers
-        """reg_list = [copy.deepcopy(mdl) if "MLP" not in mdl[0] else mdl for mdl in define_model.reg_first_layer]
+        reg_list = [copy.deepcopy(mdl) if "MLP" not in mdl[0] else mdl for mdl in define_model.reg_first_layer]
         X2_valpred = []
         for reg in reg_list:
             if verbose >= 2:
@@ -60,13 +60,14 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             y_valpred[np.isnan(y_valpred)] = 100.
             X2_valpred.append(y_valpred.reshape((-1,1)))
             if verbose >= 3: print("(%.04f) "%(metrics.r2_score(y_valtest, y_valpred)), end='')
-        if verbose >= 2: print("")"""
+        if verbose >= 2: print("")
         # append to new features
         X_oritrain.append(X_valtest)
-        #X2_train.append(np.hstack(X2_valpred))
+        X2_train.append(np.hstack(X2_valpred))
         y2_train.extend(y_valtest)
     X_oritrain = np.vstack(X_oritrain)
-    #X2_train = np.vstack(X2_train)
+    X2_train = np.vstack(X2_train)
+    y2_train = np.array(y2_train)
     # refit classifiers on all training data
     print("Refitting 1st layer on all training data...")
     reg_list = [copy.deepcopy(mdl) if "MLP" not in mdl[0] else mdl for mdl in define_model.reg_first_layer]
@@ -75,11 +76,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             print("%s ... "%reg[0], end='')
             sys.stdout.flush()
         if 'MLP' in reg[0]:
-            print(y2_train)
-            print(X_oritrain.shape)
-            print(len(y2_train))
-            print(np.array(y2_train).shape)
-            reg[1].ntraintest(X_oritrain, np.array(y2_train))
+            reg[1].ntraintest(X_oritrain, y2_train)
         else:
             reg[1].fit(X_oritrain, y2_train)
     if verbose >= 2: print("")
