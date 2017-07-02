@@ -55,7 +55,7 @@ glo = 'glorot_uniform'
 he = 'he_normal'
 k_n_layers_list = np.array((0, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 6, 6)) * 1
 k_n_units_list = np.array((2048, 1024, 1024, 1024, 1024, 512, 256, 256, 256, 128, 128, 128, 128, 128, 256)) // 2
-k_dropout_list = (0., 0.5, 0.3, 0.2, 0.1, 0.5, 0.5, 0.3, 0.1, 0.7, 0.5, 0.3, 0.1, 0.3, 0.5)
+k_dropout_list = (0.2, 0.5, 0.3, 0.2, 0.1, 0.5, 0.5, 0.3, 0.1, 0.7, 0.5, 0.3, 0.1, 0.3, 0.5)
 k_optimizer_list = (rms, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd)
 k_init_list = (glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo)
 # loop
