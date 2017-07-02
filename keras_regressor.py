@@ -1,6 +1,6 @@
 import logging as log
 import numpy as np
-import time
+import os
 
 from sklearn.model_selection import train_test_split
 
@@ -33,8 +33,9 @@ class KerasRegressor(KerasRegressor):
                 validation_data=(xtest, ytest),
                 callbacks=[earlystopping, savebestmodel, keraslog],
                 **params)
-        time.sleep(0.1)
         self.model.load_weights(best_file)
+        os.remove(best_file)
+
 
         losses = np.array(keraslog.losses)
 
