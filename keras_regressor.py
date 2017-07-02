@@ -25,7 +25,6 @@ class KerasRegressor(KerasRegressor):
         earlystopping = EarlyStopping(monitor='val_loss',
                                 patience=50, verbose=0, mode='auto')
         best_file = './best_weights.h5'
-        self.model.save_weights(best_file)
         savebestmodel = ModelCheckpoint(best_file,
                                 monitor='val_loss', verbose=0,
                                 save_best_only=True, mode='auto')
