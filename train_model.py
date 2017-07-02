@@ -78,7 +78,8 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             print(y2_train)
             print(X_oritrain.shape)
             print(len(y2_train))
-            reg[1].ntraintest(X_oritrain, y2_train)
+            print(np.array(y2_train).shape)
+            reg[1].ntraintest(X_oritrain, np.array(y2_train))
         else:
             reg[1].fit(X_oritrain, y2_train)
     if verbose >= 2: print("")
