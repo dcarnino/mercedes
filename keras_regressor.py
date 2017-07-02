@@ -46,3 +46,12 @@ class KerasRegressor(KerasRegressor):
                          %(self.best_score, best_iteration))
 
         return losses
+
+
+class Keraslog(Callback):
+    """ log scores from keras iterations """
+    def on_train_begin(self, logs={}):
+        self.losses = []
+
+    def on_epoch_end(self, batch, logs={}):
+        self.losses.append(logs.get('val_loss'))
