@@ -75,8 +75,9 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             print("%s ... "%reg[0], end='')
             sys.stdout.flush()
         if 'MLP' in reg[0]:
+            print(y2_train)
             print(X_oritrain.shape)
-            print(y2_train.shape)
+            print(len(y2_train))
             reg[1].ntraintest(X_oritrain, y2_train)
         else:
             reg[1].fit(X_oritrain, y2_train)
