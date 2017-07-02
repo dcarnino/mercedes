@@ -48,20 +48,19 @@ def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
     model.compile(loss=k_loss, optimizer=k_optimizer)
     return model
 # test zipped combinations
-sgd = SGD(lr=0.01, decay=1e-3, momentum=0.9, nesterov=True)
-rms = RMSprop(lr=0.01, rho=0.9, epsilon=1e-08, decay=1e-3)
+sgd = SGD(lr=0.05, decay=1e-3, momentum=0.9, nesterov=True)
+rms = RMSprop(lr=0.05, rho=0.9, epsilon=1e-08, decay=1e-3)
 glo = 'glorot_uniform'
 he = 'he_normal'
 k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 2, 4, 4, 10, 0, 1, 1, 1, 2, 2, 2, 4, 4, 10)) * 1
 k_n_units_list = np.array((2048, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64, 2048, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64)) // 2
-#k_dropout_list = (0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-k_dropout_list = (0.,)*20
-k_optimizer_list = (rms, rms, rms, rms, rms, rms, rms, rms, rms, rms, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd)
+k_dropout_list = (0.5, 0.5, 0.5, 0.2, 0.5, 0.5, 0.2, 0.5, 0.2, 0.5, 0.5, 0.5, 0.5, 0.2, 0.5, 0.5, 0.2, 0.5, 0.2, 0.5)
+k_optimizer_list = (sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, rms, rms, rms, rms, rms, rms, rms, rms, rms, rms)
 k_init_list = (glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo)
 # loop
 for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
 in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
-    reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
+    reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=505,
                                                          k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                          k_dropout=k_dropout, k_optimizer=k_optimizer,
                                                          k_init=k_init, verbose=0) ) )
