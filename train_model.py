@@ -18,7 +18,7 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import model_selection, metrics
 from scipy import sparse
 from xgboost import XGBRegressor
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, FastICA
 #==============================================
 #                   Files
 #==============================================
@@ -186,7 +186,7 @@ def main(verbose=1):
 
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
-    n_total = 20
+    n_total = 3
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
@@ -204,21 +204,57 @@ def main(verbose=1):
             Xb_valtrain, Xb_valtest = Xb_train.iloc[valtrain_index].values, Xb_train.iloc[valtest_index].values
             Xc_valtrain, Xc_valtest = Xc_train.iloc[valtrain_index], Xc_train.iloc[valtest_index]
 
-            ### Extract features
+            ##### Extract features
             if verbose >= 4: print("Extract features...")
-            # encode categorical
+            X_valtrain, X_valtest = []
+
+            ### add binary features
+            X_valtrain.append(Xb_valtrain)
+            X_valtest.append(Xb_valtest)
+
+            """### add categorical features
+            X_valtrain.append(Xc_valtrain.values)
+            X_valtest.append(Xc_valtest.values)"""
+
+            ### encode categorical
             ohe = OneHotEncoder(handle_unknown='ignore')
             ohe.fit(Xc_valtrain)
             Xohe_valtrain = ohe.transform(Xc_valtrain).toarray()
             Xohe_valtest = ohe.transform(Xc_valtest).toarray()
-            # merge all binary features
-            X_valtrain = np.hstack([Xc_valtrain.values, Xohe_valtrain, Xb_valtrain])
-            X_valtest = np.hstack([Xc_valtest.values, Xohe_valtest, Xb_valtest])
-            # remove constant
+            X_valtrain.append(Xohe_valtrain)
+            X_valtest.append(Xohe_valtest)
+
+            """### PCA
+            pca = PCA()
+            pca.fit(X_valtrain)
+            Xpca_valtrain = pca.transform(X_valtrain)
+            Xpca_valtest = pca.transform(X_valtest)
+            X_valtrain.append(Xpca_valtrain)
+            X_valtest.append(Xpca_valtest)"""
+
+            """### ICA
+            ica = FastICA()
+            ica.fit(X_valtrain)
+            Xica_valtrain = ica.transform(X_valtrain)
+            Xica_valtest = ica.transform(X_valtest)
+            X_valtrain.append(Xica_valtrain)
+            X_valtest.append(Xica_valtest)"""
+
+            """### Add id
+            Xid_valtrain = np.array([id_valtrain]).T
+            Xid_valtest = np.array([id_valtest]).T
+            X_valtrain.append(Xid_valtrain)
+            X_valtest.append(Xid_valtest)"""
+
+            ##### Merge
+            # merge all features
+            X_valtrain = np.hstack(X_valtrain)
+            X_valtest = np.hstack(X_valtest)
+            """# remove constant
             vt = VarianceThreshold()
             vt.fit(X_valtrain)
             X_valtrain = vt.transform(X_valtrain)
-            X_valtest = vt.transform(X_valtest)
+            X_valtest = vt.transform(X_valtest)"""
             """# drop correlations
             X_valtrain = pd.DataFrame(X_valtrain)
             X_valtest = pd.DataFrame(X_valtest)
@@ -228,8 +264,6 @@ def main(verbose=1):
             if verbose >= 5:
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
-
-            ### PCA
 
 
 
@@ -254,7 +288,7 @@ def main(verbose=1):
 
 
     ##### Compute R2-score
-    r2_score = metrics.r2_score(y_valtest, y_valpred)
+    r2_score = metrics.r2_score(y_traintest, y_trainpred)
     print("FINAL CV R2: ", r2_score)
 
     if verbose >= 1: print("Save predictions...")
