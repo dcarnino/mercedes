@@ -271,7 +271,7 @@ def main(verbose=1):
             selector = SelectFromModel(XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                                        learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs),
                                        threshold='1.25*median')
-            selector.fit(X_valtrain)
+            selector.fit(X_valtrain, y_valtrain)
             X_valtrain = selector.transform(X_valtrain)
             X_valtest = selector.transform(X_valtest)
 
