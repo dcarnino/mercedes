@@ -170,8 +170,10 @@ def main(verbose=1):
 
 
     ### Init cross-validation K-folds
-    n_folds = 5
-    cv = model_selection.KFold(n_splits=n_folds, shuffle=True)
+    """n_folds = 5
+    cv = model_selection.KFold(n_splits=n_folds, shuffle=True)"""
+    n_splits = 100
+    cv = model_selection.ShuffleSplit(n_splits=n_splits, test_size=0.2, random_state=0)
     y_trainpred, y_traintest = [], []
 
     ### Split folds and fit+predict
@@ -208,7 +210,7 @@ def main(verbose=1):
         ### Train model
         if verbose >= 4: print("Train model...")
         n_jobs = 28
-        reg = XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
+        reg = XGBRegressor(n_estimators=112, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                            learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
         reg.fit(X_valtrain, y_valtrain)
         #reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
