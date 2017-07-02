@@ -1,6 +1,7 @@
 import logging as log
 import numpy as np
 import os
+import time
 
 from sklearn.model_selection import train_test_split
 
@@ -24,7 +25,7 @@ class KerasRegressor(KerasRegressor):
 
         earlystopping = EarlyStopping(monitor='val_loss',
                                 patience=50, verbose=0, mode='auto')
-        best_file = './best_weights.h5'
+        best_file = './.best_weights_%d.h5'%(time.time())
         savebestmodel = ModelCheckpoint(best_file,
                                 monitor='val_loss', verbose=0,
                                 save_best_only=True, mode='auto')
