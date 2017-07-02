@@ -273,7 +273,7 @@ def main(verbose=1):
             reg.fit(X_valtrain, y_valtrain)
             fscores = reg.booster().get_fscore()
             reg.feature_importances_ = np.zeros(X_valtrain.shape[1])
-            total_importance = sum(fscores.values)
+            total_importance = sum(fscores.values())
             for k,v in fscores.items():
                 reg.feature_importances_[int(k[1:])] = float(v)/total_importance
             selector = SelectFromModel(reg, prefit=True,
