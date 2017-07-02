@@ -212,9 +212,9 @@ def main(verbose=1):
             X_valtrain.append(Xb_valtrain)
             X_valtest.append(Xb_valtest)
 
-            ### add categorical features
+            """### add categorical features
             X_valtrain.append(Xc_valtrain.values)
-            X_valtest.append(Xc_valtest.values)
+            X_valtest.append(Xc_valtest.values)"""
 
             ### encode categorical
             ohe = OneHotEncoder(handle_unknown='ignore')
@@ -240,11 +240,11 @@ def main(verbose=1):
             X_valtrain.append(Xica_valtrain)
             X_valtest.append(Xica_valtest)"""
 
-            """### Add id
+            ### Add id
             Xid_valtrain = np.array([id_valtrain]).T
             Xid_valtest = np.array([id_valtest]).T
             X_valtrain.append(Xid_valtrain)
-            X_valtest.append(Xid_valtest)"""
+            X_valtest.append(Xid_valtest)
 
             ##### Merge
             # merge all features
