@@ -53,3 +53,6 @@ class Keraslog(Callback):
 
     def on_epoch_end(self, batch, logs={}):
         self.losses.append(logs.get('val_loss'))
+
+    def on_train_end(self, logs={}):
+        logs.clear()
