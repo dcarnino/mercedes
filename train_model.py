@@ -213,9 +213,9 @@ def main(verbose=1):
             X_valtrain.append(Xb_valtrain)
             X_valtest.append(Xb_valtest)
 
-            """### add categorical features
+            ### add categorical features
             X_valtrain.append(Xc_valtrain.values)
-            X_valtest.append(Xc_valtest.values)"""
+            X_valtest.append(Xc_valtest.values)
 
             ### encode categorical
             ohe = OneHotEncoder(handle_unknown='ignore')
@@ -225,43 +225,56 @@ def main(verbose=1):
             X_valtrain.append(Xohe_valtrain)
             X_valtest.append(Xohe_valtest)
 
-            """### Add id
+            ### Add id
             Xid_valtrain = np.array([id_valtrain]).T
             Xid_valtest = np.array([id_valtest]).T
             X_valtrain.append(Xid_valtrain)
-            X_valtest.append(Xid_valtest)"""
+            X_valtest.append(Xid_valtest)
 
-            """### PCA
+            ### PCA
             pca = PCA()
             pca.fit(np.hstack(X_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
             Xpca_valtest = pca.transform(np.hstack(X_valtest))
-            X_valtrain.append(Xpca_valtrain)
-            X_valtest.append(Xpca_valtest)"""
 
-            """### ICA
+            ### ICA
             ica = FastICA()
-            ica.fit(X_valtrain)
-            Xica_valtrain = ica.transform(X_valtrain)
-            Xica_valtest = ica.transform(X_valtest)
+            ica.fit(np.hstack(X_valtrain))
+            Xica_valtrain = ica.transform(np.hstack(X_valtrain))
+            Xica_valtest = ica.transform(np.hstack(X_valtest))
+
+            X_valtrain.append(Xpca_valtrain)
+            X_valtest.append(Xpca_valtest)
             X_valtrain.append(Xica_valtrain)
-            X_valtest.append(Xica_valtest)"""
+            X_valtest.append(Xica_valtest)
 
             ##### Merge
+
             # merge all features
             X_valtrain = np.hstack(X_valtrain)
             X_valtest = np.hstack(X_valtest)
-            """# remove constant
+
+            # remove constant
             vt = VarianceThreshold()
             vt.fit(X_valtrain)
             X_valtrain = vt.transform(X_valtrain)
-            X_valtest = vt.transform(X_valtest)"""
+            X_valtest = vt.transform(X_valtest)
+
             # drop correlations
             X_valtrain = pd.DataFrame(X_valtrain)
             X_valtest = pd.DataFrame(X_valtest)
             to_drop = drop_correlations(X_valtrain)
             X_valtrain = X_valtrain.drop(X_valtrain.columns[to_drop], axis=1).values
             X_valtest = X_valtest.drop(X_valtest.columns[to_drop], axis=1).values
+
+            # select features
+            selector = SelectFromModel(XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
+                                       learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs),
+                                       threshold='median')
+            selector.fit(X_valtrain)
+            X_valtrain = selector.transform(X_valtrain)
+            X_valtest = selector.transform(X_valtest)
+
             if verbose >= 5:
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
