@@ -169,61 +169,64 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    ### Init cross-validation K-folds
-    n_folds = 100
-    #cv = model_selection.KFold(n_splits=n_folds, shuffle=True)
-    cv = model_selection.ShuffleSplit(n_splits=n_folds, test_size=0.2, random_state=0)
+    ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
+    n_total = 3
+    for ix_cv in range(n_total):
 
-    ### Split folds and fit+predict
-    fold_cnt = 0
-    for valtrain_index, valtest_index in cv.split(Xb_train.values):
-        fold_cnt += 1
-        if verbose >= 1: print("BIG CV: Processing fold number %d/%d..."%(fold_cnt,n_folds))
-        # split features and target labels
-        id_valtrain, id_valtest = id_train.iloc[valtrain_index].values, id_train.iloc[valtest_index].values
-        y_valtrain, y_valtest = y_train.iloc[valtrain_index].values, y_train.iloc[valtest_index].values
-        Xb_valtrain, Xb_valtest = Xb_train.iloc[valtrain_index].values, Xb_train.iloc[valtest_index].values
-        Xc_valtrain, Xc_valtest = Xc_train.iloc[valtrain_index], Xc_train.iloc[valtest_index]
+        ### Init cross-validation K-folds
+        n_folds = 5
+        cv = model_selection.KFold(n_splits=n_folds, shuffle=True)
 
-        ### Extract features
-        if verbose >= 4: print("Extract features...")
-        # encode categorical
-        ohe = OneHotEncoder(handle_unknown='ignore')
-        ohe.fit(Xc_valtrain)
-        Xohe_valtrain = ohe.transform(Xc_valtrain).toarray()
-        Xohe_valtest = ohe.transform(Xc_valtest).toarray()
-        # merge all binary features
-        X_valtrain = np.hstack([Xc_valtrain.values, Xohe_valtrain, Xb_valtrain])
-        X_valtest = np.hstack([Xc_valtest.values, Xohe_valtest, Xb_valtest])
-        # remove constant
-        vt = VarianceThreshold()
-        vt.fit(X_valtrain)
-        X_valtrain = vt.transform(X_valtrain)
-        X_valtest = vt.transform(X_valtest)
-        if verbose >= 5:
-            print("\tX_valtrain shape: ", X_valtrain.shape)
-            print("\tX_valtest shape: ", X_valtest.shape)
+        ### Split folds and fit+predict
+        fold_cnt = 0
+        for valtrain_index, valtest_index in cv.split(Xb_train.values):
+            fold_cnt += 1
+            if verbose >= 1: print("BIG CV: Processing fold number %d/%d..."%(fold_cnt+n_folds*ix_cv,n_folds*n_total))
+            # split features and target labels
+            id_valtrain, id_valtest = id_train.iloc[valtrain_index].values, id_train.iloc[valtest_index].values
+            y_valtrain, y_valtest = y_train.iloc[valtrain_index].values, y_train.iloc[valtest_index].values
+            Xb_valtrain, Xb_valtest = Xb_train.iloc[valtrain_index].values, Xb_train.iloc[valtest_index].values
+            Xc_valtrain, Xc_valtest = Xc_train.iloc[valtrain_index], Xc_train.iloc[valtest_index]
+
+            ### Extract features
+            if verbose >= 4: print("Extract features...")
+            # encode categorical
+            ohe = OneHotEncoder(handle_unknown='ignore')
+            ohe.fit(Xc_valtrain)
+            Xohe_valtrain = ohe.transform(Xc_valtrain).toarray()
+            Xohe_valtest = ohe.transform(Xc_valtest).toarray()
+            # merge all binary features
+            X_valtrain = np.hstack([Xc_valtrain.values, Xohe_valtrain, Xb_valtrain])
+            X_valtest = np.hstack([Xc_valtest.values, Xohe_valtest, Xb_valtest])
+            # remove constant
+            vt = VarianceThreshold()
+            vt.fit(X_valtrain)
+            X_valtrain = vt.transform(X_valtrain)
+            X_valtest = vt.transform(X_valtest)
+            if verbose >= 5:
+                print("\tX_valtrain shape: ", X_valtrain.shape)
+                print("\tX_valtest shape: ", X_valtest.shape)
 
 
-        ### Train model
-        if verbose >= 4: print("Train model...")
-        n_jobs = 28
-        reg = XGBRegressor(n_estimators=112, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
-                           learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
-        reg.fit(X_valtrain, y_valtrain)
-        #reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
-        #                      add_raw_features=True, verbose=verbose)
+            ### Train model
+            if verbose >= 4: print("Train model...")
+            n_jobs = 28
+            reg = XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
+                               learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
+            reg.fit(X_valtrain, y_valtrain)
+            #reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
+            #                      add_raw_features=True, verbose=verbose)
 
-        ### Predict with model
-        if verbose >= 4: print("Predict with model...")
-        y_valpred = reg.predict(X_valtest)
-        #y_valpred = predict_stacked_regressors(X_valtest, reg_list, reg_final,
-        #            add_raw_features=True, verbose=verbose)
+            ### Predict with model
+            if verbose >= 4: print("Predict with model...")
+            y_valpred = reg.predict(X_valtest)
+            #y_valpred = predict_stacked_regressors(X_valtest, reg_list, reg_final,
+            #            add_raw_features=True, verbose=verbose)
 
-        ### Append preds and tests
-        y_trainpred.extend(y_valpred)
-        y_traintest.extend(y_valtest)
+            ### Append preds and tests
+            y_trainpred.extend(y_valpred)
+            y_traintest.extend(y_valtest)
 
 
     ##### Compute R2-score
