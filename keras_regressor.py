@@ -24,7 +24,8 @@ class KerasRegressor(KerasRegressor):
 
         earlystopping = EarlyStopping(monitor='val_loss',
                                 patience=50, verbose=0, mode='auto')
-        best_file = './best_weights.txt'
+        best_file = './best_weights.h5'
+        self.model.load_weights(best_file)
         savebestmodel = ModelCheckpoint(best_file,
                                 monitor='val_loss', verbose=0,
                                 save_best_only=True, mode='auto')
@@ -34,8 +35,6 @@ class KerasRegressor(KerasRegressor):
                 callbacks=[earlystopping, savebestmodel, keraslog],
                 **params)
         self.model.load_weights(best_file)
-        os.remove(best_file)
-
 
         losses = np.array(keraslog.losses)
 
@@ -56,6 +55,3 @@ class Keraslog(Callback):
 
     def on_epoch_end(self, batch, logs={}):
         self.losses.append(logs.get('val_loss'))
-
-    def on_train_end(self, logs={}):
-        logs.clear()
