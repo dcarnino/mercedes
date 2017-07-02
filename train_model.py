@@ -186,7 +186,7 @@ def main(verbose=1):
 
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
-    n_total = 3
+    n_total = 20
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
