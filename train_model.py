@@ -268,10 +268,16 @@ def main(verbose=1):
 
             # select features
             n_jobs = 28
-            selector = SelectFromModel(XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
-                                       learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs),
+            reg = XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
+                               learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
+            reg.fit(X_valtrain, y_valtrain)
+            fscores = reg.booster().get_fscore()
+            reg.feature_importances_ = np.zeros(X_valtrain.shape[1])
+            total_importance = sum(fscores.values)
+            for k,v in fscores.items():
+                reg.feature_importances_[int(k[1:])] = float(v)/total_importance
+            selector = SelectFromModel(reg, prefit=True,
                                        threshold='1.25*median')
-            selector.fit(X_valtrain, y_valtrain)
             X_valtrain = selector.transform(X_valtrain)
             X_valtest = selector.transform(X_valtest)
 
