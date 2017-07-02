@@ -224,11 +224,17 @@ def main(verbose=1):
             X_valtrain.append(Xohe_valtrain)
             X_valtest.append(Xohe_valtest)
 
+            ### Add id
+            Xid_valtrain = np.array([id_valtrain]).T
+            Xid_valtest = np.array([id_valtest]).T
+            X_valtrain.append(Xid_valtrain)
+            X_valtest.append(Xid_valtest)
+
             ### PCA
             pca = PCA()
-            pca.fit(X_valtrain)
-            Xpca_valtrain = pca.transform(X_valtrain)
-            Xpca_valtest = pca.transform(X_valtest)
+            pca.fit(np.hstack(X_valtrain))
+            Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
+            Xpca_valtest = pca.transform(np.hstack(X_valtest))
             X_valtrain.append(Xpca_valtrain)
             X_valtest.append(Xpca_valtest)
 
@@ -239,12 +245,6 @@ def main(verbose=1):
             Xica_valtest = ica.transform(X_valtest)
             X_valtrain.append(Xica_valtrain)
             X_valtest.append(Xica_valtest)"""
-
-            ### Add id
-            Xid_valtrain = np.array([id_valtrain]).T
-            Xid_valtest = np.array([id_valtest]).T
-            X_valtrain.append(Xid_valtrain)
-            X_valtest.append(Xid_valtest)
 
             ##### Merge
             # merge all features
