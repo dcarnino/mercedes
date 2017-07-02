@@ -20,7 +20,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from keras import backend as K
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
-from keras.optimizers import SGD, RMSProp
+from keras.optimizers import SGD, RMSprop
 from keras_regressor import KerasRegressor
 
 # ===========================
