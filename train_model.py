@@ -52,7 +52,10 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             if verbose >= 2:
                 print("%s ... "%reg[0], end='')
                 sys.stdout.flush()
-            reg[1].fit(X_valtrain, y_valtrain)
+            if 'MLP' in reg[0]:
+                reg[1].ntraintest(X_valtrain, y_valtrain)
+            else:
+                reg[1].fit(X_valtrain, y_valtrain)
             y_valpred = reg[1].predict(X_valtest)
             y_valpred[np.isnan(y_valpred)] = 100.
             X2_valpred.append(y_valpred.reshape((-1,1)))
@@ -71,7 +74,10 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         if verbose >= 2:
             print("%s ... "%reg[0], end='')
             sys.stdout.flush()
-        reg[1].fit(X_oritrain, y2_train)
+        if 'MLP' in reg[0]:
+            reg[1].ntraintest(X_oritrain, y2_train)
+        else:
+            reg[1].fit(X_oritrain, y2_train)
     if verbose >= 2: print("")
 
     ### Init final layer
