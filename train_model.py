@@ -224,19 +224,19 @@ def main(verbose=1):
             X_valtrain.append(Xohe_valtrain)
             X_valtest.append(Xohe_valtest)
 
-            ### Add id
+            """### Add id
             Xid_valtrain = np.array([id_valtrain]).T
             Xid_valtest = np.array([id_valtest]).T
             X_valtrain.append(Xid_valtrain)
-            X_valtest.append(Xid_valtest)
+            X_valtest.append(Xid_valtest)"""
 
-            ### PCA
+            """### PCA
             pca = PCA()
             pca.fit(np.hstack(X_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
             Xpca_valtest = pca.transform(np.hstack(X_valtest))
             X_valtrain.append(Xpca_valtrain)
-            X_valtest.append(Xpca_valtest)
+            X_valtest.append(Xpca_valtest)"""
 
             """### ICA
             ica = FastICA()
@@ -250,11 +250,11 @@ def main(verbose=1):
             # merge all features
             X_valtrain = np.hstack(X_valtrain)
             X_valtest = np.hstack(X_valtest)
-            """# remove constant
+            # remove constant
             vt = VarianceThreshold()
             vt.fit(X_valtrain)
             X_valtrain = vt.transform(X_valtrain)
-            X_valtest = vt.transform(X_valtest)"""
+            X_valtest = vt.transform(X_valtest)
             """# drop correlations
             X_valtrain = pd.DataFrame(X_valtrain)
             X_valtest = pd.DataFrame(X_valtest)
