@@ -277,7 +277,7 @@ def main(verbose=1):
             for k,v in fscores.items():
                 reg.feature_importances_[int(k[1:])] = float(v)/total_importance
             selector = SelectFromModel(reg, prefit=True,
-                                       threshold='1.25*median')
+                                       threshold='1.75*median')
             X_valtrain = selector.transform(X_valtrain)
             X_valtest = selector.transform(X_valtest)
 
