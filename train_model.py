@@ -206,7 +206,7 @@ def main(verbose=1):
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
-            X_valtrain, X_valtest = []
+            X_valtrain, X_valtest = [], []
 
             ### add binary features
             X_valtrain.append(Xb_valtrain)
