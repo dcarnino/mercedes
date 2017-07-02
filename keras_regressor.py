@@ -18,7 +18,7 @@ class KerasRegressor(KerasRegressor):
         """ fit until stopping criteria met and retain best model """
         xtrain, xtest, ytrain, ytest = train_test_split(x, y,
                                         test_size=0.1, random_state=0)
-        params.setdefault("verbose", 1)
+        params.setdefault("verbose", 0)
         # keras verbose is 0 or 1 only
         if params["verbose"] > 0:
             params["verbose"] = 1
