@@ -134,16 +134,35 @@ def main(verbose=1):
     # train
     train_csv_name = "../data/mercedes/train.csv"
     df_train = pd.read_csv(train_csv_name)
-    id_train = df_train["ID"].values
-    y_train = df_train["y"].values
-    Xb_train = df_train.iloc[:,10:].values
+    id_train = df_train["ID"]
+    y_train = df_train["y"]
+    Xb_train = df_train.iloc[:,10:]
     Xc_train = df_train.iloc[:,2:10]
     # test
     test_csv_name = "../data/mercedes/test.csv"
     df_test = pd.read_csv(test_csv_name)
-    id_test = df_test["ID"].values
-    Xb_test = df_test.iloc[:,9:].values
+    id_test = df_test["ID"]
+    Xb_test = df_test.iloc[:,9:]
     Xc_test = df_test.iloc[:,1:9]
+
+    ### Init cross-validation K-folds
+    n_folds = 5
+    cv = model_selection.KFold(n_splits=n_folds, shuffle=True)
+
+    ### Split folds and fit+predict
+    fold_cnt = 0
+    for valtrain_index, valtest_index in cv.split(Xb_train.values):
+        fold_cnt += 1
+        if verbose >= 1: print("BIG CV: Processing fold number %d/%d..."%(fold_cnt,n_folds))
+        # split features and target labels
+        id_valtrain, id_valtest = id_train.iloc[valtrain_index], id_train.iloc[valtest_index]
+        y_valtrain, y_valtest = y_train.iloc[valtrain_index], y_train.iloc[valtest_index]
+        Xb_valtrain, Xb_valtest = Xb_train.iloc[valtrain_index], Xb_train.iloc[valtest_index]
+        Xc_valtrain, Xc_valtest = Xc_train.iloc[valtrain_index], Xc_train.iloc[valtest_index]
+        print(Xb_train.shape, Xb_valtrain.shape, y_train.shape, y_valtest.shape)
+        raise(ValueError)
+
+
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
     pd.concat([Xc_train,Xc_test]).apply(lambda x: label_dict[x.name].fit(x))
