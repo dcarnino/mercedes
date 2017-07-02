@@ -87,7 +87,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     ### Train final layer
     if verbose >= 1: print("Training 2nd layer...")
     if add_raw_features:
-            reg_final.fit(np.hstack([X_oritrain, X2_train]), y2_train)
+            reg_final.fit(np.hstack([X_oritrain[:,:183], X2_train]), y2_train)
     else:
             reg_final.fit(X2_train, y2_train)
 
@@ -113,7 +113,7 @@ def predict_stacked_regressors(X_test, reg_list, reg_final, add_raw_features=Fal
     # layer 2
     if verbose >= 1: print("Predictions of 2nd layer...")
     if add_raw_features:
-        X3_test = np.hstack([X_test, X2_test])
+        X3_test = np.hstack([X_test[:,:183], X2_test])
     else:
         X3_test = X2_test
     y_pred = reg_final.predict(X3_test)
@@ -184,12 +184,12 @@ def main(verbose=1):
     ### Train model
     if verbose >= 1: print("Train model...")
     reg_list, reg_final = fit_stacked_regressors(X_train, y_train,
-                          add_raw_features=False, verbose=verbose)
+                          add_raw_features=True, verbose=verbose)
 
     ### Predict with model
     if verbose >= 1: print("Predict with model...")
     y_pred = predict_stacked_regressors(X_test, reg_list, reg_final,
-             add_raw_features=False, verbose=verbose)
+             add_raw_features=True, verbose=verbose)
 
     ### Save predictions
     if verbose >= 1: print("Save predictions...")
