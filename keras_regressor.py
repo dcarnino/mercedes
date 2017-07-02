@@ -12,7 +12,7 @@ class KerasRegressor(KerasRegressor):
     Add ntraintest to traintest until stopping criteria met.
     """
 
-    def ntraintest(self, x, y, clear=True, scoresign=-1, **params):
+    def ntraintest(self, x, y, scoresign=-1, **params):
         """ fit until stopping criteria met and retain best model """
         xtrain, xtest, ytrain, ytest = train_test_split(x, y,
                                         test_size=0.1, random_state=0)
@@ -40,8 +40,6 @@ class KerasRegressor(KerasRegressor):
         self.best_score = max(losses)
         best_iteration = list(losses).index(self.best_score) + 1
 
-        if clear:
-            clear_output()
         log.info("best score %s with %s iterations"
                          %(self.best_score, best_iteration))
 
