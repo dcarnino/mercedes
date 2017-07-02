@@ -90,7 +90,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     ### Train final layer
     if verbose >= 1: print("Training 2nd layer...")
     if add_raw_features:
-            reg_final.fit(np.hstack([X_oritrain[:,:183], X2_train]), y2_train)
+            reg_final.fit(np.hstack([X_oritrain, X2_train]), y2_train)
     else:
             reg_final.fit(X2_train, y2_train)
 
@@ -116,7 +116,7 @@ def predict_stacked_regressors(X_test, reg_list, reg_final, add_raw_features=Fal
     # layer 2
     if verbose >= 1: print("Predictions of 2nd layer...")
     if add_raw_features:
-        X3_test = np.hstack([X_test[:,:183], X2_test])
+        X3_test = np.hstack([X_test, X2_test])
     else:
         X3_test = X2_test
     y_pred = reg_final.predict(X3_test)
@@ -231,13 +231,13 @@ def main(verbose=1):
             X_valtrain.append(Xid_valtrain)
             X_valtest.append(Xid_valtest)
 
-            ### PCA
+            """### PCA
             pca = PCA()
             pca.fit(np.hstack(X_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
             Xpca_valtest = pca.transform(np.hstack(X_valtest))
             X_valtrain.append(Xpca_valtrain)
-            X_valtest.append(Xpca_valtest)
+            X_valtest.append(Xpca_valtest)"""
 
             """### ICA
             ica = FastICA()
@@ -266,7 +266,7 @@ def main(verbose=1):
             X_valtrain = X_valtrain.drop(X_valtrain.columns[to_drop], axis=1).values
             X_valtest = X_valtest.drop(X_valtest.columns[to_drop], axis=1).values"""
 
-            # select features
+            """# select features
             n_jobs = 28
             reg = XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
@@ -279,7 +279,7 @@ def main(verbose=1):
             selector = SelectFromModel(reg, prefit=True,
                                        threshold='1.75*median')
             X_valtrain = selector.transform(X_valtrain)
-            X_valtest = selector.transform(X_valtest)
+            X_valtest = selector.transform(X_valtest)"""
 
             if verbose >= 3:
                 print("\tX_valtrain shape: ", X_valtrain.shape)
@@ -289,18 +289,18 @@ def main(verbose=1):
 
             ### Train model
             if verbose >= 4: print("Train model...")
-            n_jobs = 28
+            """n_jobs = 28
             reg = XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
-            reg.fit(X_valtrain, y_valtrain)
-            #reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
-            #                      add_raw_features=True, verbose=verbose)
+            reg.fit(X_valtrain, y_valtrain)"""
+            reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
+                                  add_raw_features=False, verbose=verbose)
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            y_valpred = reg.predict(X_valtest)
-            #y_valpred = predict_stacked_regressors(X_valtest, reg_list, reg_final,
-            #            add_raw_features=True, verbose=verbose)
+            #y_valpred = reg.predict(X_valtest)
+            y_valpred = predict_stacked_regressors(X_valtest, reg_list, reg_final,
+                        add_raw_features=False, verbose=verbose)
 
             ### Append preds and tests
             y_trainpred.extend(y_valpred)
