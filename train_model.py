@@ -170,10 +170,9 @@ def main(verbose=1):
 
 
     ### Init cross-validation K-folds
-    """n_folds = 5
-    cv = model_selection.KFold(n_splits=n_folds, shuffle=True)"""
-    n_splits = 100
-    cv = model_selection.ShuffleSplit(n_splits=n_splits, test_size=0.2, random_state=0)
+    n_folds = 100
+    #cv = model_selection.KFold(n_splits=n_folds, shuffle=True)
+    cv = model_selection.ShuffleSplit(n_splits=n_folds, test_size=0.2, random_state=0)
     y_trainpred, y_traintest = [], []
 
     ### Split folds and fit+predict
