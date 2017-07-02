@@ -176,6 +176,10 @@ def main(verbose=1):
         print("\tX_train shape: ", X_train.shape)
         print("\tX_test shape: ", X_test.shape)
 
+    # remove outlier
+    del X_train[y_train > 200]
+    del y_train[y_train > 200]
+
     ### Train model
     if verbose >= 1: print("Train model...")
     reg_list, reg_final = fit_stacked_regressors(X_train, y_train,
