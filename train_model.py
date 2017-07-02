@@ -270,12 +270,12 @@ def main(verbose=1):
             # select features
             selector = SelectFromModel(XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                                        learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs),
-                                       threshold='median')
+                                       threshold='1.25*median')
             selector.fit(X_valtrain)
             X_valtrain = selector.transform(X_valtrain)
             X_valtest = selector.transform(X_valtest)
 
-            if verbose >= 5:
+            if verbose >= 3:
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
 
