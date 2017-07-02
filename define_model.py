@@ -48,8 +48,8 @@ def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
     model.compile(loss=k_loss, optimizer=k_optimizer)
     return model
 # test zipped combinations
-sgd = SGD(lr=0.1, decay=1e-3, momentum=0.9, nesterov=True)
-rms = RMSprop(lr=0.1, rho=0.9, epsilon=1e-08, decay=1e-3)
+sgd = SGD(lr=0.4, decay=1e-2, momentum=0.9, nesterov=True)
+rms = RMSprop(lr=0.4, rho=0.9, epsilon=1e-08, decay=1e-2)
 glo = 'glorot_uniform'
 he = 'he_normal'
 k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 2, 4, 4, 10, 0, 1, 1, 1, 2, 2, 2, 4, 4, 10)) * 1
