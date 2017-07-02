@@ -31,6 +31,10 @@ n_est = 224
 
 reg_first_layer = []
 
+### gbr
+reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.5,
+                                                           criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=4) ) )
+
 ### mlp
 # function for model
 def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
@@ -87,10 +91,6 @@ for n_neighbors in n_neighbors_list:
             reg_first_layer.append( ( "kNN%d"%ix, KNeighborsRegressor(n_neighbors=n_neighbors, weights=weights, p=p,
                                                                       algorithm='auto', n_jobs=n_jobs) ) )
             ix += 1
-
-### gbr
-reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.5,
-                                                           criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=4) ) )
 
 ### adaboost
 reg_first_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
