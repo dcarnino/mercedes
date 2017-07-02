@@ -174,7 +174,7 @@ def main(verbose=1):
     y_train = y_train[y_train < 200]
 
     # check shapes
-    if verbose >= 3:
+    if verbose >= 2:
         print("\tid_train shape: ", id_train.shape)
         print("\ty_train shape: ", y_train.shape)
         print("\tXc_train shape: ", Xc_train.shape)
@@ -212,9 +212,9 @@ def main(verbose=1):
             X_valtrain.append(Xb_valtrain)
             X_valtest.append(Xb_valtest)
 
-            """### add categorical features
+            ### add categorical features
             X_valtrain.append(Xc_valtrain.values)
-            X_valtest.append(Xc_valtest.values)"""
+            X_valtest.append(Xc_valtest.values)
 
             ### encode categorical
             ohe = OneHotEncoder(handle_unknown='ignore')
