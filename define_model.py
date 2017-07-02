@@ -52,8 +52,8 @@ sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 rms = 'rmsprop'
 glo = 'glorot_uniform'
 he = 'he_normal'
-k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 2, 4, 4, 10, 0, 1, 1, 1, 2, 2, 2, 4, 4, 10)) * 8
-k_n_units_list = np.array((2048, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64, 2048, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64)) * 2
+k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 2, 4, 4, 10, 0, 1, 1, 1, 2, 2, 2, 4, 4, 10)) * 1
+k_n_units_list = np.array((2048, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64, 2048, 2048, 1024, 1024, 512, 256, 256, 128, 128, 64)) * 1
 #k_dropout_list = (0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
 k_dropout_list = (0.5,)*20
 k_optimizer_list = (rms, rms, rms, rms, rms, rms, rms, rms, rms, rms, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd, sgd)
