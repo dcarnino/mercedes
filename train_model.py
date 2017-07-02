@@ -172,13 +172,13 @@ def main(verbose=1):
     vt.fit(X_train)
     X_train = vt.transform(X_train)
     X_test = vt.transform(X_test)
+    # remove outlier
+    X_train = X_train[y_train < 200]
+    y_train = y_train[y_train < 200]
     if verbose >= 3:
         print("\tX_train shape: ", X_train.shape)
         print("\tX_test shape: ", X_test.shape)
 
-    # remove outlier
-    del X_train[y_train > 200]
-    del y_train[y_train > 200]
 
     ### Train model
     if verbose >= 1: print("Train model...")
