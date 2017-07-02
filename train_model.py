@@ -151,6 +151,14 @@ def main(verbose=1):
     pd.concat([Xc_train,Xc_test]).apply(lambda x: label_dict[x.name].fit(x.sort_values()))
     Xc_train = Xc_train.apply(lambda x: label_dict[x.name].transform(x))
     Xc_test = Xc_test.apply(lambda x: label_dict[x.name].transform(x))
+
+    # remove outlier
+    Xb_train = Xb_train[y_train < 200]
+    Xc_train = Xc_train[y_train < 200]
+    id_train = id_train[y_train < 200]
+    y_train = y_train[y_train < 200]
+
+    # check shapes
     if verbose >= 3:
         print("\tid_train shape: ", id_train.shape)
         print("\ty_train shape: ", y_train.shape)
@@ -160,11 +168,6 @@ def main(verbose=1):
         print("\tXc_test shape: ", Xc_test.shape)
         print("\tXb_test shape: ", Xb_test.shape)
 
-    # remove outlier
-    Xb_train = Xb_train[y_train < 200]
-    Xc_train = Xc_train[y_train < 200]
-    id_train = id_train[y_train < 200]
-    y_train = y_train[y_train < 200]
 
     ### Init cross-validation K-folds
     n_folds = 5
