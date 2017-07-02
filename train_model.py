@@ -19,6 +19,7 @@ from sklearn import model_selection, metrics
 from scipy import sparse
 from xgboost import XGBRegressor
 from sklearn.decomposition import PCA, FastICA
+from sklearn.feature_selection import SelectFromModel
 #==============================================
 #                   Files
 #==============================================
@@ -250,17 +251,17 @@ def main(verbose=1):
             # merge all features
             X_valtrain = np.hstack(X_valtrain)
             X_valtest = np.hstack(X_valtest)
-            # remove constant
+            """# remove constant
             vt = VarianceThreshold()
             vt.fit(X_valtrain)
             X_valtrain = vt.transform(X_valtrain)
-            X_valtest = vt.transform(X_valtest)
-            """# drop correlations
+            X_valtest = vt.transform(X_valtest)"""
+            # drop correlations
             X_valtrain = pd.DataFrame(X_valtrain)
             X_valtest = pd.DataFrame(X_valtest)
             to_drop = drop_correlations(X_valtrain)
             X_valtrain = X_valtrain.drop(X_valtrain.columns[to_drop], axis=1).values
-            X_valtest = X_valtest.drop(X_valtest.columns[to_drop], axis=1).values"""
+            X_valtest = X_valtest.drop(X_valtest.columns[to_drop], axis=1).values
             if verbose >= 5:
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
