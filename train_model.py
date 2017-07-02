@@ -18,6 +18,7 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import model_selection, metrics
 from scipy import sparse
 from xgboost import XGBRegressor
+from sklearn.decomposition import PCA
 #==============================================
 #                   Files
 #==============================================
@@ -224,9 +225,12 @@ def main(verbose=1):
             to_drop = drop_correlations(X_valtrain)
             X_valtrain = X_valtrain.drop(X_valtrain.columns[to_drop], axis=1).values
             X_valtest = X_valtest.drop(X_valtest.columns[to_drop], axis=1).values"""
-            if verbose >= 3:
+            if verbose >= 5:
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
+
+            ### PCA
+
 
 
             ### Train model
