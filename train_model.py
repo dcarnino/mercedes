@@ -296,12 +296,10 @@ def main(verbose=1):
             sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
             sorted_rank_valtrain = np.array(sorted_rank_valtrain)
             sorted_y_valtrain = np.array(sorted_y_valtrain)
-            print(sorted_rank_valtrain, sorted_y_valtrain)
+            print(len(sorted_y_valtrain), len(set(sorted_y_valtrain)))
             rank_to_y_func = InterpolatedUnivariateSpline(sorted_rank_valtrain, sorted_y_valtrain, k=3, ext='const')
             y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
-            print(y_valtrain)
             y_valtrain = y_to_rank_func(y_valtrain)
-            print(y_valtrain)
             print(y_valtrain.min(), y_valtrain.max())
 
             ### Train model
