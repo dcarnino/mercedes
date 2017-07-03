@@ -199,31 +199,14 @@ def main(verbose=1):
     # probing
     df_probing = leaderboard_probing_data()
     df_probing["ID"] = df_probing["ID"].astype(int)
-    for id_prb in df_probing["ID"]:
-        print(id_prb, id_prb in id_test.values)
-    print(id_test.apply(lambda x: x in df_probing["ID"]).shape)
     id_probing = id_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
     y_probing = df_probing["y"]
     Xb_probing = Xb_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
     Xc_probing = Xc_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
-    id_train = pd.concat([id_train, id_probing], axis=0)
-    y_train = pd.concat([y_train, y_probing], axis=0)
-    Xb_train = pd.concat([Xb_train, Xb_probing], axis=0)
-    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0)
-
-    # check shapes
-    if verbose >= 2:
-        print("\tid_probing shape: ", id_probing.shape)
-        print("\ty_probing shape: ", y_probing.shape)
-        print("\tXc_probing shape: ", Xc_probing.shape)
-        print("\tXb_probing shape: ", Xb_probing.shape)
-        print("\tid_train shape: ", id_train.shape)
-        print("\ty_train shape: ", y_train.shape)
-        print("\tXc_train shape: ", Xc_train.shape)
-        print("\tXb_train shape: ", Xb_train.shape)
-        print("\tid_test shape: ", id_test.shape)
-        print("\tXc_test shape: ", Xc_test.shape)
-        print("\tXb_test shape: ", Xb_test.shape)
+    id_train = pd.concat([id_train, id_probing], axis=0).reset_index(drop=True)
+    y_train = pd.concat([y_train, y_probing], axis=0).reset_index(drop=True)
+    Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
+    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
 
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
