@@ -71,9 +71,10 @@ class MCA(BaseEstimator, TransformerMixin):
         cm = P.sum(0)
         rm = P.sum(1)
         eP = np.outer(rm, cm)
-        print(P[np.isnan(P)])
-        print(eP[np.isnan(eP)])
+        print(P[~np.isfinite(P)])
+        print(eP[~np.isfinite(eP)])
         S = (P - eP) / np.sqrt(eP)
+        print(S[~np.isfinite(S)])
 
         u, s, v = np.linalg.svd(S, full_matrices=False)
 
