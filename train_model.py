@@ -188,7 +188,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = True
+    leaderboard = False
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -242,13 +242,13 @@ def main(verbose=1):
             X_valtrain.append(Xid_valtrain)
             X_valtest.append(Xid_valtest)
 
-            """### PCA
-            pca = PCA()
+            ### PCA
+            pca = PCA(n_components=10)
             pca.fit(np.hstack(X_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
             Xpca_valtest = pca.transform(np.hstack(X_valtest))
             X_valtrain.append(Xpca_valtrain)
-            X_valtest.append(Xpca_valtest)"""
+            X_valtest.append(Xpca_valtest)
 
             """### ICA
             ica = FastICA()
