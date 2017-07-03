@@ -291,8 +291,8 @@ def main(verbose=1):
             ##### Transform target y
             # with rank
             rank_valtrain = rankdata(y_valtrain, method='dense')
-            rank_valtrain -= rank_valtrain.min()
-            rank_valtrain /= rank_valtrain.max()
+            rank_valtrain = rank_valtrain - rank_valtrain.min()
+            rank_valtrain = rank_valtrain / rank_valtrain.max()
             sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
             y_to_rank_func = interp1d(sorted_y_valtrain, sorted_rank_valtrain, kind='cubic')
             rank_to_y_func = interp1d(sorted_rank_valtrain, sorted_y_valtrain, kind='cubic')
