@@ -294,6 +294,8 @@ def main(verbose=1):
             rank_valtrain = rank_valtrain - rank_valtrain.min()
             rank_valtrain = rank_valtrain / rank_valtrain.max()
             sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
+            sorted_rank_valtrain = np.array(sorted_rank_valtrain)
+            sorted_y_valtrain = np.array(sorted_y_valtrain)
             print(sorted_rank_valtrain, sorted_y_valtrain)
             rank_to_y_func = InterpolatedUnivariateSpline(sorted_rank_valtrain, sorted_y_valtrain, k=3, ext='const')
             y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
