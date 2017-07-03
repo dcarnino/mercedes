@@ -290,7 +290,7 @@ def main(verbose=1):
 
             ##### Transform target y
             # with rank
-            """rank_valtrain = rankdata(y_valtrain, method='dense')
+            rank_valtrain = rankdata(y_valtrain, method='dense')
             rank_valtrain = rank_valtrain - rank_valtrain.min()
             rank_valtrain = rank_valtrain / rank_valtrain.max()
             sorted_rank_valtrain = np.unique(rank_valtrain)
@@ -299,15 +299,19 @@ def main(verbose=1):
             y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
             y_valtrain = y_to_rank_func(y_valtrain)
             y_valtrain[y_valtrain < 0] = 0.
-            y_valtrain[y_valtrain > 1] = 1."""
+            y_valtrain[y_valtrain > 1] = 1.
 
             ### Train model
             if verbose >= 4: print("Train model...")
-            """reg = model_selection.GridSearchCV(XGBRegressor,
-                                               {},
-                                               scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
-                                               n_jobs=28, cv=5, verbose=1, pre_dispatch='2*n_jobs', error_score='raise')"""
-            reg = define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:linear', verbose=verbose)
+            if fold_cnt+n_folds*ix_cv == 1:
+                reg_cv = model_selection.GridSearchCV(define_model.create_final_layer(n_jobs=1, n_est=1120, objective='reg:logistic', verbose=verbose),
+                                                   {'max_depth': [5,7], 'subsample': [.6,.8], 'colsample_bytree': [.6,.8], 'n_estimators': [112, 224, 448, 1120]},
+                                                   scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
+                                                   n_jobs=28, cv=5, verbose=3, pre_dispatch='2*n_jobs', error_score='raise')
+                reg_cv.fit(X_valtrain, y_valtrain)
+                print(reg_cv.best_params_, reg_cv.best_score_)
+                reg = reg_cv.best_estimator_
+            #reg = define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:logistic', verbose=verbose)
             reg.fit(X_valtrain, y_valtrain)
             """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, verbose=verbose)"""
@@ -319,7 +323,7 @@ def main(verbose=1):
                         add_raw_features=False, verbose=verbose)"""
 
             ### Append preds and tests
-            #y_valpred = rank_to_y_func(y_valpred)
+            y_valpred = rank_to_y_func(y_valpred)
             y_trainpred.extend(y_valpred)
             y_traintest.extend(y_valtest)
 
