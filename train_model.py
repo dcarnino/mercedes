@@ -202,10 +202,10 @@ def main(verbose=1):
     y_probing = df_probing["y"]
     Xb_probing = Xb_test[id_test.apply(lambda x: x in df_probing["ID"])]
     Xc_probing = Xc_test[id_test.apply(lambda x: x in df_probing["ID"])]
-    id_train = pd.concat([id_train, id_probing])
-    y_train = pd.concat([y_train, y_probing])
-    Xb_train = pd.concat([Xb_train, Xb_probing])
-    Xc_train = pd.concat([Xc_train, Xc_probing])
+    id_train = pd.concat([id_train, id_probing]).reset_index()
+    y_train = pd.concat([y_train, y_probing]).reset_index()
+    Xb_train = pd.concat([Xb_train, Xb_probing]).reset_index()
+    Xc_train = pd.concat([Xc_train, Xc_probing]).reset_index()
 
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
