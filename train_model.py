@@ -244,7 +244,7 @@ def main(verbose=1):
             correlation_bounds = [(0.2,0.3), (0.1,0.2), (0.075,0.1), (0.05,0.075), (0.05,0.1), (0.05,0.3), (0.3,1.)]
             corr_indices = defaultdict(list)
             for ixc, xc in enumerate(Xtr.T):
-                if len(set(xc)) > 0:
+                if len(set(xc)) > 1:
                     corr = spearmanr(y_valtrain, xc)
                     for lt, ut in correlation_bounds:
                         if corr[0] >= lt and corr[0] < ut:
