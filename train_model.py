@@ -171,7 +171,7 @@ def leaderboard_probing_data():
     full_data = fetch_full_data()
     datapoints_inside_public_lb = full_data[full_data['insidePublicLB']==True]
 
-    return datapoints_inside_public_lb[["id", "y"]]
+    return datapoints_inside_public_lb[["ID", "y"]]
 
 
 
