@@ -20,7 +20,7 @@ from scipy import sparse
 from xgboost import XGBRegressor
 from sklearn.decomposition import PCA, FastICA
 from sklearn.feature_selection import SelectFromModel
-from scipy.interpolate import interp1d
+from scipy.interpolate import UnivariateSpline
 from scipy.stats import rankdata
 #==============================================
 #                   Files
@@ -294,15 +294,9 @@ def main(verbose=1):
             rank_valtrain = rank_valtrain - rank_valtrain.min()
             rank_valtrain = rank_valtrain / rank_valtrain.max()
             sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
-            sorted_rank_valtrain, sorted_y_valtrain = np.array(sorted_rank_valtrain), np.array(sorted_y_valtrain)
-            print(sorted_rank_valtrain.shape, sorted_y_valtrain.shape)
-            print(sorted_rank_valtrain)
-            rank_to_y_func = interp1d(sorted_rank_valtrain, sorted_y_valtrain, kind='cubic')
+            rank_to_y_func = UnivariateSpline(sorted_rank_valtrain, sorted_y_valtrain, k=3, s=0, ext='const')
             sorted_y_valtrain, sorted_rank_valtrain = zip(*sorted(zip(y_valtrain, rank_valtrain)))
-            sorted_rank_valtrain, sorted_y_valtrain = np.array(sorted_rank_valtrain), np.array(sorted_y_valtrain)
-            print(sorted_rank_valtrain.shape, sorted_y_valtrain.shape)
-            print(sorted_y_valtrain)
-            y_to_rank_func = interp1d(sorted_y_valtrain, sorted_rank_valtrain, kind='cubic')
+            y_to_rank_func = UnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, s=0, ext='const')
             y_valtrain = y_to_rank_func(y_valtrain)
 
             ### Train model
