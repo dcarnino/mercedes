@@ -201,7 +201,7 @@ def main(verbose=1):
         fold_cnt = 0
         for valtrain_index, valtest_index in cv.split(Xb_train.values):
             fold_cnt += 1
-            if verbose >= 1: print("BIG CV: Processing fold number %d/%d..."%(fold_cnt+n_folds*ix_cv,n_folds*n_total))
+            if verbose >= 1: print("BIG CV: Processing fold number %d/%d..."%(fold_cnt+n_folds*ix_cv,n_folds*n_total), end='')
             # split features and target labels
             id_valtrain, id_valtest = id_train.iloc[valtrain_index].values, id_train.iloc[valtest_index].values
             y_valtrain, y_valtest = y_train.iloc[valtrain_index].values, y_train.iloc[valtest_index].values
@@ -294,8 +294,12 @@ def main(verbose=1):
             rank_valtrain = rank_valtrain - rank_valtrain.min()
             rank_valtrain = rank_valtrain / rank_valtrain.max()
             sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
+            sorted_rank_valtrain, sorted_y_valtrain = np.array(sorted_rank_valtrain), np.array(sorted_y_valtrain)
+            print(sorted_rank_valtrain.shape, sorted_y_valtrain.shape)
             rank_to_y_func = interp1d(sorted_rank_valtrain, sorted_y_valtrain, kind='cubic')
             sorted_y_valtrain, sorted_rank_valtrain = zip(*sorted(zip(y_valtrain, rank_valtrain)))
+            sorted_rank_valtrain, sorted_y_valtrain = np.array(sorted_rank_valtrain), np.array(sorted_y_valtrain)
+            print(sorted_rank_valtrain.shape, sorted_y_valtrain.shape)
             y_to_rank_func = interp1d(sorted_y_valtrain, sorted_rank_valtrain, kind='cubic')
             y_valtrain = y_to_rank_func(y_valtrain)
 
@@ -316,6 +320,8 @@ def main(verbose=1):
             y_valpred = rank_to_y_func(y_valpred)
             y_trainpred.extend(y_valpred)
             y_traintest.extend(y_valtest)
+
+            if verbose >= 1: print(" (R2-score: %.04f)"%(metrics.r2_score(y_valtest, y_valpred)))
 
 
     ##### Compute R2-score
