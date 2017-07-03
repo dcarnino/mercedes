@@ -236,7 +236,7 @@ def main(verbose=1):
             X_valtrain.append(Xohe_valtrain)
             X_valtest.append(Xohe_valtest)
 
-            ### engineer new features based on correlations
+            """### engineer new features based on correlations
             Xtr = np.hstack(X_valtrain)
             Xte = np.hstack(X_valtest)
             Xcorr_valtrain = []
@@ -253,9 +253,7 @@ def main(verbose=1):
                 Xcorr_valtrain.append(Xtr[:,corr_indices[ltut]].sum(axis=1).reshape((-1,1)))
                 Xcorr_valtest.append(Xte[:,corr_indices[ltut]].sum(axis=1).reshape((-1,1)))
             X_valtrain.append(np.hstack(Xcorr_valtrain))
-            X_valtest.append(np.hstack(Xcorr_valtest))
-
-
+            X_valtest.append(np.hstack(Xcorr_valtest))"""
 
             ### Add id
             Xid_valtrain = np.array([id_valtrain]).T
@@ -318,7 +316,7 @@ def main(verbose=1):
                 print("\tX_valtest shape: ", X_valtest.shape)
 
             ##### Transform target y
-            # with rank
+            """# with rank
             rank_valtrain = rankdata(y_valtrain, method='dense')
             rank_valtrain = rank_valtrain - rank_valtrain.min()
             rank_valtrain = rank_valtrain / rank_valtrain.max()
@@ -328,7 +326,12 @@ def main(verbose=1):
             y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
             y_valtrain = y_to_rank_func(y_valtrain)
             y_valtrain[y_valtrain < 0] = 0.
-            y_valtrain[y_valtrain > 1] = 1.
+            y_valtrain[y_valtrain > 1] = 1."""
+            # in log space
+            smoothing_term = 5
+            y_valtrain = np.log(y_valtrain+smoothing_term)
+            y_mean = np.mean(y_valtrain)
+            y_valtrain -= y_mean
 
             ### Train model
             if verbose >= 4: print("Train model...")
@@ -340,7 +343,7 @@ def main(verbose=1):
                 reg_cv.fit(X_valtrain, y_valtrain)
                 print(reg_cv.best_params_, reg_cv.best_score_)
                 reg = reg_cv.best_estimator_"""
-            reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg = XGBRegressor(n_estimators=448, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             reg.fit(X_valtrain, y_valtrain)
             """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
@@ -353,7 +356,8 @@ def main(verbose=1):
                         add_raw_features=False, verbose=verbose)"""
 
             ### Append preds and tests
-            y_valpred = rank_to_y_func(y_valpred)
+            #y_valpred = rank_to_y_func(y_valpred)
+            y_valpred = np.exp(y_valpred + y_mean) - smoothing_term
             y_trainpred.extend(y_valpred)
             y_traintest.extend(y_valtest)
 
