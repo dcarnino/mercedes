@@ -198,7 +198,9 @@ def main(verbose=1):
     Xc_test = df_test.iloc[:,1:9]
     # probing
     df_probing = leaderboard_probing_data()
-    print(id_test.apply(lambda x: x in df_probing["ID"]))
+    for id_prb in df_probing["ID"]:
+        print(id_prb)
+        print(id_prb in id_test)
     print(id_test.apply(lambda x: x in df_probing["ID"]).shape)
     id_probing = id_test[id_test.apply(lambda x: x in df_probing["ID"])]
     y_probing = df_probing["y"]
