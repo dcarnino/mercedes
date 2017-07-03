@@ -256,11 +256,11 @@ def main(verbose=1):
             X_valtrain = np.hstack(X_valtrain)
             X_valtest = np.hstack(X_valtest)
 
-            """# remove constant
+            # remove constant
             vt = VarianceThreshold()
             vt.fit(X_valtrain)
             X_valtrain = vt.transform(X_valtrain)
-            X_valtest = vt.transform(X_valtest)"""
+            X_valtest = vt.transform(X_valtest)
 
             """# drop correlations
             X_valtrain = pd.DataFrame(X_valtrain)
@@ -293,12 +293,14 @@ def main(verbose=1):
             rank_valtrain = rankdata(y_valtrain, method='dense')
             rank_valtrain -= rank_valtrain.min()
             rank_valtrain /= rank_valtrain.max()
-            sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))"""
-
+            sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
+            y_to_rank_func = interp1d(sorted_y_valtrain, sorted_rank_valtrain, kind='cubic')
+            rank_to_y_func = interp1d(sorted_rank_valtrain, sorted_y_valtrain, kind='cubic')
+            y_valtrain = y_to_rank_func(y_valtrain)"""
 
             ### Train model
             if verbose >= 4: print("Train model...")
-            reg = define_model.create_final_layer(n_jobs=28, n_est=1120, verbose=verbose)
+            reg = define_model.create_final_layer(n_jobs=28, n_est=112, objective='reg:linear', verbose=verbose)
             reg.fit(X_valtrain, y_valtrain)
             """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, verbose=verbose)"""
@@ -310,6 +312,7 @@ def main(verbose=1):
                         add_raw_features=False, verbose=verbose)"""
 
             ### Append preds and tests
+            #y_valpred = rank_to_y_func(y_valpred)
             y_trainpred.extend(y_valpred)
             y_traintest.extend(y_valtest)
 
