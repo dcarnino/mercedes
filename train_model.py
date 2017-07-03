@@ -304,6 +304,26 @@ def main(verbose=1):
             X_valtrain.append(Xid_valtrain)
             X_valtest.append(Xid_valtest)
 
+            ### GLRM <==> Logistic PCA
+            from GLRM.glrm.reg import QuadraticReg
+            from GLRM.glrm.loss import HingeLoss
+            from GLRM.glrm.util import Convergence
+            Xbool_valtrain = [np.sign(np.hstack([Xb_valtrain, Xohe_valtrain])-0.5)]
+            Xbool_valtest = [np.sign(np.hstack([Xb_valtest, Xohe_valtest])-0.5)]
+            loss_list = [HingeLoss]
+            regX, regY = QuadraticReg(0.1), QuadraticReg(0.1)
+            c = Convergence(TOL=1e-3, max_iters=1000)
+            k = 20
+            glrm_model = GLRM(Xbool_valtrain, loss_list, regX, regY, k, missing = missing_list, converge = c)
+            glrm_model.fit()
+            glrm_model.A = Xbool_valtrain
+            Xglrm_valtrain = glrm_model.predict()
+            glrm_model.A = Xbool_valtest
+            Xglrm_valtest = glrm_model.predict()
+            print(Xglrm_valtrain)
+            print(Xglrm_valtest)
+
+
             ### PCA
             pca = PCA(n_components=1)
             pca.fit(np.hstack(X_valtrain))
