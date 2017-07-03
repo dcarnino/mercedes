@@ -307,7 +307,7 @@ def main(verbose=1):
                 reg_cv = model_selection.GridSearchCV(define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:logistic', verbose=verbose),
                                                    {'max_depth': [5,7], 'subsample': [.6,.8], 'colsample_bytree': [.6,.8], 'n_estimators': [112, 224, 448, 672]},
                                                    scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
-                                                   n_jobs=1, cv=5, verbose=1, pre_dispatch='n_jobs', error_score='raise')
+                                                   n_jobs=1, cv=5, verbose=2, pre_dispatch='n_jobs', error_score='raise')
                 reg_cv.fit(X_valtrain, y_valtrain)
                 print(reg_cv.best_params_, reg_cv.best_score_)
                 reg = reg_cv.best_estimator_
