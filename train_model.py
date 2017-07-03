@@ -288,7 +288,7 @@ def main(verbose=1):
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
 
-            """##### Transform target y
+            ##### Transform target y
             # with rank
             rank_valtrain = rankdata(y_valtrain, method='dense')
             rank_valtrain -= rank_valtrain.min()
@@ -296,11 +296,11 @@ def main(verbose=1):
             sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
             y_to_rank_func = interp1d(sorted_y_valtrain, sorted_rank_valtrain, kind='cubic')
             rank_to_y_func = interp1d(sorted_rank_valtrain, sorted_y_valtrain, kind='cubic')
-            y_valtrain = y_to_rank_func(y_valtrain)"""
+            y_valtrain = y_to_rank_func(y_valtrain)
 
             ### Train model
             if verbose >= 4: print("Train model...")
-            reg = define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:linear', verbose=verbose)
+            reg = define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:logistic', verbose=verbose)
             reg.fit(X_valtrain, y_valtrain)
             """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, verbose=verbose)"""
@@ -312,7 +312,7 @@ def main(verbose=1):
                         add_raw_features=False, verbose=verbose)"""
 
             ### Append preds and tests
-            #y_valpred = rank_to_y_func(y_valpred)
+            y_valpred = rank_to_y_func(y_valpred)
             y_trainpred.extend(y_valpred)
             y_traintest.extend(y_valtest)
 
