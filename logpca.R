@@ -22,6 +22,7 @@ binary_test <- read.csv(file="../data/mercedes/binary_test.csv", header=TRUE, se
 print("Define parameters...")
 k <- 10; m <- 3
 print("Fit model...")
+binary_train[,apply(binary_train, 2, var, na.rm=TRUE) != 0]
 logpca_model = convexLogisticPCA(binary_train, k = k, m = m)
 print("Predict on train...")
 logpca_features_train <- predict(logpca_model, newdata=binary_train); colnames(logpca_features_train) <- paste0("LPC", 1:k)
