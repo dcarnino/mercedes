@@ -373,8 +373,12 @@ def main(verbose=1):
             # in log space
             smoothing_term = 10
             y_valtrain = np.log(y_valtrain+smoothing_term)
-            y_mean = np.mean(y_valtrain)
-            y_valtrain -= y_mean
+            y_min = np.min(y_valtrain)
+            y_valtrain = y_valtrain - y_min
+            y_max = np.max(y_valtrain)
+            y_valtrain = y_valtrain / y_max
+            y_valtrain[y_valtrain < 0] = 0.
+            y_valtrain[y_valtrain > 1] = 1.
 
             ### Train model
             if verbose >= 4: print("Train model...")
@@ -386,7 +390,7 @@ def main(verbose=1):
                 reg_cv.fit(X_valtrain, y_valtrain)
                 print(reg_cv.best_params_, reg_cv.best_score_)
                 reg = reg_cv.best_estimator_"""
-            reg = XGBRegressor(n_estimators=448, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             reg.fit(X_valtrain, y_valtrain)
             """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
@@ -400,7 +404,7 @@ def main(verbose=1):
 
             ### Append preds and tests
             #y_valpred = rank_to_y_func(y_valpred)
-            y_valpred = np.exp(y_valpred + y_mean) - smoothing_term
+            y_valpred = np.exp(y_valpred * y_max + y_min) - smoothing_term
             y_trainpred.extend(y_valpred)
             y_traintest.extend(y_valtest)
 
