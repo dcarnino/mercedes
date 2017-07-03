@@ -28,10 +28,11 @@ class MCA(BaseEstimator, TransformerMixin):
     }
     """
     def __init__(self, method='indicator', n_components=None,
-                 benzecri_correction=True):
+                 benzecri_correction=True, eps=1e-9):
         self.benzecri_correction = benzecri_correction
         self.method = method
         self.n_components = n_components
+        self.eps = eps
 
     @property
     def method(self):
@@ -67,19 +68,13 @@ class MCA(BaseEstimator, TransformerMixin):
         J = Z.shape[1]
         N = self.n_components if self.n_components is not None else J - Q
 
-        print(C[C < 0])
-
         P = C / C.sum()
         cm = P.sum(0)
         rm = P.sum(1)
         eP = np.outer(rm, cm)
-        print(P[~np.isfinite(P)])
         PPP = np.sqrt(eP)
-        print(eP[~np.isfinite(eP)])
-        print(PPP[~np.isfinite(PPP)])
-        print(eP)
+        eP[eP == 0.] = self.eps
         S = (P - eP) / np.sqrt(eP)
-        print(S[~np.isfinite(S)])
 
         u, s, v = np.linalg.svd(S, full_matrices=False)
 
