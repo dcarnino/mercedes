@@ -198,10 +198,7 @@ def main(verbose=1):
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
-        if leaderboard:
-            n_folds = 1
-        else:
-            n_folds = 5
+        n_folds = 5
         cv = model_selection.KFold(n_splits=n_folds, shuffle=True)
 
         ### Split folds and fit+predict
@@ -340,6 +337,8 @@ def main(verbose=1):
             y_traintest.extend(y_valtest)
 
             if verbose >= 1: print(" (R2-score: %.04f)"%(metrics.r2_score(y_valtest, y_valpred)))
+            if leaderboard:
+                break
 
 
     ##### Compute R2-score
