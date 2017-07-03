@@ -198,8 +198,14 @@ def main(verbose=1):
     Xc_test = df_test.iloc[:,1:9]
     # probing
     df_probing = leaderboard_probing_data()
-    print(df_probing)
-    raise(ValueError)
+    id_probing = id_test[id_test.apply(lambda x: x in df_probing["ID"])]
+    y_probing = df_probing["y"]
+    Xb_probing = Xb_test[id_test.apply(lambda x: x in df_probing["ID"])]
+    Xc_probing = Xc_test[id_test.apply(lambda x: x in df_probing["ID"])]
+    id_train = pd.concat([id_train, id_probing])
+    y_train = pd.concat([y_train, y_probing])
+    Xb_train = pd.concat([Xb_train, Xb_probing])
+    Xc_train = pd.concat([Xc_train, Xc_probing])
 
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
