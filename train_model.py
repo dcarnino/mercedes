@@ -193,7 +193,7 @@ def main(verbose=1):
     # test
     test_csv_name = "../data/mercedes/test.csv"
     df_test = pd.read_csv(test_csv_name)
-    id_test = df_test["ID"]
+    id_test = df_test["ID"].astype(int)
     Xb_test = df_test.iloc[:,9:]
     Xc_test = df_test.iloc[:,1:9]
     # probing
