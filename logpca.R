@@ -14,8 +14,8 @@ library(rARPACK)
 #  k       1        2      3        4        5        6        7        8        9       10
 #  20 400428 261586.6 185985 143663.3 118547.4 102668.9 92638.51 85579.33 80440.14 76707.54
 
-binary_train <- read_csv("../data/mercedes/binary_train.csv")
-binary_test <- read_csv("../data/mercedes/binary_test.csv")
+binary_train <- read.csv(file="../data/mercedes/binary_train.csv", header=TRUE, sep=",")
+binary_test <- read.csv(file="../data/mercedes/binary_test.csv", header=TRUE, sep=",")
 
 k <- 20; m <- 12
 logpca_model = logisticPCA(binary_train, k = k, m = m)
