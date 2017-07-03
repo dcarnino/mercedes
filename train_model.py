@@ -307,7 +307,7 @@ def main(verbose=1):
                                                {},
                                                scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
                                                n_jobs=28, cv=5, verbose=1, pre_dispatch='2*n_jobs', error_score='raise')"""
-            reg = define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:logistic', verbose=verbose)
+            reg = define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:linear', verbose=verbose)
             reg.fit(X_valtrain, y_valtrain)
             """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, verbose=verbose)"""
