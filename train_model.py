@@ -21,7 +21,7 @@ from xgboost import XGBRegressor
 from sklearn.decomposition import PCA, FastICA
 from sklearn.feature_selection import SelectFromModel
 from scipy.interpolate import InterpolatedUnivariateSpline
-from scipy.stats import rankdata
+from scipy.stats import rankdata, spearmanr
 #==============================================
 #                   Files
 #==============================================
@@ -235,6 +235,25 @@ def main(verbose=1):
             Xohe_valtest = ohe.transform(Xc_valtest).toarray()
             X_valtrain.append(Xohe_valtrain)
             X_valtest.append(Xohe_valtest)
+
+            ### engineer new features based on correlations
+            Xtr = np.hstack(X_valtrain)
+            Xte = np.hstack(X_valtest)
+            Xcorr_valtrain = []
+            Xcorr_valtest = []
+            for lt, ut in [(0.2,0.3), (0.1,0.2), (0.05,0.1)]:
+                corr_indices = []
+                for ixc, xc in enumerate(Xtr.T):
+                    corr = spearmanr(y_valtrain, xc)
+                    if corr[0] >= lt and corr[0] < ut:
+                        corr_indices.append(ixc)
+                print(lt, ut, len(corr_indices))
+                Xcorr_valtrain.append(Xtr[:,corr_indices].sum(axis=1).reshape((-1,1)))
+                Xcorr_valtest.append(Xte[:,corr_indices].sum(axis=1).reshape((-1,1)))
+            X_valtrain.append(np.hstack(Xcorr_valtrain))
+            X_valtest.append(np.hstack(Xcorr_valtest))
+
+
 
             ### Add id
             Xid_valtrain = np.array([id_valtrain]).T
