@@ -300,7 +300,7 @@ def main(verbose=1):
 
             ### Train model
             if verbose >= 4: print("Train model...")
-            reg = define_model.create_final_layer(n_jobs=28, n_est=112, objective='reg:linear', verbose=verbose)
+            reg = define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:linear', verbose=verbose)
             reg.fit(X_valtrain, y_valtrain)
             """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, verbose=verbose)"""
