@@ -206,10 +206,10 @@ def main(verbose=1):
     y_probing = df_probing["y"]
     Xb_probing = Xb_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
     Xc_probing = Xc_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
-    id_train = pd.concat([id_train, id_probing], axis=0).reset_index()
-    y_train = pd.concat([y_train, y_probing], axis=0).reset_index()
-    Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index()
-    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index()
+    id_train = pd.concat([id_train, id_probing], axis=0)
+    y_train = pd.concat([y_train, y_probing], axis=0)
+    Xb_train = pd.concat([Xb_train, Xb_probing], axis=0)
+    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0)
 
     # check shapes
     if verbose >= 2:
