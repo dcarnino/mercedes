@@ -328,7 +328,7 @@ def main(verbose=1):
             y_valtrain[y_valtrain < 0] = 0.
             y_valtrain[y_valtrain > 1] = 1."""
             # in log space
-            smoothing_term = 5
+            smoothing_term = 10
             y_valtrain = np.log(y_valtrain+smoothing_term)
             y_mean = np.mean(y_valtrain)
             y_valtrain -= y_mean
