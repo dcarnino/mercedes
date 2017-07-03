@@ -298,6 +298,7 @@ def main(verbose=1):
             sorted_y_valtrain, sorted_rank_valtrain = zip(*sorted(zip(y_valtrain, rank_valtrain)))
             y_to_rank_func = UnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, s=0, ext='const')
             y_valtrain = y_to_rank_func(y_valtrain)
+            print(y_valtrain.min(), y_valtrain.max())
 
             ### Train model
             if verbose >= 4: print("Train model...")
