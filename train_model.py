@@ -207,6 +207,16 @@ def main(verbose=1):
     Xb_train = pd.concat([Xb_train, Xb_probing]).reset_index()
     Xc_train = pd.concat([Xc_train, Xc_probing]).reset_index()
 
+    # check shapes
+    if verbose >= 2:
+        print("\tid_train shape: ", id_train.shape)
+        print("\ty_train shape: ", y_train.shape)
+        print("\tXc_train shape: ", Xc_train.shape)
+        print("\tXb_train shape: ", Xb_train.shape)
+        print("\tid_test shape: ", id_test.shape)
+        print("\tXc_test shape: ", Xc_test.shape)
+        print("\tXb_test shape: ", Xb_test.shape)
+
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
     pd.concat([Xc_train,Xc_test]).apply(lambda x: label_dict[x.name].fit(x.sort_values()))
