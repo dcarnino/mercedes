@@ -20,7 +20,7 @@ from scipy import sparse
 from xgboost import XGBRegressor
 from sklearn.decomposition import PCA, FastICA
 from sklearn.feature_selection import SelectFromModel
-from scipy.interpolate import UnivariateSpline
+from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.stats import rankdata
 #==============================================
 #                   Files
@@ -295,8 +295,8 @@ def main(verbose=1):
             rank_valtrain = rank_valtrain / rank_valtrain.max()
             sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
             print(sorted_rank_valtrain, sorted_y_valtrain)
-            rank_to_y_func = UnivariateSpline(sorted_rank_valtrain, sorted_y_valtrain, k=3, s=0, ext='const')
-            y_to_rank_func = UnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, s=0, ext='const')
+            rank_to_y_func = InterpolatedUnivariateSpline(sorted_rank_valtrain, sorted_y_valtrain, k=3, ext='const')
+            y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
             y_valtrain = y_to_rank_func(y_valtrain)
             print(y_valtrain.min(), y_valtrain.max())
 
