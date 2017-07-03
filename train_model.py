@@ -310,7 +310,7 @@ def main(verbose=1):
             Xbool_valtest = pd.DataFrame(np.hstack([Xb_valtest, Xohe_valtest]))
             Xbool_valtrain.to_csv("../data/mercedes/binary_train.csv", index=False)
             Xbool_valtest.to_csv("../data/mercedes/binary_test.csv", index=False)
-            subprocess.call (["/usr/bin/Rscript", "--vanilla", "logpca.r"])
+            subprocess.call(["/usr/bin/Rscript", "--vanilla", "logpca.r"])
             Xlogpca_valtrain = pd.read_csv("../data/mercedes/logpca_train.csv").values
             Xlogpca_valtest = pd.read_csv("../data/mercedes/logpca_test.csv").values
             X_valtrain.append(Xlogpca_valtrain)
