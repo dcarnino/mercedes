@@ -30,7 +30,8 @@ import define_model
 #                   Functions
 #==============================================
 def fit_stacked_regressors(X_train, y_train, n_folds=5,
-                           add_raw_features=False, verbose=1):
+                           add_raw_features=False, n_jobs=28,
+                           n_est1=224, n_est2=11200, verbose=1):
     """
     Regressify with two layers of regressors.
     """
@@ -49,7 +50,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         X_valtrain, X_valtest = X_train[valtrain_index], X_train[valtest_index]
         y_valtrain, y_valtest = y_train[valtrain_index], y_train[valtest_index]
         # fit classifiers
-        reg_list = [copy.deepcopy(mdl) if "MLP" not in mdl[0] else mdl for mdl in define_model.reg_first_layer]
+        reg_list = define_model.create_first_layer(input_dim=X_valtrain.shape[1], n_jobs=n_jobs, n_est=n_est1, verbose=verbose)
         X2_valpred = []
         for reg in reg_list:
             if verbose >= 2:
@@ -73,7 +74,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     y2_train = np.array(y2_train)
     # refit classifiers on all training data
     print("Refitting 1st layer on all training data...")
-    reg_list = [copy.deepcopy(mdl) if "MLP" not in mdl[0] else mdl for mdl in define_model.reg_first_layer]
+    reg_list = define_model.create_first_layer(input_dim=X_valtrain.shape[1], n_jobs=n_jobs, n_est=n_est1, verbose=verbose)
     for reg in reg_list:
         if verbose >= 2:
             print("%s ... "%reg[0], end='')
@@ -85,7 +86,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     if verbose >= 2: print("")
 
     ### Init final layer
-    reg_final = copy.deepcopy(define_model.reg_final_layer)
+    reg_final = define_model.create_final_layer(n_jobs=n_jobs, n_est=n_est2, verbose=verbose)
 
     ### Train final layer
     if verbose >= 1: print("Training 2nd layer...")
