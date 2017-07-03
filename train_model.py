@@ -198,6 +198,8 @@ def main(verbose=1):
     Xc_test = df_test.iloc[:,1:9]
     # probing
     df_probing = leaderboard_probing_data()
+    print(id_test.apply(lambda x: x in df_probing["ID"]))
+    print(id_test.apply(lambda x: x in df_probing["ID"]).shape)
     id_probing = id_test[id_test.apply(lambda x: x in df_probing["ID"])]
     y_probing = df_probing["y"]
     Xb_probing = Xb_test[id_test.apply(lambda x: x in df_probing["ID"])]
@@ -209,6 +211,10 @@ def main(verbose=1):
 
     # check shapes
     if verbose >= 2:
+        print("\tid_probing shape: ", id_probing.shape)
+        print("\ty_probing shape: ", y_probing.shape)
+        print("\tXc_probing shape: ", Xc_probing.shape)
+        print("\tXb_probing shape: ", Xb_probing.shape)
         print("\tid_train shape: ", id_train.shape)
         print("\ty_train shape: ", y_train.shape)
         print("\tXc_train shape: ", Xc_train.shape)
