@@ -214,7 +214,7 @@ def main(verbose=1):
 
             if leaderboard:
                 id_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain = id_train.values, y_train.values, Xb_train.values, Xc_train
-                id_valtest, y_valtest, Xb_valtest, Xc_valtest = id_test.values, y_train[:len(id_test)].values, Xb_test.values, Xc_test
+                id_valtest, y_valtest, Xb_valtest, Xc_valtest = id_test.values, id_test.values, Xb_test.values, Xc_test
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
