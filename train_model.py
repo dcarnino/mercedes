@@ -243,7 +243,7 @@ def main(verbose=1):
             X_valtest.append(Xid_valtest)
 
             ### PCA
-            pca = PCA(n_components=10)
+            pca = PCA(n_components=1)
             pca.fit(np.hstack(X_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
             Xpca_valtest = pca.transform(np.hstack(X_valtest))
