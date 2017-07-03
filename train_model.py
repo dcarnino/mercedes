@@ -188,13 +188,20 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
+    leaderboard = True
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
-    n_total = 20
+    if leaderboard:
+        n_total = 1
+    else:
+        n_total = 20
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
-        n_folds = 5
+        if leaderboard:
+            n_folds = 1
+        else:
+            n_folds = 5
         cv = model_selection.KFold(n_splits=n_folds, shuffle=True)
 
         ### Split folds and fit+predict
@@ -207,6 +214,10 @@ def main(verbose=1):
             y_valtrain, y_valtest = y_train.iloc[valtrain_index].values, y_train.iloc[valtest_index].values
             Xb_valtrain, Xb_valtest = Xb_train.iloc[valtrain_index].values, Xb_train.iloc[valtest_index].values
             Xc_valtrain, Xc_valtest = Xc_train.iloc[valtrain_index], Xc_train.iloc[valtest_index]
+
+            if leaderboard:
+                id_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain = id_train.values, y_train.values, Xb_train.values, Xc_train
+                id_valtest, y_valtest, Xb_valtest, Xc_valtest = id_test.values, y_train[:len(id_test)].values, Xb_test.values, Xc_test
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
@@ -303,16 +314,16 @@ def main(verbose=1):
 
             ### Train model
             if verbose >= 4: print("Train model...")
-            if fold_cnt+n_folds*ix_cv == 1:
+            """if fold_cnt+n_folds*ix_cv == 1:
                 reg_cv = model_selection.GridSearchCV(define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:logistic', verbose=verbose),
-                                                   {'max_depth': [5], 'subsample': [.65], 'colsample_bytree': [.65], 'n_estimators': [448], 'learning_rate': [.02], 'min_child_weight': [2, 3, 4]},
+                                                   {'max_depth': [5], 'subsample': [.65], 'colsample_bytree': [.65], 'n_estimators': [448], 'learning_rate': [.02], 'min_child_weight': [4]},
                                                    scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
                                                    n_jobs=1, cv=5, verbose=3, pre_dispatch='n_jobs', error_score='raise')
                 reg_cv.fit(X_valtrain, y_valtrain)
                 print(reg_cv.best_params_, reg_cv.best_score_)
-                reg = reg_cv.best_estimator_
-            """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
-                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
+                reg = reg_cv.best_estimator_"""
+            reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             reg.fit(X_valtrain, y_valtrain)
             """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, verbose=verbose)"""
@@ -345,12 +356,12 @@ def main(verbose=1):
 
 
 
-    """### Save predictions
+    ### Save predictions
     if verbose >= 1: print("Save predictions...")
     pred_csv_name = "../data/mercedes/pred.csv"
-    pred_df = pd.DataFrame(np.array([id_test, y_pred]).T, columns=["ID", "y"])
+    pred_df = pd.DataFrame(np.array([id_test, y_trainpred]).T, columns=["ID", "y"])
     pred_df["ID"] = pred_df["ID"].astype(int)
-    pred_df.to_csv(pred_csv_name, index=False)"""
+    pred_df.to_csv(pred_csv_name, index=False)
 
 
 
