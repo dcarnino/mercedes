@@ -198,7 +198,7 @@ def main(verbose=1):
     Xc_test = df_test.iloc[:,1:9]
     # probing
     df_probing = leaderboard_probing_data()
-    df_probing["ID"] = df_probing["ID"].astype(int)
+    df_probing = df_probing.iloc[:13,:]
     id_probing = id_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
     y_probing = df_probing["y"]
     Xb_probing = Xb_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
