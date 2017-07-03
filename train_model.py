@@ -152,7 +152,7 @@ def leaderboard_probing_data():
 
     def fetch_full_data():
       all_questions=json.loads(
-        urllib.urlopen(
+        urllib.request.urlopen(
           "https://crowdstats.eu/api/topics/kaggle-mercedes-benz-greener-manufacturing-leaderboard-probing/questions"
         ).read()
       )
@@ -198,7 +198,7 @@ def main(verbose=1):
     Xc_test = df_test.iloc[:,1:9]
     # probing
     df_probing = leaderboard_probing_data()
-    print df_probing
+    print(df_probing)
     raise(ValueError)
 
     # string to numerical
