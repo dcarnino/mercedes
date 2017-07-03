@@ -305,7 +305,7 @@ def main(verbose=1):
             if verbose >= 4: print("Train model...")
             if fold_cnt+n_folds*ix_cv == 1:
                 reg_cv = model_selection.GridSearchCV(define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:logistic', verbose=verbose),
-                                                   {'max_depth': [4,5,6], 'subsample': [.5,.6,.7], 'colsample_bytree': [.5,.6,.7], 'n_estimators': [224]},
+                                                   {'max_depth': [5], 'subsample': [.65,.7,.75], 'colsample_bytree': [.65,.7,.75], 'n_estimators': [224], 'learning_rate': [.02,.05,.08]},
                                                    scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
                                                    n_jobs=1, cv=5, verbose=3, pre_dispatch='n_jobs', error_score='raise')
                 reg_cv.fit(X_valtrain, y_valtrain)
