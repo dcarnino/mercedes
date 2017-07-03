@@ -21,10 +21,10 @@ binary_test <- read.csv(file="../data/mercedes/binary_test.csv", header=TRUE, se
 
 print("Define parameters...")
 k <- 2; m <- 4
-print("Remove constant columns...")
-binary_train <- binary_train[,apply(binary_train, 2, var, na.rm=TRUE) != 0]
+# print("Remove constant columns...")
+# binary_train <- binary_train[,apply(binary_train, 2, var, na.rm=TRUE) != 0]
 print("Fit model...")
-logpca_model = convexLogisticPCA(binary_train, k = k, m = m, quiet=FALSE, partial_decomp=TRUE)
+logpca_model = convexLogisticPCA(binary_train, k = k, m = m, quiet=FALSE, partial_decomp=TRUE, main_effects=FALSE)
 print("Predict on train...")
 logpca_features_train <- predict(logpca_model, newdata=binary_train); colnames(logpca_features_train) <- paste0("LPC", 1:k)
 print("Predict on test...")
