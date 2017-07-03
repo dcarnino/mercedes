@@ -20,6 +20,8 @@ from scipy import sparse
 from xgboost import XGBRegressor
 from sklearn.decomposition import PCA, FastICA
 from sklearn.feature_selection import SelectFromModel
+from scipy.interpolate import interp1d
+from scipy.stats import rankdata
 #==============================================
 #                   Files
 #==============================================
@@ -254,11 +256,11 @@ def main(verbose=1):
             X_valtrain = np.hstack(X_valtrain)
             X_valtest = np.hstack(X_valtest)
 
-            # remove constant
+            """# remove constant
             vt = VarianceThreshold()
             vt.fit(X_valtrain)
             X_valtrain = vt.transform(X_valtrain)
-            X_valtest = vt.transform(X_valtest)
+            X_valtest = vt.transform(X_valtest)"""
 
             """# drop correlations
             X_valtrain = pd.DataFrame(X_valtrain)
@@ -286,8 +288,12 @@ def main(verbose=1):
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
 
-            ##### Transform target y
-
+            """##### Transform target y
+            # with rank
+            rank_valtrain = rankdata(y_valtrain, method='dense')
+            rank_valtrain -= rank_valtrain.min()
+            rank_valtrain /= rank_valtrain.max()
+            sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))"""
 
 
             ### Train model
