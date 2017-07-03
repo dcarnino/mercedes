@@ -11,6 +11,8 @@ import os
 import copy
 import numpy as np
 import pandas as pd
+import urllib
+import json
 from collections import defaultdict
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.feature_selection import VarianceThreshold
@@ -143,6 +145,36 @@ def drop_correlations(X, threshold=0.99):
 
 
 
+def leaderboard_probing_data():
+    """
+    Get leaderboard probing crowdsourced data.
+    """
+
+    def fetch_full_data():
+      all_questions=json.loads(
+        urllib.urlopen(
+          "https://crowdstats.eu/api/topics/kaggle-mercedes-benz-greener-manufacturing-leaderboard-probing/questions"
+        ).read()
+      )
+      answers = []
+      for question in all_questions:
+        for answer in question['answers']:
+          newAnswer = {
+            'ID': question['id'],
+            'insidePublicLB': answer['inside_public_lb'],
+            'y': answer['y_value'],
+            'rho100': answer['rho_100'],
+          }
+          answers.append(newAnswer)
+      return pd.DataFrame(answers)
+
+    full_data = fetch_full_data()
+    datapoints_inside_public_lb = full_data[full_data['insidePublicLB']==True]
+
+    return datapoints_inside_public_lb[["id", "y"]]
+
+
+
 
 def main(verbose=1):
     """
@@ -164,6 +196,10 @@ def main(verbose=1):
     id_test = df_test["ID"]
     Xb_test = df_test.iloc[:,9:]
     Xc_test = df_test.iloc[:,1:9]
+    # probing
+    df_probing = leaderboard_probing_data()
+    print df_probing
+    raise(ValueError)
 
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
