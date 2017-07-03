@@ -20,7 +20,7 @@ binary_train <- read.csv(file="../data/mercedes/binary_train.csv", header=TRUE, 
 binary_test <- read.csv(file="../data/mercedes/binary_test.csv", header=TRUE, sep=",")
 
 print("Define parameters...")
-k <- 10; m <- 3
+k <- 2; m <- 3
 print("Remove constant columns...")
 binary_train <- binary_train[,apply(binary_train, 2, var, na.rm=TRUE) != 0]
 print("Fit model...")
