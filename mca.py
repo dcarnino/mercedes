@@ -74,7 +74,9 @@ class MCA(BaseEstimator, TransformerMixin):
         rm = P.sum(1)
         eP = np.outer(rm, cm)
         print(P[~np.isfinite(P)])
+        PPP = np.sqrt(eP)
         print(eP[~np.isfinite(eP)])
+        print(PPP[~np.isfinite(PPP)])
         S = (P - eP) / np.sqrt(eP)
         print(S[~np.isfinite(S)])
 
