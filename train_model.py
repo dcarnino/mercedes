@@ -286,22 +286,22 @@ def main(verbose=1):
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
 
+            ##### Transform target y
+
 
 
             ### Train model
             if verbose >= 4: print("Train model...")
-            """n_jobs = 28
-            reg = XGBRegressor(n_estimators=1120, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
-                               learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
-            reg.fit(X_valtrain, y_valtrain)"""
-            reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
-                                  add_raw_features=False, verbose=verbose)
+            reg = define_model.create_final_layer(n_jobs=28, n_est=1120, verbose=verbose)
+            reg.fit(X_valtrain, y_valtrain)
+            """reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
+                                  add_raw_features=False, verbose=verbose)"""
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            #y_valpred = reg.predict(X_valtest)
-            y_valpred = predict_stacked_regressors(X_valtest, reg_list, reg_final,
-                        add_raw_features=False, verbose=verbose)
+            y_valpred = reg.predict(X_valtest)
+            """y_valpred = predict_stacked_regressors(X_valtest, reg_list, reg_final,
+                        add_raw_features=False, verbose=verbose)"""
 
             ### Append preds and tests
             y_trainpred.extend(y_valpred)

@@ -166,11 +166,11 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
 
 ##### Final layer classifier
-def create_final_layer(n_jobs=28, n_est=11200, verbose=1):
+def create_final_layer(n_jobs=28, n_est=11200, objective='reg:linear', verbose=1):
     """
     Create final layer.
     """
-    reg_final_layer = XGBRegressor(n_estimators=11200, objective='reg:linear', gamma=0, reg_lambda=1, min_child_weight=4,
+    reg_final_layer = XGBRegressor(n_estimators=11200, objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
                                    learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
     #reg_final_layer = AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs),
     #                                    n_estimators=5, learning_rate=0.8)
