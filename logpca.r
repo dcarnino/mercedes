@@ -1,5 +1,5 @@
 #! /usr/bin/Rscript
-print("Import packages...")
+# print("Import packages...")
 library(logisticPCA)
 library(rARPACK)
 
