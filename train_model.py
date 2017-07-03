@@ -295,11 +295,11 @@ def main(verbose=1):
             rank_valtrain = rank_valtrain / rank_valtrain.max()
             sorted_rank_valtrain = np.unique(rank_valtrain)
             sorted_y_valtrain = np.unique(y_valtrain)
-            print(len(sorted_y_valtrain), len(sorted_rank_valtrain))
             rank_to_y_func = InterpolatedUnivariateSpline(sorted_rank_valtrain, sorted_y_valtrain, k=3, ext='const')
             y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
             y_valtrain = y_to_rank_func(y_valtrain)
-            print(y_valtrain.min(), y_valtrain.max())
+            y_valtrain[y_valtrain < 0] = 0.
+            y_valtrain[y_valtrain > 1] = 1.
 
             ### Train model
             if verbose >= 4: print("Train model...")
