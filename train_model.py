@@ -301,6 +301,7 @@ def main(verbose=1):
             y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
             print(y_valtrain)
             y_valtrain = y_to_rank_func(y_valtrain)
+            print(y_valtrain)
             print(y_valtrain.min(), y_valtrain.max())
 
             ### Train model
