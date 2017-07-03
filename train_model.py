@@ -29,6 +29,7 @@ import subprocess
 #                   Files
 #==============================================
 import define_model
+from mca import MCA
 
 
 #==============================================
@@ -305,7 +306,17 @@ def main(verbose=1):
             X_valtrain.append(Xid_valtrain)
             X_valtest.append(Xid_valtest)
 
-            ### Logistic PCA
+            ### MCA
+            Xbool_valtrain = np.hstack([Xb_valtrain, Xohe_valtrain])
+            Xbool_valtest = np.hstack([Xb_valtest, Xohe_valtest])
+            mca_obj = MCA(n_components=20)
+            mca_obj.fit(Xbool_valtrain)
+            Xmca_valtrain = mca_obj.transform(Xbool_valtrain)
+            Xmca_valtest = mca_obj.transform(Xbool_valtest)
+            X_valtrain.append(Xmca_valtrain)
+            X_valtest.append(Xmca_valtest)
+
+            """### Logistic PCA
             Xbool_valtrain = pd.DataFrame(np.hstack([Xb_valtrain, Xohe_valtrain]))
             Xbool_valtest = pd.DataFrame(np.hstack([Xb_valtest, Xohe_valtest]))
             Xbool_valtrain.to_csv("../data/mercedes/binary_train.csv", index=False)
@@ -314,7 +325,7 @@ def main(verbose=1):
             Xlogpca_valtrain = pd.read_csv("../data/mercedes/logpca_train.csv").values
             Xlogpca_valtest = pd.read_csv("../data/mercedes/logpca_test.csv").values
             X_valtrain.append(Xlogpca_valtrain)
-            X_valtest.append(Xlogpca_valtest)
+            X_valtest.append(Xlogpca_valtest)"""
 
             """### PCA
             pca = PCA(n_components=1)
