@@ -296,10 +296,12 @@ def main(verbose=1):
             sorted_rank_valtrain, sorted_y_valtrain = zip(*sorted(zip(rank_valtrain, y_valtrain)))
             sorted_rank_valtrain, sorted_y_valtrain = np.array(sorted_rank_valtrain), np.array(sorted_y_valtrain)
             print(sorted_rank_valtrain.shape, sorted_y_valtrain.shape)
+            print(sorted_rank_valtrain)
             rank_to_y_func = interp1d(sorted_rank_valtrain, sorted_y_valtrain, kind='cubic')
             sorted_y_valtrain, sorted_rank_valtrain = zip(*sorted(zip(y_valtrain, rank_valtrain)))
             sorted_rank_valtrain, sorted_y_valtrain = np.array(sorted_rank_valtrain), np.array(sorted_y_valtrain)
             print(sorted_rank_valtrain.shape, sorted_y_valtrain.shape)
+            print(sorted_y_valtrain)
             y_to_rank_func = interp1d(sorted_y_valtrain, sorted_rank_valtrain, kind='cubic')
             y_valtrain = y_to_rank_func(y_valtrain)
 
