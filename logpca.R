@@ -1,4 +1,5 @@
 #! /usr/bin/Rscript
+print("Import packages...")
 library(logisticPCA)
 library(rARPACK)
 
@@ -14,13 +15,19 @@ library(rARPACK)
 #  k       1        2      3        4        5        6        7        8        9       10
 #  20 400428 261586.6 185985 143663.3 118547.4 102668.9 92638.51 85579.33 80440.14 76707.54
 
+print("Import data...")
 binary_train <- read.csv(file="../data/mercedes/binary_train.csv", header=TRUE, sep=",")
 binary_test <- read.csv(file="../data/mercedes/binary_test.csv", header=TRUE, sep=",")
 
+print("Define parameters...")
 k <- 20; m <- 12
+print("Fit model...")
 logpca_model = logisticPCA(binary_train, k = k, m = m)
+print("Predict on train...")
 logpca_features_train <- predict(logpca_model, newdata=binary_train); colnames(logpca_features_train) <- paste0("LPC", 1:k)
+print("Predict on test...")
 logpca_features_test <- predict(logpca_model, newdata=binary_test); colnames(logpca_features_test) <- paste0("LPC", 1:k)
 
+print("Write data...")
 write.csv(logpca_features_train, file="../data/mercedes/logpca_train.csv", row.names=FALSE)
 write.csv(logpca_features_test, file="../data/mercedes/logpca_test.csv", row.names=FALSE)
