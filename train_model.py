@@ -241,15 +241,17 @@ def main(verbose=1):
             Xte = np.hstack(X_valtest)
             Xcorr_valtrain = []
             Xcorr_valtest = []
-            for lt, ut in [(0.2,0.3), (0.1,0.2), (0.05,0.1)]:
-                corr_indices = []
-                for ixc, xc in enumerate(Xtr.T):
+            correlation_bounds = [(0.2,0.3), (0.1,0.2), (0.075,0.1), (0.05,0.075), (0.05,0.1), (0.05,0.3), (0.3,1.)]
+            corr_indices = defaultdict(list)
+            for ixc, xc in enumerate(Xtr.T):
+                if len(set(xc)) > 0:
                     corr = spearmanr(y_valtrain, xc)
-                    if corr[0] >= lt and corr[0] < ut:
-                        corr_indices.append(ixc)
-                print(lt, ut, len(corr_indices))
-                Xcorr_valtrain.append(Xtr[:,corr_indices].sum(axis=1).reshape((-1,1)))
-                Xcorr_valtest.append(Xte[:,corr_indices].sum(axis=1).reshape((-1,1)))
+                    for lt, ut in correlation_bounds:
+                        if corr[0] >= lt and corr[0] < ut:
+                            corr_indices[(lt,ut)].append(ixc)
+            for ltut in correlation_bounds:
+                Xcorr_valtrain.append(Xtr[:,corr_indices[ltut]].sum(axis=1).reshape((-1,1)))
+                Xcorr_valtest.append(Xte[:,corr_indices[ltut]].sum(axis=1).reshape((-1,1)))
             X_valtrain.append(np.hstack(Xcorr_valtrain))
             X_valtest.append(np.hstack(Xcorr_valtest))
 
