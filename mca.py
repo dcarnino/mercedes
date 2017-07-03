@@ -74,6 +74,8 @@ class MCA(BaseEstimator, TransformerMixin):
         eP = np.outer(rm, cm)
         PPP = np.sqrt(eP)
         eP[eP == 0.] = self.eps
+        cm[cm == 0.] = self.eps
+        rm[rm == 0.] = self.eps
         S = (P - eP) / np.sqrt(eP)
 
         u, s, v = np.linalg.svd(S, full_matrices=False)
