@@ -284,7 +284,7 @@ def main(verbose=1):
             X_valtrain = selector.transform(X_valtrain)
             X_valtest = selector.transform(X_valtest)"""
 
-            if verbose >= 3:
+            if verbose >= 5:
                 print("\tX_valtrain shape: ", X_valtrain.shape)
                 print("\tX_valtest shape: ", X_valtest.shape)
 
