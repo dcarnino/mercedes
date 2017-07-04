@@ -37,11 +37,11 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
                                                                criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
     ### svr
-    kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
+    """kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
     for ix, kernel in enumerate(kernel_list):
-        #reg_first_layer.append( ( "SVR%d"%ix, SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001) ) )
+        reg_first_layer.append( ( "SVR%d"%ix, SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001) ) )
         reg_first_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
-                                         n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )
+                                         n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )"""
 
     ### mlp
     # function for model
