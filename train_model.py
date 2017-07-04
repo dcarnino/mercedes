@@ -60,6 +60,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         # fit classifiers
         reg_list = define_model.create_first_layer(input_dim=X_valtrain.shape[1], n_jobs=n_jobs, n_est=n_est1, verbose=verbose)
         reg_superlist.append(reg_list)
+        score_list = []
         X2_valpred = []
         for reg in reg_list:
             if verbose >= 2:
