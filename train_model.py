@@ -269,9 +269,9 @@ def main(verbose=1):
             X_valtrain.append(Xb_valtrain)
             X_valtest.append(Xb_valtest)
 
-            """### add categorical features
+            ### add categorical features
             X_valtrain.append(Xc_valtrain.values)
-            X_valtest.append(Xc_valtest.values)"""
+            X_valtest.append(Xc_valtest.values)
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
