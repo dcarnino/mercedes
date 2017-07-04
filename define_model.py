@@ -33,9 +33,9 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
     reg_first_layer = []
 
-    ### gbr
+    """### gbr
     reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
-                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
+                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )"""
     ### svr
     """kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
     for ix, kernel in enumerate(kernel_list):
@@ -43,7 +43,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_first_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
                                          n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )"""
 
-    ### mlp
+    """### mlp
     # function for model
     def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
                      k_optimizer='rmsprop', k_init='glorot_uniform',
@@ -72,7 +72,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     he = 'he_normal'
     k_n_layers_list = np.array((2, 2, 3)) * 1
     k_n_units_list = np.array((512, 256, 766)) // 2
-    k_dropout_list = (0.1, 0.1, 0.1)
+    k_dropout_list = (0.2, 0.1, 0.1)
     k_optimizer_list = (add, add, add)
     k_init_list = (glo, glo, glo)
     # loop
@@ -81,7 +81,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                             k_init=k_init, verbose=0) ) )
+                                                             k_init=k_init, verbose=0) ) )"""
 
     ### knn
     # test all combinations
@@ -96,11 +96,11 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                           algorithm='auto', n_jobs=n_jobs) ) )
                 ix += 1
 
-    ### adaboost
+    """### adaboost
     reg_first_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
                                                               n_estimators=n_est//10, learning_rate=0.9) ) )
     reg_first_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
-                                                                      n_estimators=n_est//20, learning_rate=0.9) ) )
+                                                                      n_estimators=n_est//20, learning_rate=0.9) ) )"""
 
     ### random forest
     # test all combinations
@@ -143,7 +143,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                            nthread=n_jobs) ) )
                         ix += 1
 
-    ### lgbm
+    """### lgbm
     # test all combinations
     max_depth_list = (4, 8)
     subsample_list = (.5, .8)
@@ -157,7 +157,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                          num_leaves=31, subsample=subsample,
                                                                          colsample_bytree=colsample_bytree, max_depth=max_depth,
                                                                          nthread=n_jobs) ) )
-                ix += 1
+                ix += 1"""
 
 
     return reg_first_layer
