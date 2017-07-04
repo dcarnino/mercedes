@@ -64,9 +64,9 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     adx = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     glo = 'glorot_uniform'
     he = 'he_normal'
-    k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 2)) * 1
+    k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 3)) * 1
     k_n_units_list = np.array((2048, 1024, 1024, 1024, 512, 256, 256)) // 2
-    k_dropout_list = (0.2, 0.5, 0.3, 0.1, 0.5, 0.3, 0.1)
+    k_dropout_list = (0.1, 0.1, 0.3, 0.05, 0.1, 0.1, 0.1)
     k_optimizer_list = (add, add, add, add, add, add, add)
     k_init_list = (glo, glo, glo, glo, glo, glo, glo)
     # loop
@@ -78,7 +78,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                              k_init=k_init, verbose=0) ) )
 
     ### svr
-    kernel_list = ('linear', 'poly', 'rbf', 'sigmoid')
+    kernel_list = ('linear', 'rbf', 'sigmoid')
     for ix, kernel in enumerate(kernel_list):
         reg_first_layer.append( ( "SVR%d"%ix, SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001) ) )
         reg_first_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
