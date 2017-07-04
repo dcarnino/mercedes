@@ -269,9 +269,23 @@ def main(verbose=1):
             X_valtrain.append(Xb_valtrain)
             X_valtest.append(Xb_valtest)
 
-            ### add categorical features
+            """### add categorical features
             X_valtrain.append(Xc_valtrain.values)
-            X_valtest.append(Xc_valtest.values)
+            X_valtest.append(Xc_valtest.values)"""
+
+            ### add means of categorical
+            Xmeans_valtrain, Xmeans_valtest = [], []
+            for cat_col in Xc_valtrain.columns:
+                cat_means = defaultdict(lambda x: y_valtrain.mean())
+                diff_cat = set(Xc_valtrain[cat_col])
+                for cat in diff_cat:
+                    cat_means[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].mean()
+                Xm_valtrain = Xc_valtrain[cat_col].apply(lambda x: cat_means[x])
+                Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x])
+                Xmeans_valtrain.append(Xm_valtrain)
+                Xmeans_valtest.append(Xm_valtest)
+            X_valtrain.append(np.hstack(Xmeans_valtrain))
+            X_valtest.append(np.hstack(Xmeans_valtest))
 
             ### encode categorical
             ohe = OneHotEncoder(handle_unknown='ignore')
@@ -306,7 +320,7 @@ def main(verbose=1):
             X_valtrain.append(Xid_valtrain)
             X_valtest.append(Xid_valtest)
 
-            ### MCA
+            """### MCA
             Xbool_valtrain = np.hstack([Xb_valtrain, Xohe_valtrain])
             Xbool_valtest = np.hstack([Xb_valtest, Xohe_valtest])
             mca_obj = MCA(n_components=20)
@@ -314,7 +328,7 @@ def main(verbose=1):
             Xmca_valtrain = mca_obj.transform(Xbool_valtrain)
             Xmca_valtest = mca_obj.transform(Xbool_valtest)
             X_valtrain.append(Xmca_valtrain)
-            X_valtest.append(Xmca_valtest)
+            X_valtest.append(Xmca_valtest)"""
 
             """### Logistic PCA
             Xbool_valtrain = pd.DataFrame(np.hstack([Xb_valtrain, Xohe_valtrain]))
