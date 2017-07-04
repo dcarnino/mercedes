@@ -276,7 +276,7 @@ def main(verbose=1):
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
             for cat_col in Xc_valtrain.columns:
-                cat_means = defaultdict(lambda x: y_valtrain.mean())
+                cat_means = defaultdict(lambda: y_valtrain.mean())
                 diff_cat = set(Xc_valtrain[cat_col])
                 for cat in diff_cat:
                     cat_means[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].mean()
