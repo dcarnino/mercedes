@@ -127,10 +127,11 @@ def predict_stacked_regressors(X_test, reg_superlist, reg_final, add_raw_feature
     X2_test = []
     for reg_list in reg_superlist:
         y_subpred = [reg[1].predict(X_test) for reg in reg_list]
+        print(y_subpred)
         y_subpred = sum(y_subpred)/float(len(reg_list))
+        print(y_subpred)
         X2_test.append(y_subpred.reshape((-1,1)))
     print(X2_test)
-    print(X2_test.shape)
     X2_test = np.hstack(X2_test)
     # layer 2
     if verbose >= 1: print("Predictions of 2nd layer...")
