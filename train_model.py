@@ -96,7 +96,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     mean_thresh = np.percentile(mean_scores, int(remove_bad*100))
     std_thresh = np.percentile(std_scores, int((1-remove_bad)*100))
     reg_superlist = []
-    for reg_l, mean_s, std_s in zip(reg_superlist, mean_scores, std_scores):
+    for reg_l, mean_s, std_s in zip(reg_superlist2, mean_scores, std_scores):
         if mean_s > mean_thresh and std_s < std_thresh:
             reg_superlist.append(reg_l)
 
@@ -127,11 +127,8 @@ def predict_stacked_regressors(X_test, reg_superlist, reg_final, add_raw_feature
     X2_test = []
     for reg_list in reg_superlist:
         y_subpred = [reg[1].predict(X_test) for reg in reg_list]
-        print(y_subpred)
         y_subpred = sum(y_subpred)/float(len(reg_list))
-        print(y_subpred)
         X2_test.append(y_subpred.reshape((-1,1)))
-    print(X2_test)
     X2_test = np.hstack(X2_test)
     # layer 2
     if verbose >= 1: print("Predictions of 2nd layer...")
