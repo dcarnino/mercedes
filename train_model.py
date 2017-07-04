@@ -280,8 +280,10 @@ def main(verbose=1):
                 diff_cat = set(Xc_valtrain[cat_col])
                 for cat in diff_cat:
                     cat_means[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].mean()
-                Xm_valtrain = Xc_valtrain[cat_col].apply(lambda x: cat_means[x])
-                Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x])
+                Xm_valtrain = Xc_valtrain[cat_col].apply(lambda x: cat_means[x]).values
+                Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x]).values
+                print(Xm_valtrain.shape)
+                print(Xm_valtest.shape)
                 Xmeans_valtrain.append(Xm_valtrain)
                 Xmeans_valtest.append(Xm_valtest)
             X_valtrain.append(np.hstack(Xmeans_valtrain))
