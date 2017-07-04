@@ -67,7 +67,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 2)) * 1
     k_n_units_list = np.array((2048, 1024, 1024, 1024, 512, 256, 256)) // 2
     k_dropout_list = (0.2, 0.5, 0.3, 0.1, 0.5, 0.3, 0.1)
-    k_optimizer_list = (adm, adm, adm, adm, adm, adm, adm)
+    k_optimizer_list = (add, add, add, add, add, add, add)
     k_init_list = (glo, glo, glo, glo, glo, glo, glo)
     # loop
     for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
