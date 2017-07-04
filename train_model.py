@@ -37,7 +37,8 @@ from mca import MCA
 #==============================================
 def fit_stacked_regressors(X_train, y_train, n_folds=5,
                            add_raw_features=False, n_jobs=28,
-                           n_est1=224, n_est2=11200, verbose=1):
+                           n_est1=224, n_est2=11200, score_func=metrics.r2_score,
+                           remove_bad=0.2, verbose=1):
     """
     Regressify with two layers of regressors.
     """
@@ -49,6 +50,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     if verbose >= 1: print("Training 1st layer...")
     fold_cnt = 0
     X_oritrain, X2_train, y2_train = [], [], []
+    reg_superlist, score_superlist = [], []
     for valtrain_index, valtest_index in cv.split(X_train):
         fold_cnt += 1
         if verbose >= 1: print("Processing fold number %d/%d..."%(fold_cnt,n_folds))
@@ -57,6 +59,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         y_valtrain, y_valtest = y_train[valtrain_index], y_train[valtest_index]
         # fit classifiers
         reg_list = define_model.create_first_layer(input_dim=X_valtrain.shape[1], n_jobs=n_jobs, n_est=n_est1, verbose=verbose)
+        reg_superlist.append(reg_list)
         X2_valpred = []
         for reg in reg_list:
             if verbose >= 2:
@@ -69,8 +72,11 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             y_valpred = reg[1].predict(X_valtest)
             y_valpred[np.isnan(y_valpred)] = 100.
             X2_valpred.append(y_valpred.reshape((-1,1)))
-            if verbose >= 3: print("(%.04f) "%(metrics.r2_score(y_valtest, y_valpred)), end='')
+            score = score_func(y_valtest, y_valpred)
+            score_list.append(score)
+            if verbose >= 3: print("(%.04f) "%(score), end='')
         if verbose >= 2: print("")
+        score_superlist.append(score_list)
         # append to new features
         X_oritrain.append(X_valtest)
         X2_train.append(np.hstack(X2_valpred))
@@ -78,18 +84,20 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     X_oritrain = np.vstack(X_oritrain)
     X2_train = np.vstack(X2_train)
     y2_train = np.array(y2_train)
-    # refit classifiers on all training data
-    print("Refitting 1st layer on all training data...")
-    reg_list = define_model.create_first_layer(input_dim=X_valtrain.shape[1], n_jobs=n_jobs, n_est=n_est1, verbose=verbose)
-    for reg in reg_list:
-        if verbose >= 2:
-            print("%s ... "%reg[0], end='')
-            sys.stdout.flush()
-        if 'MLP' in reg[0]:
-            reg[1].ntraintest(X_oritrain, y2_train)
-        else:
-            reg[1].fit(X_oritrain, y2_train)
-    if verbose >= 2: print("")
+
+    ### Transpose shape of reg list of list
+    reg_superlist2 = zip(*reg_superlist)
+    score_superlist = zip(*score_superlist)
+
+    ### Remove regs with too low mean score or too high std score
+    mean_scores = [np.mean(tsl) for tsl in score_superlist]
+    std_scores = [np.std(tsl) for tsl in score_superlist]
+    mean_thresh = np.percentile(mean_scores, int(remove_bad*100))
+    std_thresh = np.percentile(std_scores, int((1-remove_bad)*100))
+    reg_superlist = []
+    for reg_l, mean_s, std_s in zip(reg_superlist, mean_scores, std_scores):
+        if mean_s > mean_thresh and std_s < std_thresh:
+            reg_superlist.append(reg_l)
 
     ### Init final layer
     reg_final = define_model.create_final_layer(n_jobs=n_jobs, n_est=n_est2, verbose=verbose)
@@ -101,13 +109,13 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     else:
             reg_final.fit(X2_train, y2_train)
 
-    return reg_list, reg_final
+    return reg_superlist, reg_final
 
 
 
 
 
-def predict_stacked_regressors(X_test, reg_list, reg_final, add_raw_features=False, verbose=1):
+def predict_stacked_regressors(X_test, reg_superlist, reg_final, add_raw_features=False, verbose=1):
     """
     Predict for two layers regressor.
     """
@@ -116,8 +124,9 @@ def predict_stacked_regressors(X_test, reg_list, reg_final, add_raw_features=Fal
     # layer 1
     if verbose >= 1: print("Predictions of 1st layer...")
     X2_test = []
-    for reg in reg_list:
-        y_subpred = reg[1].predict(X_test)
+    for reg_list in reg_superlist:
+        y_subpred = [reg[1].predict(X_test) for reg in reg_list]
+        y_subpred = sum(y_subpred)/float(len(reg_list))
         X2_test.append(y_subpred.reshape((-1,1)))
     X2_test = np.hstack(X2_test)
     # layer 2
@@ -239,7 +248,7 @@ def main(verbose=1):
     if leaderboard:
         n_total = 1
     else:
-        n_total = 5
+        n_total = 3
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
@@ -430,14 +439,14 @@ def main(verbose=1):
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             reg.fit(X_valtrain, y_valtrain)"""
-            reg_list, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
+            reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, n_jobs=28,
                                   n_est1=448, n_est2=448, verbose=verbose)
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
             #y_valpred = reg.predict(X_valtest)
-            y_valpred = predict_stacked_regressors(X_valtest, reg_list, reg_final,
+            y_valpred = predict_stacked_regressors(X_valtest, reg_superlist, reg_final,
                         add_raw_features=False, verbose=verbose)
 
             ### Append preds and tests

@@ -85,9 +85,9 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
     ### knn
     # test all combinations
-    n_neighbors_list = (2, 9)
+    n_neighbors_list = (2, 5, 9)
     weights_list = ('distance',)
-    p_list = (1, 3)
+    p_list = (1, 2, 3)
     ix = 0
     for n_neighbors in n_neighbors_list:
         for weights in weights_list:
@@ -124,7 +124,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
     ### xgboost
     # test all combinations
-    max_depth_list = (4, 8)
+    max_depth_list = (3, 5, 10)
     subsample_list = (.5, .8)
     colsample_bytree_list = (.5, .8)
     learning_rate_list = (0.02,)
