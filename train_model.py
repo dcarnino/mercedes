@@ -87,13 +87,12 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     y2_train = np.array(y2_train)
 
     ### Transpose shape of reg list of list
-    reg_superlist2 = zip(*reg_superlist)
-    score_superlist = zip(*score_superlist)
+    reg_superlist2 = list(zip(*reg_superlist))
+    score_superlist = list(zip(*score_superlist))
 
     ### Remove regs with too low mean score or too high std score
     mean_scores = [np.mean(tsl) for tsl in score_superlist]
     std_scores = [np.std(tsl) for tsl in score_superlist]
-    print(score_superlist)
     mean_thresh = np.percentile(mean_scores, int(remove_bad*100))
     std_thresh = np.percentile(std_scores, int((1-remove_bad)*100))
     reg_superlist = []
