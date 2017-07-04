@@ -71,7 +71,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             else:
                 reg[1].fit(X_valtrain, y_valtrain)
             y_valpred = reg[1].predict(X_valtest)
-            y_valpred[np.isnan(y_valpred)] = 100.
+            y_valpred[np.isnan(y_valpred)] = .5
             X2_valpred.append(y_valpred.reshape((-1,1)))
             score = score_func(y_valtest, y_valpred)
             score_list.append(score)
@@ -93,6 +93,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     ### Remove regs with too low mean score or too high std score
     mean_scores = [np.mean(tsl) for tsl in score_superlist]
     std_scores = [np.std(tsl) for tsl in score_superlist]
+    print std_scores
     mean_thresh = np.percentile(mean_scores, int(remove_bad*100))
     std_thresh = np.percentile(std_scores, int((1-remove_bad)*100))
     reg_superlist = []
