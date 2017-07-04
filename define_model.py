@@ -36,6 +36,12 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     ### gbr
     reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
                                                                criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
+    ### svr
+    kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
+    for ix, kernel in enumerate(kernel_list):
+        #reg_first_layer.append( ( "SVR%d"%ix, SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001) ) )
+        reg_first_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
+                                         n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )
 
     ### mlp
     # function for model
@@ -64,11 +70,11 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     adx = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     glo = 'glorot_uniform'
     he = 'he_normal'
-    k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 3)) * 1
-    k_n_units_list = np.array((2048, 1024, 1024, 1024, 512, 256, 256)) // 2
-    k_dropout_list = (0.1, 0.1, 0.3, 0.05, 0.1, 0.1, 0.1)
-    k_optimizer_list = (add, add, add, add, add, add, add)
-    k_init_list = (glo, glo, glo, glo, glo, glo, glo)
+    k_n_layers_list = np.array((2, 2, 3, 3, 4)) * 1
+    k_n_units_list = np.array((512, 256, 512, 256, 256)) // 2
+    k_dropout_list = (0.1, 0.1, 0.1, 0.1, 0.05)
+    k_optimizer_list = (add, add, add, add)
+    k_init_list = (glo, glo, glo, glo)
     # loop
     for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
     in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
@@ -76,13 +82,6 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
                                                              k_init=k_init, verbose=0) ) )
-
-    ### svr
-    kernel_list = ('linear', 'rbf', 'sigmoid')
-    for ix, kernel in enumerate(kernel_list):
-        reg_first_layer.append( ( "SVR%d"%ix, SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001) ) )
-        reg_first_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
-                                         n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )
 
     ### knn
     # test all combinations
