@@ -87,7 +87,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     y2_train = np.array(y2_train)
 
     ### Transpose shape of reg list of list
-    reg_superlist2 = list(zip(*reg_superlist))
+    reg_superlist = list(zip(*reg_superlist))
     score_superlist = list(zip(*score_superlist))
 
     ### Remove regs with too low mean score or too high std score
@@ -95,10 +95,10 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
     std_scores = [np.std(tsl) for tsl in score_superlist]
     mean_thresh = np.percentile(mean_scores, int(remove_bad*100))
     std_thresh = np.percentile(std_scores, int((1-remove_bad)*100))
-    reg_superlist = []
-    for reg_l, mean_s, std_s in zip(reg_superlist2, mean_scores, std_scores):
+    for ix_reg, (reg_l, mean_s, std_s) in enumerate(zip(reg_superlist, mean_scores, std_scores)):
         if mean_s > mean_thresh and std_s < std_thresh:
-            reg_superlist.append(reg_l)
+            reg_superlist.pop(ix_reg)
+            X2_train = np.delete(X2_train, ix_reg, axis=1)
 
     ### Init final layer
     reg_final = define_model.create_final_layer(n_jobs=n_jobs, n_est=n_est2, verbose=verbose)
@@ -249,7 +249,7 @@ def main(verbose=1):
     if leaderboard:
         n_total = 1
     else:
-        n_total = 3
+        n_total = 1
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
