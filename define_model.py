@@ -34,8 +34,8 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     reg_first_layer = []
 
     ### gbr
-    reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.5,
-                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=4) ) )
+    reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
+                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
 
     ### mlp
     # function for model
@@ -50,7 +50,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
             model.add(Dense(k_n_units//(nl+1)+1, activation='relu', kernel_initializer=k_init))
             if k_n_units//(nl+1)+1 > 16:
                 model.add(Dropout(k_dropout))
-        model.add(Dense(1, activation='linear', kernel_initializer=k_init))
+        model.add(Dense(1, activation='sigmoid', kernel_initializer=k_init))
         # Compile model
         model.compile(loss=k_loss, optimizer=k_optimizer)
         return model
@@ -64,11 +64,11 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     adx = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     glo = 'glorot_uniform'
     he = 'he_normal'
-    k_n_layers_list = np.array((0, 1, 1, 1, 1, 2, 2, 2, 2, 4)) * 1
-    k_n_units_list = np.array((2048, 1024, 1024, 1024, 1024, 512, 256, 256, 256, 512)) // 2
-    k_dropout_list = (0.2, 0.5, 0.3, 0.2, 0.1, 0.5, 0.5, 0.3, 0.1, 0.1)
-    k_optimizer_list = (add, add, add, add, add, add, add, add, add, add)
-    k_init_list = (glo, glo, glo, glo, glo, glo, glo, glo, glo, glo)
+    k_n_layers_list = np.array((0, 1, 1, 1, 2, 2, 2)) * 1
+    k_n_units_list = np.array((2048, 1024, 1024, 1024, 512, 256, 256)) // 2
+    k_dropout_list = (0.2, 0.5, 0.3, 0.1, 0.5, 0.3, 0.1)
+    k_optimizer_list = (adm, adm, adm, adm, adm, adm, adm)
+    k_init_list = (glo, glo, glo, glo, glo, glo, glo)
     # loop
     for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
     in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
@@ -86,9 +86,9 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
     ### knn
     # test all combinations
-    n_neighbors_list = (1, 3, 5, 9)
+    n_neighbors_list = (5, 9)
     weights_list = ('uniform', 'distance')
-    p_list = (1, 2, 3)
+    p_list = (2, 3)
     ix = 0
     for n_neighbors in n_neighbors_list:
         for weights in weights_list:
@@ -125,11 +125,11 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
     ### xgboost
     # test all combinations
-    max_depth_list = (4, 6, 8, 10)
-    subsample_list = (.6, .8)
-    colsample_bytree_list = (.6, .8)
-    learning_rate_list = (0.02, 0.05, 0.08, 0.2)
-    min_child_weight_list = (1, 2, 4)
+    max_depth_list = (5, 6, 7)
+    subsample_list = (.65, .8)
+    colsample_bytree_list = (.65, .8)
+    learning_rate_list = (0.02, 0.05)
+    min_child_weight_list = (2, 4)
     # test zipped combinations
     ix = 0
     for max_depth in max_depth_list:
@@ -137,7 +137,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
             for colsample_bytree in colsample_bytree_list:
                 for learning_rate in learning_rate_list:
                     for min_child_weight in min_child_weight_list:
-                        reg_first_layer.append( ( "XGB%d"%ix, XGBRegressor(n_estimators=n_est, objective='reg:linear',
+                        reg_first_layer.append( ( "XGB%d"%ix, XGBRegressor(n_estimators=n_est, objective='reg:logistic',
                                                                            gamma=0, reg_lambda=1, min_child_weight=min_child_weight,
                                                                            learning_rate=learning_rate, subsample=subsample,
                                                                            colsample_bytree=colsample_bytree, max_depth=max_depth,
@@ -146,9 +146,9 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
     ### lgbm
     # test all combinations
-    max_depth_list = (5, 7, 9)
-    subsample_list = (.5, .7, .9)
-    colsample_bytree_list = (.5, .7, .9)
+    max_depth_list = (4, 5, 6)
+    subsample_list = (.65, .75)
+    colsample_bytree_list = (.65, .75)
     # test zipped combinations
     ix = 0
     for max_depth in max_depth_list:
@@ -166,12 +166,12 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
 
 ##### Final layer classifier
-def create_final_layer(n_jobs=28, n_est=11200, objective='reg:linear', verbose=1):
+def create_final_layer(n_jobs=28, n_est=448, objective='reg:logistic', verbose=1):
     """
     Create final layer.
     """
     reg_final_layer = XGBRegressor(n_estimators=n_est, objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
-                                   learning_rate=0.02, subsample=0.8, colsample_bytree=0.8, max_depth=4, nthread=n_jobs)
+                                   learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs)
     #reg_final_layer = AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs),
     #                                    n_estimators=5, learning_rate=0.8)
     #reg_final_layer = ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs)
