@@ -34,9 +34,9 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
 
     reg_first_layer = []
 
-    """### gbr
+    ### gbr
     reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
-                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )"""
+                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
     ### svr
     """kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
     for ix, kernel in enumerate(kernel_list):
@@ -44,7 +44,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_first_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
                                          n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )"""
 
-    """### mlp
+    ### mlp
     # function for model
     def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
                      k_optimizer='rmsprop', k_init='glorot_uniform',
@@ -82,7 +82,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                             k_init=k_init, verbose=0) ) )"""
+                                                             k_init=k_init, verbose=0) ) )
 
     ### knn
     # test all combinations
@@ -97,7 +97,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                           algorithm='auto', n_jobs=n_jobs) ) )
                 ix += 1
 
-    """### adaboost
+    ### adaboost
     reg_first_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
                                                               n_estimators=n_est//10, learning_rate=0.9) ) )
     reg_first_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
@@ -142,7 +142,7 @@ def create_first_layer(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                            learning_rate=learning_rate, subsample=subsample,
                                                                            colsample_bytree=colsample_bytree, max_depth=max_depth,
                                                                            nthread=n_jobs) ) )
-                        ix += 1"""
+                        ix += 1
 
     """### lgbm
     # test all combinations
@@ -172,7 +172,7 @@ def create_final_layer(n_jobs=28, n_est=448, objective='reg:logistic', verbose=1
     """
     reg_final_layer = model_selection.GridSearchCV(XGBRegressor(n_estimators=n_est, objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
                                                    learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs),
-                                                   {'max_depth': [5], 'subsample': [.5, .65, .8], 'colsample_bytree': [.5, .65, .8], 'n_estimators': [28], 'learning_rate': [.02], 'min_child_weight': [2,4]},
+                                                   {'max_depth': [5], 'subsample': [.5, .65, .8], 'colsample_bytree': [.5, .65, .8], 'n_estimators': [224, 448, 1120], 'learning_rate': [.02], 'min_child_weight': [2,4]},
                                                    scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
                                                    n_jobs=1, cv=5, verbose=verbose, pre_dispatch='n_jobs', error_score='raise')
     #reg_final_layer = XGBRegressor(n_estimators=n_est, objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
