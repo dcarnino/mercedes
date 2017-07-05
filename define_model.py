@@ -301,7 +301,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
 
 
 ##### Final layer classifier
-def create_layer2(n_jobs=28, objective='reg:logistic' verbose=1):
+def create_layer2(n_jobs=28, objective='reg:logistic', verbose=1):
     """
     Create final layer.
     """
