@@ -444,9 +444,10 @@ def main(verbose=1):
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
             """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            reg = stacked_regressor(create_layer0, create_layer1, create_layer2, remove_bad0=0.2, remove_bad1=0.1,
-                         n_folds0=5, n_folds1=5, n_est0=448, n_est1=1120, score_func=metrics.r2_score,
-                         default_y_value=0.5, n_jobs=28)
+            reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
+                                    remove_bad0=0.2, remove_bad1=0.1,
+                                    n_folds0=5, n_folds1=5, n_est0=448, n_est1=1120, score_func=metrics.r2_score,
+                                    default_y_value=0.5, n_jobs=28)
             reg.fit(X_valtrain, y_valtrain)
             """reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, n_jobs=28,
