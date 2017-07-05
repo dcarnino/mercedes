@@ -50,7 +50,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         return 'custom_metric', score
 
 
-    def fit(self, X, y, verbose=1):
+    def fit(self, X, y, verbose=False):
 
         X, y = check_X_y(X, y)
 
@@ -87,3 +87,5 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
             y_pred = np.median(y_pred, axis=0)
         else:
             y_pred = np.mean(y_pred, axis=0)
+
+        return y_pred
