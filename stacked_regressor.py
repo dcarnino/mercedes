@@ -188,7 +188,7 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
             X2 = X2_1
 
         ### Init final layer
-        self.reg_final_ = self.layer2_func(n_jobs=n_jobs, verbose=verbose)
+        self.reg_final_ = self.layer2_func(n_jobs=self.n_jobs, verbose=verbose)
 
         ### Train final layer
         if verbose >= 1: print("Training layer 2...")
