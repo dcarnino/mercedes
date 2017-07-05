@@ -59,8 +59,8 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
 
             if verbose >= 1: print("XGB fold %d/%d..."%(fold_cnt+1,self.n_folds))
 
-            X_train, X_test = X[valtrain_index], X[valtest_index]
-            y_train, y_test = y[valtrain_index], y[valtest_index]
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
 
             self.estimator_list_[fold_cnt].fit(X_train, y_train, sample_weight=sample_weight,
                                               eval_set=[(X_test, y_test)], eval_metric=self.eval_metric,
