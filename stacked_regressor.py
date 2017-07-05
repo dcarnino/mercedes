@@ -51,7 +51,7 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
         ### Train first layer of regressors
         if verbose >= 1: print("Training layer 0...")
         fold_cnt = 0
-        X0_0, X1_0, y_0 = [], [], []
+        X0_0, X0_1, X0_2, X1_0, y_0 = [], [], [], [], []
         self.reg0_superlist_, self.score0_superlist_ = [], []
         for valtrain_index, valtest_index in cv0.split(X0):
             fold_cnt += 1
@@ -123,7 +123,7 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
         ### Train first layer of regressors
         if verbose >= 1: print("Training layer 1...")
         fold_cnt = 0
-        X1_1, X2_1, y_1 = [], [], []
+        X1_1, X1_2, X2_1, y_1 = [], [], [], []
         self.reg1_superlist_, self.score1_superlist_ = [], []
         for valtrain_index, valtest_index in cv1.split(X1):
             fold_cnt += 1
