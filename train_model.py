@@ -20,6 +20,7 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import model_selection, metrics
 from scipy import sparse
 from xgboost import XGBRegressor
+from xgboost_ensembling import XGBRegressor_ensembling
 from sklearn.decomposition import PCA, FastICA
 from sklearn.feature_selection import SelectFromModel
 from scipy.interpolate import InterpolatedUnivariateSpline
@@ -243,7 +244,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = True
+    leaderboard = False
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -438,17 +439,19 @@ def main(verbose=1):
                 print(reg_cv.best_params_, reg_cv.best_score_)
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
+            reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg.fit(X_valtrain, y_valtrain)"""
-            reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
+            reg.fit(X_valtrain, y_valtrain)
+            """reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, n_jobs=28,
-                                  n_est1=448, n_est2=448, verbose=verbose)
+                                  n_est1=448, n_est2=448, verbose=verbose)"""
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            #y_valpred = reg.predict(X_valtest)
-            y_valpred = predict_stacked_regressors(X_valtest, reg_superlist, reg_final,
-                        add_raw_features=False, verbose=verbose)
+            y_valpred = reg.predict(X_valtest)
+            """y_valpred = predict_stacked_regressors(X_valtest, reg_superlist, reg_final,
+                        add_raw_features=False, verbose=verbose)"""
 
             ### Append preds and tests
             #y_valpred = rank_to_y_func(y_valpred)
