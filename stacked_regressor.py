@@ -114,6 +114,8 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
 
         if X1 is not None:
             X1 = np.hstack([X0_1, X1_0])
+        else:
+            X1 = X1_0
 
         ### Init cross-validation K-folds
         cv1 = model_selection.KFold(n_splits=self.n_folds1, shuffle=True)
@@ -182,6 +184,8 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
 
         if X2 is not None:
             X2 = np.hstack([X1_2, X2_1])
+        else:
+            X2 = X2_1
 
         ### Init final layer
         self.reg_final_ = self.layer2_func(n_jobs=n_jobs, verbose=verbose)
@@ -211,6 +215,8 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
         # layer 1
         if X1 is not None:
             X1 = np.hstack([X1, X1_0])
+        else:
+            X1 = X1_0
         if verbose >= 1: print("Predictions of layer 1...")
         X2_1 = []
         for reg_list in self.reg1_superlist_:
@@ -221,6 +227,8 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
         # layer 2
         if X2 is not None:
             X2 = np.hstack([X2, X2_1])
+        else:
+            X2 = X2_1
         if verbose >= 1: print("Predictions of layer 2...")
         y_pred = self.reg_final_.predict(X2)
 
