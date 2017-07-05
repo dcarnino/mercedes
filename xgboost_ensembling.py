@@ -41,7 +41,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         self.predict_median = predict_median
 
 
-    def fit(self, X, y, sample_weight=None, verbose=0):
+    def fit(self, X, y, verbose=0):
 
         X, y = check_X_y(X, y)
 
@@ -62,7 +62,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            self.estimator_list_[fold_cnt].fit(X_train, y_train, sample_weight=sample_weight,
+            self.estimator_list_[fold_cnt].fit(X_train, y_train,
                                               eval_set=[(X_test, y_test)], eval_metric=self.eval_metric,
                                               early_stopping_rounds=self.early_stopping_rounds, verbose=verbose)
 
