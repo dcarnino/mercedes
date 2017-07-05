@@ -76,7 +76,7 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
                 y_valpred = reg[1].predict(X0_valtest)
                 y_valpred[np.isnan(y_valpred)] = self.default_y_value
                 X1_valpred.append(y_valpred.reshape((-1,1)))
-                score = score_func(y_valtest, y_valpred)
+                score = self.score_func(y_valtest, y_valpred)
                 score_list.append(score)
                 if verbose >= 3: print("(%.04f) "%(score), end='')
             if verbose >= 2: print("")
@@ -145,7 +145,7 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
                 y_valpred = reg[1].predict(X1_valtest)
                 y_valpred[np.isnan(y_valpred)] = self.default_y_value
                 X2_valpred.append(y_valpred.reshape((-1,1)))
-                score = score_func(y_valtest, y_valpred)
+                score = self.score_func(y_valtest, y_valpred)
                 score_list.append(score)
                 if verbose >= 3: print("(%.04f) "%(score), end='')
             if verbose >= 2: print("")
