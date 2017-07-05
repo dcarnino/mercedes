@@ -38,7 +38,7 @@ from mca import MCA
 #==============================================
 def fit_stacked_regressors(X_train, y_train, n_folds=5,
                            add_raw_features=False, n_jobs=28,
-                           n_est1=224, n_est2=11200, score_func=metrics.r2_score,
+                           n_est=224, score_func=metrics.r2_score,
                            remove_bad=0.2, verbose=1):
     """
     Regressify with two layers of regressors.
@@ -59,7 +59,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
         X_valtrain, X_valtest = X_train[valtrain_index], X_train[valtest_index]
         y_valtrain, y_valtest = y_train[valtrain_index], y_train[valtest_index]
         # fit classifiers
-        reg_list = define_model.create_first_layer(input_dim=X_valtrain.shape[1], n_jobs=n_jobs, n_est=n_est1, verbose=verbose)
+        reg_list = define_model.create_first_layer(input_dim=X_valtrain.shape[1], n_jobs=n_jobs, n_est=n_est, verbose=verbose)
         reg_superlist.append(reg_list)
         score_list = []
         X2_valpred = []
@@ -102,7 +102,7 @@ def fit_stacked_regressors(X_train, y_train, n_folds=5,
             X2_train = np.delete(X2_train, ix_reg, axis=1)
 
     ### Init final layer
-    reg_final = define_model.create_final_layer(n_jobs=n_jobs, n_est=n_est2, verbose=verbose)
+    reg_final = define_model.create_final_layer(n_jobs=n_jobs, verbose=verbose)
 
     ### Train final layer
     if verbose >= 1: print("Training 2nd layer...")
@@ -430,22 +430,23 @@ def main(verbose=1):
 
             ### Train model
             if verbose >= 4: print("Train model...")
-            """if fold_cnt+n_folds*ix_cv == 1:
-                reg_cv = model_selection.GridSearchCV(define_model.create_final_layer(n_jobs=28, n_est=1120, objective='reg:logistic', verbose=verbose),
-                                                   {'max_depth': [5], 'subsample': [.65], 'colsample_bytree': [.65], 'n_estimators': [448], 'learning_rate': [.02], 'min_child_weight': [4]},
-                                                   scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
-                                                   n_jobs=1, cv=5, verbose=3, pre_dispatch='n_jobs', error_score='raise')
+            if fold_cnt+n_folds*ix_cv == 1:
+                reg_cv = model_selection.GridSearchCV(XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+                                                      learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28),
+                                                      {'max_depth': [5, 7], 'subsample': [.65, .8], 'colsample_bytree': [.65, .8], 'learning_rate': [.02], 'min_child_weight': [1, 4, 20]},
+                                                      scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
+                                                      n_jobs=1, cv=5, verbose=3, pre_dispatch='n_jobs', error_score='raise')
                 reg_cv.fit(X_valtrain, y_valtrain)
                 print(reg_cv.best_params_, reg_cv.best_score_)
-                reg = reg_cv.best_estimator_"""
+                reg = reg_cv.best_estimator_
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            reg = XGBRegressor_ensembling(predict_median=True, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
-                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
+            """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
             reg.fit(X_valtrain, y_valtrain)
             """reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, n_jobs=28,
-                                  n_est1=448, n_est2=448, verbose=verbose)"""
+                                  n_est=448, verbose=verbose)"""
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
