@@ -50,7 +50,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         return 'custom_metric', score
 
 
-    def fit(self, X, y, verbose=0):
+    def fit(self, X, y, verbose=1):
 
         X, y = check_X_y(X, y)
 
