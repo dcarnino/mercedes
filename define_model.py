@@ -180,13 +180,13 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
     reg_layer = []
 
     """### gbr
-    reg_first_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
+    reg_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
                                                                criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )"""
     """### svr
     kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
     for ix, kernel in enumerate(kernel_list):
-        reg_first_layer.append( ( "SVR%d"%ix, SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001) ) )
-        reg_first_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
+        reg_layer.append( ( "SVR%d"%ix, SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001) ) )
+        reg_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
                                          n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )"""
 
     """### mlp
@@ -224,7 +224,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
     # loop
     for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
     in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
-        reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
+        reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
                                                              k_init=k_init, verbose=0) ) )"""
@@ -238,16 +238,16 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
     for n_neighbors in n_neighbors_list:
         for weights in weights_list:
             for p in p_list:
-                reg_first_layer.append( ( "kNN%d"%ix, KNeighborsRegressor(n_neighbors=n_neighbors, weights=weights, p=p,
+                reg_layer.append( ( "kNN%d"%ix, KNeighborsRegressor(n_neighbors=n_neighbors, weights=weights, p=p,
                                                                           algorithm='auto', n_jobs=n_jobs) ) )
                 ix += 1
 
     """### adaboost
-    reg_first_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
+    reg_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
                                                               n_estimators=n_est//20, learning_rate=0.9) ) )
-    reg_first_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
+    reg_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
                                                                       n_estimators=n_est//20, learning_rate=0.9) ) )
-    reg_first_layer.append( ( "AdaBoostXGBoost", AdaBoostRegressor(base_estimator=XGBRegressor_ensembling(objective='reg:logistic',
+    reg_layer.append( ( "AdaBoostXGBoost", AdaBoostRegressor(base_estimator=XGBRegressor_ensembling(objective='reg:logistic',
                                                                                                           gamma=0, reg_lambda=1, min_child_weight=4,
                                                                                                           learning_rate=0.02, subsample=0.65,
                                                                                                           colsample_bytree=0.65, max_depth=5,
