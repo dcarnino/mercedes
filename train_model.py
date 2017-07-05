@@ -352,13 +352,13 @@ def main(verbose=1):
             X_valtrain.append(Xlogpca_valtrain)
             X_valtest.append(Xlogpca_valtest)"""
 
-            """### PCA
-            pca = PCA(n_components=1)
+            ### PCA
+            pca = PCA(n_components=12)
             pca.fit(np.hstack(X_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
             Xpca_valtest = pca.transform(np.hstack(X_valtest))
             X_valtrain.append(Xpca_valtrain)
-            X_valtest.append(Xpca_valtest)"""
+            X_valtest.append(Xpca_valtest)
 
             """### ICA
             ica = FastICA()
