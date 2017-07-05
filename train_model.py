@@ -448,14 +448,14 @@ def main(verbose=1):
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=448, n_est1=1120, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X_valtrain, y_valtrain)
+            reg.fit(X_valtrain, y_valtrain, verbose=verbose)
             """reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, n_jobs=28,
                                   n_est=448, verbose=verbose)"""
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            y_valpred = reg.predict(X_valtest)
+            y_valpred = reg.predict(X_valtest, verbose=verbose)
             """y_valpred = predict_stacked_regressors(X_valtest, reg_superlist, reg_final,
                         add_raw_features=False, verbose=verbose)"""
 
