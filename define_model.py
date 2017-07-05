@@ -11,10 +11,11 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 import lightgbm as lgb
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor, AdaBoostRegressor, BaggingRegressor
-from sklearn.linear_model import SGDRegressor, LassoCV, LarsCV, RidgeCV, ElasticNetCV, ARDRegression, BayesianRidge
+from sklearn.linear_model import LinearRegression, SGDRegressor, Lasso, Lars, Ridge, ElasticNet, ARDRegression, BayesianRidge, Ridge, HuberRegressor, RANSACRegressor
 from sklearn.neural_network import MLPRegressor
+from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
-from sklearn.svm import SVR
+from sklearn.svm import SVR, LinearSVR
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn import model_selection, metrics
@@ -34,6 +35,20 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     """
 
     reg_layer = []
+
+    ### linear models
+    reg_layer.append( ( "OLS", LinearRegression(fit_intercept=True, n_jobs=n_jobs) ) )
+    reg_layer.append( ( "Ridge", Ridge(alpha=.5) ) )
+    reg_layer.append( ( "Lasso", Lasso(alpha=.1) ) )
+    reg_layer.append( ( "Lars", Lars() ) )
+    reg_layer.append( ( "ElasticNet", ElasticNet(alpha=1., l1_ratio=0.5) ) )
+    reg_layer.append( ( "Huber", HuberRegressor() ) )
+    reg_layer.append( ( "RansacOLS", RANSACRegressor() ) )
+    reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )
+    reg_layer.append( ( "LinearSVR", LinearSVR() ) )
+
+    ### tree
+    reg_layer.append( ( "Tree", DecisionTreeRegressor() ) )
 
     """### gbr
     reg_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
