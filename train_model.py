@@ -146,7 +146,7 @@ def main(verbose=1):
     if leaderboard:
         n_total = 1
     else:
-        n_total = 1
+        n_total = 20
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
@@ -287,7 +287,7 @@ def main(verbose=1):
             X1_valtest.append(Xpca_valtest)
 
             ### ICA
-            ica = FastICA(n_components=n_components)
+            ica = FastICA(n_components=n_components, max_iter=2000)
             ica.fit(np.hstack(X0_valtrain))
             Xica_valtrain = ica.transform(np.hstack(X0_valtrain))
             Xica_valtest = ica.transform(np.hstack(X0_valtest))
