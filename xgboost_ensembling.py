@@ -41,7 +41,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         self.predict_median = predict_median
 
 
-    def custom_eval(y_pred, dtest):
+    def custom_eval(self, y_pred, dtest):
         y_test = dtest.get_label()
         assert len(y_test) == len(y_pred)
         score = self.eval_metric(y_test, y_pred)
@@ -72,7 +72,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
             y_train, y_test = y[train_index], y[test_index]
 
             self.estimator_list_[fold_cnt].fit(X_train, y_train,
-                                              eval_set=[(X_test, y_test)], eval_metric=custom_eval,
+                                              eval_set=[(X_test, y_test)], eval_metric=(lambda y_pred, dtest: self.custom_eval(y_pred, dtest)),
                                               early_stopping_rounds=self.early_stopping_rounds, verbose=verbose)
 
 
