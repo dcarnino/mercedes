@@ -14,7 +14,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
                  objective='reg:linear', nthread=None,
                  gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
                  colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
-                 scale_pos_weight=1, base_score=0.5, seed=None, missing=None):
+                 scale_pos_weight=1, base_score=0.5, missing=None):
 
         self.max_depth = max_depth
         self.learning_rate = learning_rate
@@ -32,7 +32,6 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         self.reg_lambda = reg_lambda
         self.scale_pos_weight = scale_pos_weight
         self.base_score = base_score
-        self.seed = seed
         self.missing = missing
 
         self.n_folds = n_folds
@@ -51,7 +50,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
                                       gamma=self.gamma, min_child_weight=self.min_child_weight, max_delta_step=self.max_delta_step,
                                       subsample=self.subsample, colsample_bytree=self.colsample_bytree, colsample_bylevel=self.colsample_bytree,
                                       reg_alpha=self.reg_alpha, reg_lambda=self.reg_lambda, scale_pos_weight=self.scale_pos_weight,
-                                      base_score=self.base_score, seed=self.seed, missing=self.missing) for fold in range(self.n_folds)]
+                                      base_score=self.base_score, missing=self.missing) for fold in range(self.n_folds)]
 
         cv = model_selection.KFold(n_splits=self.n_folds, shuffle=True)
 
