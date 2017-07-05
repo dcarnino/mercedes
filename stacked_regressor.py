@@ -192,7 +192,7 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
 
         ### Train final layer
         if verbose >= 1: print("Training layer 2...")
-        self.reg_final_.fit(X2, y_2)
+        self.reg_final_.fit(X2, y_1)
 
 
 

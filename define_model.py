@@ -83,7 +83,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                             k_init=k_init, verbose=0) ) )
+                                                             k_init=k_init, verbose=0) ) )"""
 
     ### knn
     # test all combinations
@@ -98,7 +98,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                           algorithm='auto', n_jobs=n_jobs) ) )
                 ix += 1
 
-    ### adaboost
+    """### adaboost
     reg_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
                                                               n_estimators=n_est//20, learning_rate=0.9) ) )
     reg_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
@@ -130,7 +130,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                          bootstrap=bootstrap, max_features=max_features,
                                                                          min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )"""
 
-    ### xgboost
+    """### xgboost
     # test all combinations
     max_depth_list = (3, 5, 10)
     subsample_list = (.5, .8)
@@ -149,7 +149,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                            learning_rate=learning_rate, subsample=subsample,
                                                                            colsample_bytree=colsample_bytree, max_depth=max_depth,
                                                                            nthread=n_jobs) ) )
-                        ix += 1
+                        ix += 1"""
 
     """### lgbm
     # test all combinations
@@ -227,7 +227,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
         reg_first_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                             k_init=k_init, verbose=0) ) )
+                                                             k_init=k_init, verbose=0) ) )"""
 
     ### knn
     # test all combinations
@@ -242,7 +242,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                           algorithm='auto', n_jobs=n_jobs) ) )
                 ix += 1
 
-    ### adaboost
+    """### adaboost
     reg_first_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
                                                               n_estimators=n_est//20, learning_rate=0.9) ) )
     reg_first_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
@@ -254,7 +254,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                                                           nthread=n_jobs),
                                                                    n_estimators=n_est//20, learning_rate=0.9) ) )"""
 
-    ### random forest
+    """### random forest
     # test all combinations
     # test zipped combinations
     max_depth_list = (None, None)
@@ -293,7 +293,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                            learning_rate=learning_rate, subsample=subsample,
                                                                            colsample_bytree=colsample_bytree, max_depth=max_depth,
                                                                            nthread=n_jobs) ) )
-                        ix += 1
+                        ix += 1"""
 
 
     return reg_layer
