@@ -273,17 +273,41 @@ def main(verbose=1):
                 id_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain = id_train.values, y_train.values, Xb_train.values, Xc_train
                 id_valtest, y_valtest, Xb_valtest, Xc_valtest = id_test.values, id_test.values, Xb_test.values, Xc_test
 
+            ##### Transform target y
+            """# with rank
+            rank_valtrain = rankdata(y_valtrain, method='dense')
+            rank_valtrain = rank_valtrain - rank_valtrain.min()
+            rank_valtrain = rank_valtrain / rank_valtrain.max()
+            sorted_rank_valtrain = np.unique(rank_valtrain)
+            sorted_y_valtrain = np.unique(y_valtrain)
+            rank_to_y_func = InterpolatedUnivariateSpline(sorted_rank_valtrain, sorted_y_valtrain, k=3, ext='const')
+            y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
+            y_valtrain = y_to_rank_func(y_valtrain)
+            y_valtrain[y_valtrain < 0] = 0.
+            y_valtrain[y_valtrain > 1] = 1."""
+            # in log space
+            smoothing_term = 10
+            y_valtrain = np.log(y_valtrain+smoothing_term)
+            y_min = np.min(y_valtrain)
+            y_valtrain = y_valtrain - y_min
+            y_max = np.max(y_valtrain)
+            y_valtrain = y_valtrain / y_max
+            y_valtrain[y_valtrain < 0] = 0.
+            y_valtrain[y_valtrain > 1] = 1.
+
             ##### Extract features
             if verbose >= 4: print("Extract features...")
-            X_valtrain, X_valtest = [], []
+            X0_valtrain, X0_valtest = [], []
+            X1_valtrain, X1_valtest = [], []
+            X2_valtrain, X2_valtest = [], []
 
             ### add binary features
-            X_valtrain.append(Xb_valtrain)
-            X_valtest.append(Xb_valtest)
+            X0_valtrain.append(Xb_valtrain)
+            X0_valtest.append(Xb_valtest)
 
             ### add categorical features
-            X_valtrain.append(Xc_valtrain.values)
-            X_valtest.append(Xc_valtest.values)
+            X1_valtrain.append(Xc_valtrain.values)
+            X1_valtest.append(Xc_valtest.values)
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
@@ -296,16 +320,16 @@ def main(verbose=1):
                 Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x]).values
                 Xmeans_valtrain.append(Xm_valtrain.reshape((-1,1)))
                 Xmeans_valtest.append(Xm_valtest.reshape((-1,1)))
-            X_valtrain.append(np.hstack(Xmeans_valtrain))
-            X_valtest.append(np.hstack(Xmeans_valtest))
+            X1_valtrain.append(np.hstack(Xmeans_valtrain))
+            X1_valtest.append(np.hstack(Xmeans_valtest))
 
             ### encode categorical
             ohe = OneHotEncoder(handle_unknown='ignore')
             ohe.fit(Xc_valtrain)
             Xohe_valtrain = ohe.transform(Xc_valtrain).toarray()
             Xohe_valtest = ohe.transform(Xc_valtest).toarray()
-            X_valtrain.append(Xohe_valtrain)
-            X_valtest.append(Xohe_valtest)
+            X0_valtrain.append(Xohe_valtrain)
+            X0_valtest.append(Xohe_valtest)
 
             """### engineer new features based on correlations
             Xtr = np.hstack(X_valtrain)
@@ -329,8 +353,10 @@ def main(verbose=1):
             ### Add id
             Xid_valtrain = np.array([id_valtrain]).T
             Xid_valtest = np.array([id_valtest]).T
-            X_valtrain.append(Xid_valtrain)
-            X_valtest.append(Xid_valtest)
+            X0_valtrain.append(Xid_valtrain)
+            X0_valtest.append(Xid_valtest)
+            X1_valtrain.append(Xid_valtrain)
+            X1_valtest.append(Xid_valtest)
 
             """### MCA
             Xbool_valtrain = np.hstack([Xb_valtrain, Xohe_valtrain])
@@ -354,32 +380,50 @@ def main(verbose=1):
             X_valtest.append(Xlogpca_valtest)"""
 
             ### PCA
-            pca = PCA(n_components=12)
-            pca.fit(np.hstack(X_valtrain))
-            Xpca_valtrain = pca.transform(np.hstack(X_valtrain))
-            Xpca_valtest = pca.transform(np.hstack(X_valtest))
-            X_valtrain.append(Xpca_valtrain)
-            X_valtest.append(Xpca_valtest)
+            pca = PCA(n_components=5)
+            pca.fit(np.hstack(X0_valtrain))
+            Xpca_valtrain = pca.transform(np.hstack(X0_valtrain))
+            Xpca_valtest = pca.transform(np.hstack(X0_valtest))
+            X1_valtrain.append(Xpca_valtrain)
+            X1_valtest.append(Xpca_valtest)
 
-            """### ICA
-            ica = FastICA()
-            ica.fit(np.hstack(X_valtrain))
-            Xica_valtrain = ica.transform(np.hstack(X_valtrain))
-            Xica_valtest = ica.transform(np.hstack(X_valtest))
-            X_valtrain.append(Xica_valtrain)
-            X_valtest.append(Xica_valtest)"""
+            ### ICA
+            ica = FastICA(n_components=5)
+            ica.fit(np.hstack(X0_valtrain))
+            Xica_valtrain = ica.transform(np.hstack(X0_valtrain))
+            Xica_valtest = ica.transform(np.hstack(X0_valtest))
+            X1_valtrain.append(Xica_valtrain)
+            X1_valtest.append(Xica_valtest)
+
+            ### Add specific columns
+            X2_valtrain.append(Xb_valtrain[:,[297]])
+            X2_valtest.append(Xb_valtest[:,[297]])
+            X2_valtrain.append(Xmeans_valtrain[:,[0,5]])
+            X2_valtest.append(Xmeans_valtest[:,[0,5]])
 
             ##### Merge
 
             # merge all features
-            X_valtrain = np.hstack(X_valtrain)
-            X_valtest = np.hstack(X_valtest)
+            X0_valtrain = np.hstack(X0_valtrain)
+            X0_valtest = np.hstack(X0_valtest)
+            X1_valtrain = np.hstack(X1_valtrain)
+            X1_valtest = np.hstack(X1_valtest)
+            X2_valtrain = np.hstack(X2_valtrain)
+            X2_valtest = np.hstack(X2_valtest)
 
             # remove constant
             vt = VarianceThreshold()
-            vt.fit(X_valtrain)
-            X_valtrain = vt.transform(X_valtrain)
-            X_valtest = vt.transform(X_valtest)
+            vt.fit(X0_valtrain)
+            X0_valtrain = vt.transform(X0_valtrain)
+            X0_valtest = vt.transform(X0_valtest)
+            vt = VarianceThreshold()
+            vt.fit(X1_valtrain)
+            X1_valtrain = vt.transform(X1_valtrain)
+            X1_valtest = vt.transform(X1_valtest)
+            vt = VarianceThreshold()
+            vt.fit(X1_valtrain)
+            X1_valtrain = vt.transform(X1_valtrain)
+            X1_valtest = vt.transform(X1_valtest)
 
             """# drop correlations
             X_valtrain = pd.DataFrame(X_valtrain)
@@ -404,30 +448,12 @@ def main(verbose=1):
             X_valtest = selector.transform(X_valtest)"""
 
             if verbose >= 5:
-                print("\tX_valtrain shape: ", X_valtrain.shape)
-                print("\tX_valtest shape: ", X_valtest.shape)
-
-            ##### Transform target y
-            """# with rank
-            rank_valtrain = rankdata(y_valtrain, method='dense')
-            rank_valtrain = rank_valtrain - rank_valtrain.min()
-            rank_valtrain = rank_valtrain / rank_valtrain.max()
-            sorted_rank_valtrain = np.unique(rank_valtrain)
-            sorted_y_valtrain = np.unique(y_valtrain)
-            rank_to_y_func = InterpolatedUnivariateSpline(sorted_rank_valtrain, sorted_y_valtrain, k=3, ext='const')
-            y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
-            y_valtrain = y_to_rank_func(y_valtrain)
-            y_valtrain[y_valtrain < 0] = 0.
-            y_valtrain[y_valtrain > 1] = 1."""
-            # in log space
-            smoothing_term = 10
-            y_valtrain = np.log(y_valtrain+smoothing_term)
-            y_min = np.min(y_valtrain)
-            y_valtrain = y_valtrain - y_min
-            y_max = np.max(y_valtrain)
-            y_valtrain = y_valtrain / y_max
-            y_valtrain[y_valtrain < 0] = 0.
-            y_valtrain[y_valtrain > 1] = 1.
+                print("\tX0_valtrain shape: ", X0_valtrain.shape)
+                print("\tX0_valtest shape: ", X0_valtest.shape)
+                print("\tX0_valtrain shape: ", X1_valtrain.shape)
+                print("\tX0_valtest shape: ", X1_valtest.shape)
+                print("\tX0_valtrain shape: ", X2_valtrain.shape)
+                print("\tX0_valtest shape: ", X2_valtest.shape)
 
             ### Train model
             if verbose >= 4: print("Train model...")
@@ -445,17 +471,17 @@ def main(verbose=1):
             """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
             reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
-                                    remove_bad0=0.2, remove_bad1=0.1,
-                                    n_folds0=5, n_folds1=5, n_est0=448, n_est1=1120, score_func=metrics.r2_score,
+                                    remove_bad0=0., remove_bad1=0.,
+                                    n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X_valtrain, y_valtrain, verbose=verbose)
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
             """reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, n_jobs=28,
                                   n_est=448, verbose=verbose)"""
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            y_valpred = reg.predict(X_valtest, verbose=verbose)
+            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
             """y_valpred = predict_stacked_regressors(X_valtest, reg_superlist, reg_final,
                         add_raw_features=False, verbose=verbose)"""
 
