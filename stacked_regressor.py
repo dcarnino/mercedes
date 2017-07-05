@@ -20,8 +20,8 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
         self.remove_bad0 = remove_bad0
         self.remove_bad1 = remove_bad1
 
-        self.n_folds0 = self.n_folds0
-        self.n_folds1 = self.n_folds1
+        self.n_folds0 = n_folds0
+        self.n_folds1 = n_folds1
 
         self.n_est0 = n_est0
         self.n_est1 = n_est1
