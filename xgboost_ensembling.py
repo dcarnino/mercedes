@@ -50,7 +50,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
 
         self.estimator_list_ = [ XGBRegressor(max_depth=self.max_depth, learning_rate=self.learning_rate,
                                       n_estimators=self.n_estimators, silent=self.silent,
-                                      objective=self.objective, booster=booster, n_jobs=self.n_jobs, nthread=self.nthread,
+                                      objective=self.objective, booster=self.booster, n_jobs=self.n_jobs, nthread=self.nthread,
                                       gamma=self.gamma, min_child_weight=self.min_child_weight, max_delta_step=self.max_delta_step,
                                       subsample=self.subsample, colsample_bytree=self.colsample_bytree, colsample_bylevel=self.colsample_bytree,
                                       reg_alpha=self.reg_alpha, reg_lambda=self.reg_lambda, scale_pos_weight=self.scale_pos_weight,
