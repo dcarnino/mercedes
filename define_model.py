@@ -37,13 +37,10 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     reg_layer = []
 
     ### linear models
-    reg_layer.append( ( "OLS", LinearRegression(fit_intercept=True, n_jobs=n_jobs) ) )
     reg_layer.append( ( "Ridge", Ridge(alpha=.5) ) )
     reg_layer.append( ( "Lasso", Lasso(alpha=.1) ) )
-    reg_layer.append( ( "Lars", Lars() ) )
     reg_layer.append( ( "ElasticNet", ElasticNet(alpha=1., l1_ratio=0.5) ) )
     reg_layer.append( ( "Huber", HuberRegressor() ) )
-    reg_layer.append( ( "RansacOLS", RANSACRegressor() ) )
     reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )
     reg_layer.append( ( "LinearSVR", LinearSVR() ) )
 
@@ -282,6 +279,9 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                                                           colsample_bytree=0.65, max_depth=5,
                                                                                                           nthread=n_jobs),
                                                                    n_estimators=n_est//20, learning_rate=0.9) ) )"""
+
+    ### ransac rf
+    reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )
 
     ### random forest
     # test all combinations

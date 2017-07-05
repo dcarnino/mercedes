@@ -22,6 +22,9 @@ from scipy import sparse
 from xgboost import XGBRegressor
 from xgboost_ensembling import XGBRegressor_ensembling
 from sklearn.decomposition import PCA, FastICA
+from sklearn.random_projection import GaussianRandomProjection
+from sklearn.random_projection import SparseRandomProjection
+from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_selection import SelectFromModel
 from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.stats import rankdata, spearmanr
@@ -37,114 +40,6 @@ from mca import MCA
 #==============================================
 #                   Functions
 #==============================================
-def fit_stacked_regressors(X_train, y_train, n_folds=5,
-                           add_raw_features=False, n_jobs=28,
-                           n_est=224, score_func=metrics.r2_score,
-                           remove_bad=0.2, verbose=1):
-    """
-    Regressify with two layers of regressors.
-    """
-
-    ### Init cross-validation K-folds
-    cv = model_selection.KFold(n_splits=n_folds, shuffle=True)
-
-    ### Train first layer of regressors
-    if verbose >= 1: print("Training 1st layer...")
-    fold_cnt = 0
-    X_oritrain, X2_train, y2_train = [], [], []
-    reg_superlist, score_superlist = [], []
-    for valtrain_index, valtest_index in cv.split(X_train):
-        fold_cnt += 1
-        if verbose >= 1: print("Processing fold number %d/%d..."%(fold_cnt,n_folds))
-        # split features and target labels
-        X_valtrain, X_valtest = X_train[valtrain_index], X_train[valtest_index]
-        y_valtrain, y_valtest = y_train[valtrain_index], y_train[valtest_index]
-        # fit classifiers
-        reg_list = define_model.create_first_layer(input_dim=X_valtrain.shape[1], n_jobs=n_jobs, n_est=n_est, verbose=verbose)
-        reg_superlist.append(reg_list)
-        score_list = []
-        X2_valpred = []
-        for reg in reg_list:
-            if verbose >= 2:
-                print("%s ... "%reg[0], end='')
-                sys.stdout.flush()
-            if 'MLP' in reg[0]:
-                reg[1].ntraintest(X_valtrain, y_valtrain)
-            else:
-                reg[1].fit(X_valtrain, y_valtrain)
-            y_valpred = reg[1].predict(X_valtest)
-            y_valpred[np.isnan(y_valpred)] = .5
-            X2_valpred.append(y_valpred.reshape((-1,1)))
-            score = score_func(y_valtest, y_valpred)
-            score_list.append(score)
-            if verbose >= 3: print("(%.04f) "%(score), end='')
-        if verbose >= 2: print("")
-        score_superlist.append(score_list)
-        # append to new features
-        X_oritrain.append(X_valtest)
-        X2_train.append(np.hstack(X2_valpred))
-        y2_train.extend(y_valtest)
-    X_oritrain = np.vstack(X_oritrain)
-    X2_train = np.vstack(X2_train)
-    y2_train = np.array(y2_train)
-
-    ### Transpose shape of reg list of list
-    reg_superlist = list(zip(*reg_superlist))
-    score_superlist = list(zip(*score_superlist))
-
-    ### Remove regs with too low mean score or too high std score
-    mean_scores = [np.mean(tsl) for tsl in score_superlist]
-    std_scores = [np.std(tsl) for tsl in score_superlist]
-    mean_thresh = np.percentile(mean_scores, int(remove_bad*100))
-    std_thresh = np.percentile(std_scores, int((1-remove_bad)*100))
-    for ix_reg, (reg_l, mean_s, std_s) in enumerate(zip(reg_superlist, mean_scores, std_scores)):
-        if mean_s > mean_thresh and std_s < std_thresh:
-            reg_superlist.pop(ix_reg)
-            X2_train = np.delete(X2_train, ix_reg, axis=1)
-
-    ### Init final layer
-    reg_final = define_model.create_final_layer(n_jobs=n_jobs, verbose=verbose)
-
-    ### Train final layer
-    if verbose >= 1: print("Training 2nd layer...")
-    if add_raw_features:
-            reg_final.fit(np.hstack([X_oritrain, X2_train]), y2_train)
-    else:
-            reg_final.fit(X2_train, y2_train)
-
-    return reg_superlist, reg_final
-
-
-
-
-
-def predict_stacked_regressors(X_test, reg_superlist, reg_final, add_raw_features=False, verbose=1):
-    """
-    Predict for two layers regressor.
-    """
-
-    ### Predict with both layers
-    # layer 1
-    if verbose >= 1: print("Predictions of 1st layer...")
-    X2_test = []
-    for reg_list in reg_superlist:
-        y_subpred = [reg[1].predict(X_test) for reg in reg_list]
-        y_subpred = sum(y_subpred)/float(len(reg_list))
-        X2_test.append(y_subpred.reshape((-1,1)))
-    X2_test = np.hstack(X2_test)
-    # layer 2
-    if verbose >= 1: print("Predictions of 2nd layer...")
-    if add_raw_features:
-        X3_test = np.hstack([X_test, X2_test])
-    else:
-        X3_test = X2_test
-    y_pred = reg_final.predict(X3_test)
-
-    return y_pred
-
-
-
-
 def drop_correlations(X, threshold=0.99):
     """
     Get highly correlated features inplace.
@@ -304,6 +199,8 @@ def main(verbose=1):
             ### add binary features
             X0_valtrain.append(Xb_valtrain)
             X0_valtest.append(Xb_valtest)
+            X1_valtrain.append(Xb_valtrain)
+            X1_valtest.append(Xb_valtest)
 
             ### add categorical features
             X1_valtrain.append(Xc_valtrain.values)
@@ -379,8 +276,10 @@ def main(verbose=1):
             X_valtrain.append(Xlogpca_valtrain)
             X_valtest.append(Xlogpca_valtest)"""
 
+            n_components=12
+
             ### PCA
-            pca = PCA(n_components=5)
+            pca = PCA(n_components=n_components)
             pca.fit(np.hstack(X0_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X0_valtrain))
             Xpca_valtest = pca.transform(np.hstack(X0_valtest))
@@ -388,12 +287,36 @@ def main(verbose=1):
             X1_valtest.append(Xpca_valtest)
 
             ### ICA
-            ica = FastICA(n_components=5)
+            ica = FastICA(n_components=n_components)
             ica.fit(np.hstack(X0_valtrain))
             Xica_valtrain = ica.transform(np.hstack(X0_valtrain))
             Xica_valtest = ica.transform(np.hstack(X0_valtest))
             X1_valtrain.append(Xica_valtrain)
             X1_valtest.append(Xica_valtest)
+
+            # tSVD
+            tsvd = TruncatedSVD(n_components=n_components)
+            tsvd.fit(np.hstack(X0_valtrain))
+            Xtsvd_valtrain = tsvd.transform(np.hstack(X0_valtrain))
+            Xtsvd_valtest = tsvd.transform(np.hstack(X0_valtest))
+            X1_valtrain.append(Xtsvd_valtrain)
+            X1_valtest.append(Xtsvd_valtest)
+
+            # SGRP
+            srp = SparseRandomProjection(n_components=n_components, dense_output=True)
+            srp.fit(np.hstack(X0_valtrain))
+            Xsrp_valtrain = srp.transform(np.hstack(X0_valtrain))
+            Xsrp_valtest = srp.transform(np.hstack(X0_valtest))
+            X1_valtrain.append(Xsrp_valtrain)
+            X1_valtest.append(Xsrp_valtest)
+
+            # GRP
+            grp = GaussianRandomProjection(n_components=n_components, eps=0.1)
+            grp.fit(np.hstack(X0_valtrain))
+            Xgrp_valtrain = grp.transform(np.hstack(X0_valtrain))
+            Xgrp_valtest = grp.transform(np.hstack(X0_valtest))
+            X1_valtrain.append(Xgrp_valtrain)
+            X1_valtest.append(Xgrp_valtest)
 
             ### Add specific columns
             X2_valtrain.append(Xb_valtrain[:,[297]])
@@ -468,22 +391,20 @@ def main(verbose=1):
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
-                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
+            """reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
                                     remove_bad0=0.1, remove_bad1=0.05,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
-            """reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
-                                  add_raw_features=False, n_jobs=28,
-                                  n_est=448, verbose=verbose)"""
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
+            reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+                                          learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
+            reg.fit(X1_valtrain, y_valtrain)
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
-            """y_valpred = predict_stacked_regressors(X_valtest, reg_superlist, reg_final,
-                        add_raw_features=False, verbose=verbose)"""
+            #y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
+            y_valpred = reg.predict(X1_valtest)
+
 
             ### Append preds and tests
             #y_valpred = rank_to_y_func(y_valpred)
