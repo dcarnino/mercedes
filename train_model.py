@@ -243,13 +243,13 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = False
+    leaderboard = True
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
         n_total = 1
     else:
-        n_total = 3
+        n_total = 20
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
@@ -442,13 +442,13 @@ def main(verbose=1):
             reg.fit(X_valtrain, y_valtrain)"""
             reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, n_jobs=28,
-                                  n_est1=448, n_est2=448, verbose=0)
+                                  n_est1=448, n_est2=448, verbose=verbose)
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
             #y_valpred = reg.predict(X_valtest)
             y_valpred = predict_stacked_regressors(X_valtest, reg_superlist, reg_final,
-                        add_raw_features=False, verbose=0)
+                        add_raw_features=False, verbose=verbose)
 
             ### Append preds and tests
             #y_valpred = rank_to_y_func(y_valpred)
