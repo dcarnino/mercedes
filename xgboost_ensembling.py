@@ -11,7 +11,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
 
     def __init__(self, n_folds=5, early_stopping_rounds=10, eval_metric=metrics.r2_score, predict_median=False,
                  max_depth=3, learning_rate=0.1, n_estimators=100000, silent=True,
-                 objective='reg:linear', booster='gbtree', n_jobs=1, nthread=None,
+                 objective='reg:linear', n_jobs=1, nthread=None,
                  gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
                  colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
                  scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None):
@@ -21,7 +21,6 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         self.n_estimators = n_estimators
         self.silent = silent
         self.objective = objective
-        self.booster = booster
         self.n_jobs = n_jobs
         self.nthread = nthread
         self.gamma = gamma
@@ -50,7 +49,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
 
         self.estimator_list_ = [ XGBRegressor(max_depth=self.max_depth, learning_rate=self.learning_rate,
                                       n_estimators=self.n_estimators, silent=self.silent,
-                                      objective=self.objective, booster=self.booster, n_jobs=self.n_jobs, nthread=self.nthread,
+                                      objective=self.objective, n_jobs=self.n_jobs, nthread=self.nthread,
                                       gamma=self.gamma, min_child_weight=self.min_child_weight, max_delta_step=self.max_delta_step,
                                       subsample=self.subsample, colsample_bytree=self.colsample_bytree, colsample_bylevel=self.colsample_bytree,
                                       reg_alpha=self.reg_alpha, reg_lambda=self.reg_lambda, scale_pos_weight=self.scale_pos_weight,
