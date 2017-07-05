@@ -201,7 +201,9 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
 
         check_is_fitted(self, ['reg0_superlist_', 'score0_superlist_', 'reg1_superlist_', 'score1_superlist_', 'reg_final_'])
 
-        X = check_array(X)
+        X0 = check_array(X0)
+        if X1 is not None: X1 = check_array(X1)
+        if X2 is not None: X2 = check_array(X2)
 
         ### Predict with both layers
         # layer 0
