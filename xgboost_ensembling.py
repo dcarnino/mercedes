@@ -47,7 +47,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         score = self.eval_metric(y_test, y_pred)
         if self.greater_is_better:
             score = -score
-        return 'custom metric', score
+        return 'custom_metric', score
 
 
     def fit(self, X, y, verbose=0):
