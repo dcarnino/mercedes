@@ -287,7 +287,7 @@ def main(verbose=1):
             X1_valtest.append(Xpca_valtest)
 
             ### ICA
-            ica = FastICA(n_components=n_components, max_iter=200, tol=0.001)
+            ica = FastICA(n_components=n_components, max_iter=200, tol=0.003)
             ica.fit(np.hstack(X0_valtrain))
             Xica_valtrain = ica.transform(np.hstack(X0_valtrain))
             Xica_valtest = ica.transform(np.hstack(X0_valtest))
