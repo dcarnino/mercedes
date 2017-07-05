@@ -9,7 +9,7 @@ import numpy as np
 class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
 
 
-    def __init__(self, n_folds=5, early_stopping_rounds=10, eval_metric=metrics.r2_score, predict_median=False,
+    def __init__(self, n_folds=5, early_stopping_rounds=10, eval_metric=metrics.r2_score, greater_is_better=True, predict_median=False,
                  max_depth=3, learning_rate=0.1, n_estimators=100000, silent=True,
                  objective='reg:linear', nthread=None,
                  gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
@@ -37,6 +37,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         self.n_folds = n_folds
         self.early_stopping_rounds = early_stopping_rounds
         self.eval_metric = eval_metric
+        self.greater_is_better = greater_is_better
         self.predict_median = predict_median
 
 
@@ -62,7 +63,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
             y_train, y_test = y[train_index], y[test_index]
 
             self.estimator_list_[fold_cnt].fit(X_train, y_train,
-                                              eval_set=[(X_test, y_test)], eval_metric=self.eval_metric,
+                                              eval_set=[(X_test, y_test)], eval_metric=model_selection.make_scorer(self.eval_metric, greater_is_better=self.greater_is_better),
                                               early_stopping_rounds=self.early_stopping_rounds, verbose=verbose)
 
 
