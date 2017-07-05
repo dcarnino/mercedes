@@ -244,7 +244,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = True
+    leaderboard = False
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -431,18 +431,18 @@ def main(verbose=1):
             ### Train model
             if verbose >= 4: print("Train model...")
             if fold_cnt+n_folds*ix_cv == 1:
-                reg_cv = model_selection.GridSearchCV(XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+                """reg_cv = model_selection.GridSearchCV(XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                                       learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28),
                                                       {'max_depth': [5, 7, 9], 'subsample': [.5, .65, .8], 'colsample_bytree': [.5, .65, .8], 'min_child_weight': [4, 10, 20]},
                                                       scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
                                                       n_jobs=1, cv=5, verbose=3, pre_dispatch='n_jobs', error_score='raise')
                 reg_cv.fit(X_valtrain, y_valtrain)
                 print(reg_cv.best_params_, reg_cv.best_score_)
-                reg = reg_cv.best_estimator_
+                reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
-                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
+            reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=6,
+                               learning_rate=0.02, subsample=0.7, colsample_bytree=0.7, max_depth=5, nthread=28)
             reg.fit(X_valtrain, y_valtrain)
             """reg_superlist, reg_final = fit_stacked_regressors(X_valtrain, y_valtrain,
                                   add_raw_features=False, n_jobs=28,
