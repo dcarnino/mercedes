@@ -244,7 +244,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = False
+    leaderboard = True
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -433,7 +433,7 @@ def main(verbose=1):
             if fold_cnt+n_folds*ix_cv == 1:
                 reg_cv = model_selection.GridSearchCV(XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                                       learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28),
-                                                      {'max_depth': [5, 7], 'subsample': [.65, .8], 'colsample_bytree': [.65, .8], 'learning_rate': [.02], 'min_child_weight': [1, 4, 20]},
+                                                      {'max_depth': [5, 7, 9], 'subsample': [.5, .65, .8], 'colsample_bytree': [.5, .65, .8], 'min_child_weight': [4, 10, 20]},
                                                       scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
                                                       n_jobs=1, cv=5, verbose=3, pre_dispatch='n_jobs', error_score='raise')
                 reg_cv.fit(X_valtrain, y_valtrain)
