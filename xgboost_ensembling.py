@@ -63,7 +63,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
             y_train, y_test = y[train_index], y[test_index]
 
             self.estimator_list_[fold_cnt].fit(X_train, y_train,
-                                              eval_set=[(X_test, y_test)], eval_metric=model_selection.make_scorer(self.eval_metric, greater_is_better=self.greater_is_better),
+                                              eval_set=[(X_test, y_test)], eval_metric=metrics.make_scorer(self.eval_metric, greater_is_better=self.greater_is_better),
                                               early_stopping_rounds=self.early_stopping_rounds, verbose=verbose)
 
 
