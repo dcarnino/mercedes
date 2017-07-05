@@ -117,6 +117,10 @@ def main(verbose=1):
     Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
     Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
 
+    # add new X0+X5 feature
+    Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
+    Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]
+
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
     pd.concat([Xc_train,Xc_test]).apply(lambda x: label_dict[x.name].fit(x.sort_values()))
@@ -278,7 +282,7 @@ def main(verbose=1):
 
             n_components=12
 
-            ### PCA
+            """### PCA
             pca = PCA(n_components=n_components)
             pca.fit(np.hstack(X0_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X0_valtrain))
@@ -316,7 +320,7 @@ def main(verbose=1):
             Xgrp_valtrain = grp.transform(np.hstack(X0_valtrain))
             Xgrp_valtest = grp.transform(np.hstack(X0_valtest))
             X1_valtrain.append(Xgrp_valtrain)
-            X1_valtest.append(Xgrp_valtest)
+            X1_valtest.append(Xgrp_valtest)"""
 
             ### Add specific columns
             X2_valtrain.append(Xb_valtrain[:,[297]])
