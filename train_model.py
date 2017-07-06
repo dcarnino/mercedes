@@ -132,7 +132,7 @@ def main(verbose=1):
     df_X5 = pd.DataFrame(np.array([Xc["X5"],y]).T, columns=["X5", "y"])
     df_X5["y"] = pd.to_numeric(df_X5["y"])
     X5_med = df_X5.groupby(["X5"])["y"].aggregate([np.nanmedian, 'size']).sort_values(by="nanmedian")
-    print(X0_med)
+    print(X5_med)
     raise(ValueError)
 
     # X0 grouped feature
