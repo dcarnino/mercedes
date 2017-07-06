@@ -339,7 +339,7 @@ def main(verbose=1):
 
                 ### change X0 med value based on new value
                 print(Xc_valtest.loc[:,"X0_med"][mask_test])
-                Xc_valtest.loc[:,"X0_med"] = Xc_valtest["X0"].apply(lambda x: X0_to_X0_med_mapping[x])
+                Xc_valtest.loc[:,"X0_med"] = Xc_valtest.loc[:,"X0"].apply(lambda x: X0_to_X0_med_mapping[x])
                 print(Xc_valtest.loc[:,"X0_med"][mask_test])
 
             ##### Extract features
