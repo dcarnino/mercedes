@@ -165,8 +165,9 @@ def main(verbose=1):
     dupe_df = pd.DataFrame(np.vstack([np.hstack([Xb_train.values, Xc_train.values]),np.hstack([Xb_test.values, Xc_test.values])]))
     dupe_ser = dupe_df.groupby(list(dupe_df.columns)).size()
     dupe_dict = dupe_ser.to_dict()
-    dupe_df["dupe_count"] = [dupe_dict[dupe_tuple] for dupe_tuple in dupe_df.itertuples(index=False)]
-    print(dupe_df["dupe_count"])
+    dupe_count_train = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_train.values, Xc_train.values])).itertuples(index=False)])
+    dupe_count_test = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_test.values, Xc_test.values])).itertuples(index=False)])
+
     raise(ValueError)
 
     # remove outlier
@@ -174,14 +175,17 @@ def main(verbose=1):
     Xc_train = Xc_train[y_train < 200]
     id_train = id_train[y_train < 200]
     y_train = y_train[y_train < 200]
+    dupe_count_train = dupe_count_train[y_train < 200]
 
     # check shapes
     if verbose >= 2:
         print("\tid_train shape: ", id_train.shape)
+        print("\tdupe_count_train shape: ", dupe_count_train.shape)
         print("\ty_train shape: ", y_train.shape)
         print("\tXc_train shape: ", Xc_train.shape)
         print("\tXb_train shape: ", Xb_train.shape)
         print("\tid_test shape: ", id_test.shape)
+        print("\tdupe_count_test shape: ", dupe_count_test.shape)
         print("\tXc_test shape: ", Xc_test.shape)
         print("\tXb_test shape: ", Xb_test.shape)
 
@@ -206,13 +210,14 @@ def main(verbose=1):
             if verbose >= 1: print("BIG CV: Processing fold number %d/%d..."%(fold_cnt+n_folds*ix_cv,n_folds*n_total), end='')
             # split features and target labels
             id_valtrain, id_valtest = id_train.iloc[valtrain_index].values, id_train.iloc[valtest_index].values
+            dupe_count_valtrain, dupe_count_valtest = dupe_count_train.iloc[valtrain_index].values, dupe_count_train.iloc[valtest_index].values
             y_valtrain, y_valtest = y_train.iloc[valtrain_index].values, y_train.iloc[valtest_index].values
             Xb_valtrain, Xb_valtest = Xb_train.iloc[valtrain_index].values, Xb_train.iloc[valtest_index].values
             Xc_valtrain, Xc_valtest = Xc_train.iloc[valtrain_index], Xc_train.iloc[valtest_index]
 
             if leaderboard:
-                id_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain = id_train.values, y_train.values, Xb_train.values, Xc_train
-                id_valtest, y_valtest, Xb_valtest, Xc_valtest = id_test.values, id_test.values, Xb_test.values, Xc_test
+                id_valtrain, dupe_count_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain = id_train.values, dupe_count_train.values, y_train.values, Xb_train.values, Xc_train
+                id_valtest, dupe_count_valtest, y_valtest, Xb_valtest, Xc_valtest = id_test.values, dupe_count_test.values, id_test.values, Xb_test.values, Xc_test
 
             ##### Transform target y
             """# with rank
@@ -326,6 +331,14 @@ def main(verbose=1):
             X0_valtest.append(Xid_valtest)
             X1_valtrain.append(Xid_valtrain)
             X1_valtest.append(Xid_valtest)
+
+            ### Add dupe_count
+            Xdpc_valtrain = np.array([dupe_count_valtrain]).T
+            Xdpc_valtest = np.array([dupe_count_valtest]).T
+            X0_valtrain.append(Xdpc_valtrain)
+            X0_valtest.append(Xdpc_valtest)
+            X1_valtrain.append(Xdpc_valtrain)
+            X1_valtest.append(Xdpc_valtest)
 
             """### MCA
             Xbool_valtrain = np.hstack([Xb_valtrain, Xohe_valtrain])
