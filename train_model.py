@@ -117,9 +117,30 @@ def main(verbose=1):
     Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
     Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
 
+    # replace test labels
+    missing_dict = {"p": "q", "av": "aa", "ae": "ab", "bb": "ab", "an": "c", "ag": "c"}
+    Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x])
+    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x])
+
     # add new X0+X5 feature
-    #Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
-    #Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]
+    Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
+    Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]
+
+    # get X0 insights
+    Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
+    y = pd.concat([y_train, y_train.iloc[:len(Xc_test.index)].apply(lambda x: np.nan)])
+    df_X0 = pd.DataFrame(np.array([Xc["X0"],y]).T, columns=["X0", "y"])
+    df_X0["y"] = pd.to_numeric(df_X0["y"])
+    X0_med = df_X0.groupby(["X0"])["y"].aggregate([np.nanmedian, 'size']).sort_values(by="nanmedian")
+
+    # global feature
+    new_feat_dict = {}
+    for cat in X0_med.index[:2]:
+        new_feat_dict[cat] = 'a'
+    for cat in X0_med.index[3:23]:
+        new_feat_dict[cat] = 'b'
+    for cat in X0_med.index[23:46]:
+        new_feat_dict[cat] = 'c'
 
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
@@ -144,7 +165,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = False
+    leaderboard = True
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -203,12 +224,12 @@ def main(verbose=1):
             ### add binary features
             X0_valtrain.append(Xb_valtrain)
             X0_valtest.append(Xb_valtest)
-            X1_valtrain.append(Xb_valtrain)
-            X1_valtest.append(Xb_valtest)
+            #X1_valtrain.append(Xb_valtrain)
+            #X1_valtest.append(Xb_valtest)
 
             ### add categorical features
-            X1_valtrain.append(Xc_valtrain.values)
-            X1_valtest.append(Xc_valtest.values)
+            #X1_valtrain.append(Xc_valtrain.values)
+            #X1_valtest.append(Xc_valtest.values)
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
@@ -231,8 +252,8 @@ def main(verbose=1):
             Xohe_valtest = ohe.transform(Xc_valtest).toarray()
             X0_valtrain.append(Xohe_valtrain)
             X0_valtest.append(Xohe_valtest)
-            X1_valtrain.append(Xohe_valtrain)
-            X1_valtest.append(Xohe_valtest)
+            #X1_valtrain.append(Xohe_valtrain)
+            #X1_valtest.append(Xohe_valtest)
 
             """### engineer new features based on correlations
             Xtr = np.hstack(X_valtrain)
@@ -293,7 +314,7 @@ def main(verbose=1):
             X1_valtest.append(Xpca_valtest)
 
             ### ICA
-            ica = FastICA(n_components=n_components, max_iter=200, tol=0.003)
+            ica = FastICA(n_components=n_components, max_iter=1000, tol=0.005)
             ica.fit(np.hstack(X0_valtrain))
             Xica_valtrain = ica.transform(np.hstack(X0_valtrain))
             Xica_valtest = ica.transform(np.hstack(X0_valtest))
@@ -397,19 +418,19 @@ def main(verbose=1):
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            """reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
-                                    remove_bad0=0.1, remove_bad1=0.05,
+            reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
+                                    remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
-            reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=0)
+            """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg.fit(X1_valtrain, y_valtrain)
+            reg.fit(X1_valtrain, y_valtrain)"""
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            #y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
-            y_valpred = reg.predict(X1_valtest)
+            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=0)
+            #y_valpred = reg.predict(X1_valtest)
 
 
             ### Append preds and tests
