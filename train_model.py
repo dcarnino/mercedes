@@ -320,22 +320,24 @@ def main(verbose=1):
             X0_train_labels = set(Xc_valtrain.values[:,0])
             X0_test_labels = set(Xc_valtest.values[:,0])
             X0_missing_labels = X0_test_labels - X0_train_labels
-            mask_test = np.array([xc in X0_missing_labels for xc in Xc_valtest.values[:,0]])
-            # truely split train test
-            y_impute_train = np.hstack([Xc_valtrain.values[:,0], Xc_valtest.values[:,0][~mask_test]])
-            X_impute_train = np.vstack([X_impute_traintrain, X_impute_traintest[~mask_test]])
-            X_impute_test = X_impute_traintest[mask_test]
+            if len(X0_missing_labels) > 0:
+                print("used")
+                mask_test = np.array([xc in X0_missing_labels for xc in Xc_valtest.values[:,0]])
+                # truely split train test
+                y_impute_train = np.hstack([Xc_valtrain.values[:,0], Xc_valtest.values[:,0][~mask_test]])
+                X_impute_train = np.vstack([X_impute_traintrain, X_impute_traintest[~mask_test]])
+                X_impute_test = X_impute_traintest[mask_test]
 
-            ### classify
-            clf = RandomForestClassifier(n_estimators=1120, n_jobs=28)
-            clf.fit(X_impute_train, y_impute_train)
-            y_impute_pred = clf.predict(X_impute_test)
+                ### classify
+                clf = RandomForestClassifier(n_estimators=1120, n_jobs=28)
+                clf.fit(X_impute_train, y_impute_train)
+                y_impute_pred = clf.predict(X_impute_test)
 
-            ### replace missing values with predicted values
-            Xc_valtest.iloc[:,0][mask_test] = y_impute_pred
+                ### replace missing values with predicted values
+                Xc_valtest.iloc[:,0][mask_test] = y_impute_pred
 
-            ### change X0 med value based on new value
-            Xc_valtest["X0_med"] = Xc_valtest["X0"].apply(lambda x: X0_to_X0_med_mapping[x])
+                ### change X0 med value based on new value
+                Xc_valtest["X0_med"] = Xc_valtest["X0"].apply(lambda x: X0_to_X0_med_mapping[x])
 
 
             ##### Extract features
