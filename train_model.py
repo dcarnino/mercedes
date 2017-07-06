@@ -168,8 +168,6 @@ def main(verbose=1):
     dupe_count_train = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_train.values, Xc_train.values])).itertuples(index=False)])
     dupe_count_test = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_test.values, Xc_test.values])).itertuples(index=False)])
 
-    raise(ValueError)
-
     # remove outlier
     Xb_train = Xb_train[y_train < 200]
     Xc_train = Xc_train[y_train < 200]
