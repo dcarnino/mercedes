@@ -245,7 +245,7 @@ def main(verbose=1):
             y_valtrain[y_valtrain < 0] = 0.
             y_valtrain[y_valtrain > 1] = 1.
 
-            ##### Process duplicate rows
+            """##### Process duplicate rows
             dupe_df = pd.DataFrame(np.hstack([Xb_valtrain, Xc_valtrain.values]))
             dupe_df["_fake"] = range(len(dupe_df.index))
             dupe_df = dupe_df[dupe_df[[col for col in dupe_df.columns if col!="_fake"]].duplicated(keep=False)]
@@ -261,7 +261,7 @@ def main(verbose=1):
             id_valtrain = np.delete(id_valtrain, drop_rows, axis=0)
             dupe_count_valtrain = np.delete(dupe_count_valtrain, drop_rows, axis=0)
             Xb_valtrain = np.delete(Xb_valtrain, drop_rows, axis=0)
-            Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[drop_rows])
+            Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[drop_rows])"""
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
@@ -337,13 +337,13 @@ def main(verbose=1):
             X1_valtrain.append(Xid_valtrain)
             X1_valtest.append(Xid_valtest)
 
-            ### Add dupe_count
+            """### Add dupe_count
             Xdpc_valtrain = np.array([dupe_count_valtrain]).T
             Xdpc_valtest = np.array([dupe_count_valtest]).T
             X0_valtrain.append(Xdpc_valtrain)
             X0_valtest.append(Xdpc_valtest)
             X1_valtrain.append(Xdpc_valtrain)
-            X1_valtest.append(Xdpc_valtest)
+            X1_valtest.append(Xdpc_valtest)"""
 
             """### MCA
             Xbool_valtrain = np.hstack([Xb_valtrain, Xohe_valtrain])
