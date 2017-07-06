@@ -224,7 +224,7 @@ def main(verbose=1):
             for dupes in dupe_list:
                 for ix_dupe, dupe in enumerate(dupes):
                     if ix_dupe == 0:
-                        y_valtrain[dupe] = np.mean(y_valtrain[dupes])
+                        y_valtrain[dupe] = np.median(y_valtrain[dupes])
                     else:
                         drop_rows.append(dupe)
             y_valtrain = np.delete(y_valtrain, drop_rows, axis=0)
@@ -370,7 +370,6 @@ def main(verbose=1):
             X1_valtest.append(Xgrp_valtest)"""
 
             ### Add specific columns
-            print(Xb_valtrain.shape)
             X2_valtrain.append(Xb_valtrain[:,[297]])
             X2_valtest.append(Xb_valtest[:,[297]])
             X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5]])
