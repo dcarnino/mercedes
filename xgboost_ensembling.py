@@ -127,7 +127,6 @@ class XGBClassifier_ensembling(BaseEstimator, ClassifierMixin):
         self.early_stopping_rounds = early_stopping_rounds
         self.eval_metric = eval_metric
         self.greater_is_better = greater_is_better
-        self.predict_median = predict_median
 
 
     def custom_eval(self, y_pred, dtest):
