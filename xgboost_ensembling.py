@@ -132,9 +132,7 @@ class XGBClassifier_ensembling(BaseEstimator, ClassifierMixin):
     def custom_eval(self, y_pred, dtest):
         y_test = dtest.get_label()
         assert len(y_test) == len(y_pred)
-        print(y_test[:3])
-        print(y_pred[:3])
-        score = self.eval_metric(y_test, y_pred)
+        score = self.eval_metric(y_test, np.argmax(y_pred, axis=1))
         if self.greater_is_better:
             score = -score
         return 'custom_metric', score
