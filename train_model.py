@@ -150,15 +150,23 @@ def main(verbose=1):
     Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
     Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]"""
 
-    # add new X0_med+X5 feature
+    """# add new X0_med+X5 feature
     Xc_train["X0_medX5"] = Xc_train["X0_med"] + "_" + Xc_train["X5"]
-    Xc_test["X0_medX5"] = Xc_test["X0_med"] + "_" + Xc_test["X5"]
+    Xc_test["X0_medX5"] = Xc_test["X0_med"] + "_" + Xc_test["X5"]"""
 
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
     pd.concat([Xc_train,Xc_test]).apply(lambda x: label_dict[x.name].fit(x.sort_values()))
     Xc_train = Xc_train.apply(lambda x: label_dict[x.name].transform(x))
     Xc_test = Xc_test.apply(lambda x: label_dict[x.name].transform(x))
+
+    # count duplicate rows
+    ##### Process duplicate rows
+    dupe_df = pd.DataFrame(np.vstack([np.hstack([Xb_train.values, Xc_train.values]),np.hstack([Xb_test.values, Xc_test.values])]))
+    dupe_df = dupe_df[dupe_df.duplicated(keep=False)]
+    dupe_ser = dupe_df.groupby(list(dupe_df.columns)).count()
+    print(dupe_ser)
+    raise(ValueError)
 
     # remove outlier
     Xb_train = Xb_train[y_train < 200]
