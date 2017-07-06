@@ -122,14 +122,20 @@ def main(verbose=1):
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
     Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
 
-    # get X0 insights
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
     y = pd.concat([y_train, y_train.iloc[:len(Xc_test.index)].apply(lambda x: np.nan)])
+    # get X0 insights
     df_X0 = pd.DataFrame(np.array([Xc["X0"],y]).T, columns=["X0", "y"])
     df_X0["y"] = pd.to_numeric(df_X0["y"])
     X0_med = df_X0.groupby(["X0"])["y"].aggregate([np.nanmedian, 'size']).sort_values(by="nanmedian")
+    # get X5 insights
+    df_X5 = pd.DataFrame(np.array([Xc["X5"],y]).T, columns=["X5", "y"])
+    df_X5["y"] = pd.to_numeric(df_X5["y"])
+    X5_med = df_X5.groupby(["X5"])["y"].aggregate([np.nanmedian, 'size']).sort_values(by="nanmedian")
+    print(X0_med)
+    raise(ValueError)
 
-    # global feature
+    # X0 grouped feature
     new_feat_dict = {}
     for cat in X0_med.index[:2]:
         new_feat_dict[cat] = 'a'
