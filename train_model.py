@@ -21,7 +21,7 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import model_selection, metrics
 from scipy import sparse
 from xgboost import XGBRegressor
-from xgboost_ensembling import XGBRegressor_ensembling
+from xgboost_ensembling import XGBRegressor_ensembling, XGBClassifier_ensembling
 from sklearn.decomposition import PCA, FastICA
 from sklearn.random_projection import GaussianRandomProjection
 from sklearn.random_projection import SparseRandomProjection
@@ -283,16 +283,6 @@ def main(verbose=1):
             Xb_valtrain = np.delete(Xb_valtrain, drop_rows, axis=0)
             Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[drop_rows])"""
 
-            ##### Extract features
-            if verbose >= 4: print("Extract features...")
-            X0_valtrain, X0_valtest = [], []
-            X1_valtrain, X1_valtest = [], []
-            X2_valtrain, X2_valtest = [], []
-
-            ### add categorical features
-            X1_valtrain.append(Xc_valtrain.values)
-            X1_valtest.append(Xc_valtest.values)
-
             ##### Replace test X0s not in train X0s
 
             ### save X0 to X0_med mapping
@@ -338,10 +328,16 @@ def main(verbose=1):
                 X_impute_train = np.vstack([X_impute_traintrain, X_impute_traintest[~mask_test]])
                 X_impute_test = X_impute_traintest[mask_test]
 
+                # encode labels
+                le = LabelEncoder()
+                y_impute_train = le.fit_transform(y_impute_train)
+
                 ### classify
-                clf = RandomForestClassifier(n_estimators=1120, n_jobs=28)
+                clf = XGBClassifier_ensembling(objective='multi:softmax', gamma=0, reg_lambda=1, min_child_weight=4,
+                                              learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
                 clf.fit(X_impute_train, y_impute_train)
                 y_impute_pred = clf.predict(X_impute_test)
+                y_impute_pred = le.inverse_transform(y_impute_pred)
 
                 ### replace missing values with predicted values
                 Xc_valtest.iloc[:,0][mask_test] = y_impute_pred
@@ -349,6 +345,16 @@ def main(verbose=1):
                 ### change X0 med value based on new value
                 Xc_valtest.loc[:,"X0_med"] = Xc_valtest.loc[:,"X0"].apply(lambda x: X0_to_X0_med_mapping[x])
 
+
+            ##### Extract features
+            if verbose >= 4: print("Extract features...")
+            X0_valtrain, X0_valtest = [], []
+            X1_valtrain, X1_valtest = [], []
+            X2_valtrain, X2_valtest = [], []
+
+            ### add categorical features
+            X1_valtrain.append(Xc_valtrain.values)
+            X1_valtest.append(Xc_valtest.values)
 
             ### add binary features
             X0_valtrain.append(Xb_valtrain)
