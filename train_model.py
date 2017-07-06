@@ -173,6 +173,10 @@ def main(verbose=1):
     Xc_train["X0_medX5"] = Xc_train["X0_med"] + "_" + Xc_train["X5"]
     Xc_test["X0_medX5"] = Xc_test["X0_med"] + "_" + Xc_test["X5"]"""
 
+    # add new X0_med+X5_med feature
+    Xc_train["X0_medX5_med"] = Xc_train["X0_med"] + "_" + Xc_train["X5_med"]
+    Xc_test["X0_medX5_med"] = Xc_test["X0_med"] + "_" + Xc_test["X5_med"]
+
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
     pd.concat([Xc_train,Xc_test]).apply(lambda x: label_dict[x.name].fit(x.sort_values()))
