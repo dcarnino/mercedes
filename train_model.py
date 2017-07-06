@@ -163,10 +163,11 @@ def main(verbose=1):
     # count duplicate rows
     ##### Process duplicate rows
     dupe_df = pd.DataFrame(np.vstack([np.hstack([Xb_train.values, Xc_train.values]),np.hstack([Xb_test.values, Xc_test.values])]))
-    dupe_df = dupe_df[dupe_df.duplicated(keep=False)]
     dupe_ser = dupe_df.groupby(list(dupe_df.columns)).size()
-    print(dupe_ser)
-    print(dupe_ser.to_dict())
+    dupe_dict = dupe_ser.to_dict()
+    print(dupe_dict)
+    dupe_df["dupe_count"] = dupe_df.apply(dupe_dict)
+    print(dupe_df["dupe_count"])
     raise(ValueError)
 
     # remove outlier
