@@ -122,9 +122,9 @@ def main(verbose=1):
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
     Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
 
-    # add new X0+X5 feature
+    """# add new X0+X5 feature
     Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
-    Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]
+    Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]"""
 
     # get X0 insights
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
@@ -219,9 +219,16 @@ def main(verbose=1):
             dupe_df = pd.DataFrame(np.hstack([Xb_valtrain, Xc_valtrain.values]))
             dupe_df["_fake"] = range(len(dupe_df.index))
             dupe_df = dupe_df[dupe_df[[col for col in dupe_df.columns if col!="_fake"]].duplicated(keep=False)]
-            dupe_df = dupe_df.groupby([col for col in dupe_df.columns if col!="_fake"]).apply(lambda x: list(x.index)).tolist()
-            print(dupe_df)
-            raise(ValueError)
+            dupe_list = dupe_df.groupby([col for col in dupe_df.columns if col!="_fake"]).apply(lambda x: list(x.index)).tolist()
+            for dupes in dupe_list:
+                for ix_dupe, dupe in enumerate(dupes):
+                    if ix_dupe == 0:
+                        y_valtrain[dupe] = np.mean(y_valtrain[dupes])
+                    else:
+                        y_valtrain = np.delete(y_valtrain, dupe)
+                        id_valtrain = np.delete(id_valtrain, dupe)
+                        Xb_valtrain = np.delete(Xb_valtrain, dupe)
+                        Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[dupe])
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
@@ -289,13 +296,13 @@ def main(verbose=1):
             X_valtrain.append(np.hstack(Xcorr_valtrain))
             X_valtest.append(np.hstack(Xcorr_valtest))"""
 
-            ### Add id
+            """### Add id
             Xid_valtrain = np.array([id_valtrain]).T
             Xid_valtest = np.array([id_valtest]).T
             X0_valtrain.append(Xid_valtrain)
             X0_valtest.append(Xid_valtest)
             X1_valtrain.append(Xid_valtrain)
-            X1_valtest.append(Xid_valtest)
+            X1_valtest.append(Xid_valtest)"""
 
             """### MCA
             Xbool_valtrain = np.hstack([Xb_valtrain, Xohe_valtrain])
