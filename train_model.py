@@ -321,7 +321,6 @@ def main(verbose=1):
             X0_test_labels = set(Xc_valtest.values[:,0])
             X0_missing_labels = X0_test_labels - X0_train_labels
             if len(X0_missing_labels) > 0:
-                print("used")
                 mask_test = np.array([xc in X0_missing_labels for xc in Xc_valtest.values[:,0]])
                 # truely split train test
                 y_impute_train = np.hstack([Xc_valtrain.values[:,0], Xc_valtest.values[:,0][~mask_test]])
@@ -334,10 +333,12 @@ def main(verbose=1):
                 y_impute_pred = clf.predict(X_impute_test)
 
                 ### replace missing values with predicted values
+                print(Xc_valtest.iloc[:,0][mask_test])
                 Xc_valtest.iloc[:,0][mask_test] = y_impute_pred
+                print(Xc_valtest.iloc[:,0][mask_test])
 
                 ### change X0 med value based on new value
-                Xc_valtest["X0_med"] = Xc_valtest["X0"].apply(lambda x: X0_to_X0_med_mapping[x])
+                Xc_valtest.loc[:,"X0_med"] = Xc_valtest["X0"].apply(lambda x: X0_to_X0_med_mapping[x])
 
 
             ##### Extract features
