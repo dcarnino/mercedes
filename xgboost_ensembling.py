@@ -98,7 +98,8 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
 class XGBClassifier_ensembling(BaseEstimator, ClassifierMixin):
 
 
-    def __init__(self, n_folds=5, early_stopping_rounds=10, eval_metric=metrics.f1_score, greater_is_better=True,
+    def __init__(self, n_folds=5, early_stopping_rounds=10,
+                 eval_metric=(lambda y_true, y_pred: metrics.f1_score(y_true, y_pred, average='weighted')), greater_is_better=True,
                  max_depth=3, learning_rate=0.1, n_estimators=100000, silent=True,
                  objective='multi:softmax', nthread=None,
                  gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
