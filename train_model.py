@@ -217,9 +217,10 @@ def main(verbose=1):
 
             ##### Process duplicate rows
             dupe_df = pd.DataFrame(np.hstack([Xb_valtrain, Xc_valtrain.values]))
+            dupe_df["3000"] = range(len(dupe_df.index))
             dupe_df = dupe_df[dupe_df.duplicated(keep=False)]
             print(dupe_df.head())
-            dupe_df = dupe_df.groupby(dupe_df.columns).apply(lambda x: list(x.index))
+            dupe_df = dupe_df.groupby([col for col in dupe_df.columns if col!="3000"]).apply(lambda x: list(x.index))
             print(dupe_df)
             raise(ValueError)
 
