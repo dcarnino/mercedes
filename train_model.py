@@ -283,6 +283,10 @@ def main(verbose=1):
             Xb_valtrain = np.delete(Xb_valtrain, drop_rows, axis=0)
             Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[drop_rows])"""
 
+            ### add categorical features
+            X1_valtrain.append(Xc_valtrain.values)
+            X1_valtest.append(Xc_valtest.values)
+
             ##### Replace test X0s not in train X0s
 
             ### save X0 to X0_med mapping
@@ -352,11 +356,6 @@ def main(verbose=1):
             ################################ TO REMOVE
             X1_valtrain.append(Xb_valtrain)
             X1_valtest.append(Xb_valtest)
-
-            ################################ TO REMOVE
-            ### add categorical features
-            X1_valtrain.append(Xc_valtrain.values)
-            X1_valtest.append(Xc_valtest.values)
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
