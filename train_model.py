@@ -228,9 +228,9 @@ def main(verbose=1):
                     else:
                         drop_rows.append(dupe)
             print(Xb_valtrain.shape)
-            y_valtrain = np.delete(y_valtrain, dupe)
-            id_valtrain = np.delete(id_valtrain, dupe)
-            Xb_valtrain = np.delete(Xb_valtrain, dupe)
+            y_valtrain = np.delete(y_valtrain, dupe, axis=0)
+            id_valtrain = np.delete(id_valtrain, dupe, axis=0)
+            Xb_valtrain = np.delete(Xb_valtrain, dupe, axis=0)
             Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[dupe])
             print(Xb_valtrain.shape)
 
