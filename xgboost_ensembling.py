@@ -148,7 +148,7 @@ class XGBClassifier_ensembling(BaseEstimator, ClassifierMixin):
                                       gamma=self.gamma, min_child_weight=self.min_child_weight, max_delta_step=self.max_delta_step,
                                       subsample=self.subsample, colsample_bytree=self.colsample_bytree, colsample_bylevel=self.colsample_bytree,
                                       reg_alpha=self.reg_alpha, reg_lambda=self.reg_lambda, scale_pos_weight=self.scale_pos_weight,
-                                      base_score=self.base_score, missing=self.missing, num_class=len(set(y))) for fold in range(self.n_folds)]
+                                      base_score=self.base_score, missing=self.missing) for fold in range(self.n_folds)]
 
         cv = model_selection.KFold(n_splits=self.n_folds, shuffle=True)
 
