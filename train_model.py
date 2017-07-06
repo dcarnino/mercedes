@@ -105,7 +105,7 @@ def main(verbose=1):
     id_test = df_test["ID"].astype(int)
     Xb_test = df_test.iloc[:,9:]
     Xc_test = df_test.iloc[:,1:9]
-    """# probing
+    # probing
     df_probing = leaderboard_probing_data()
     df_probing = df_probing.iloc[:13,:]
     id_probing = id_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
@@ -115,7 +115,7 @@ def main(verbose=1):
     id_train = pd.concat([id_train, id_probing], axis=0).reset_index(drop=True)
     y_train = pd.concat([y_train, y_probing], axis=0).reset_index(drop=True)
     Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
-    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)"""
+    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
 
     """# replace test labels
     missing_dict = {"p": "q", "av": "aa", "ae": "ab", "bb": "ab", "an": "c", "ag": "c"}
@@ -295,10 +295,10 @@ def main(verbose=1):
             X1_valtrain.append(Xb_valtrain)
             X1_valtest.append(Xb_valtest)
 
-            ################################ TO REMOVE
+            """################################ TO REMOVE
             ### add categorical features
             X1_valtrain.append(Xc_valtrain.values)
-            X1_valtest.append(Xc_valtest.values)
+            X1_valtest.append(Xc_valtest.values)"""
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
