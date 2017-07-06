@@ -119,8 +119,8 @@ def main(verbose=1):
 
     # replace test labels
     missing_dict = {"p": "q", "av": "aa", "ae": "ab", "bb": "ab", "an": "c", "ag": "c"}
-    Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x])
-    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x])
+    Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
+    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
 
     # add new X0+X5 feature
     Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
