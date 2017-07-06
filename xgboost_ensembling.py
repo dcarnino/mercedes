@@ -159,6 +159,15 @@ class XGBClassifier_ensembling(BaseEstimator, ClassifierMixin):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
+            # remove new labels from validation set
+            train_labels = set(y_train)
+            test_labels = set(y_test)
+            new_labels = test_labels - train_labels
+            if len(new_labels) > 0:
+                new_mask = np.array([yt in new_labels for yt in y_test])
+                X_test = X_test[~new_mask]
+                y_test = y_test[~new_mask]
+
             self.estimator_list_[fold_cnt].fit(X_train, y_train,
                                               eval_set=[(X_test, y_test)], eval_metric=(lambda y_pred, dtest: self.custom_eval(y_pred, dtest)),
                                               early_stopping_rounds=self.early_stopping_rounds, verbose=verbose)
