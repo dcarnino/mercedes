@@ -227,10 +227,12 @@ def main(verbose=1):
                         y_valtrain[dupe] = np.mean(y_valtrain[dupes])
                     else:
                         drop_rows.append(dupe)
+            print(Xb_valtrain.shape)
             y_valtrain = np.delete(y_valtrain, dupe)
             id_valtrain = np.delete(id_valtrain, dupe)
             Xb_valtrain = np.delete(Xb_valtrain, dupe)
             Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[dupe])
+            print(Xb_valtrain.shape)
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
@@ -370,6 +372,7 @@ def main(verbose=1):
             X1_valtest.append(Xgrp_valtest)"""
 
             ### Add specific columns
+            print(Xb_valtrain.shape)
             X2_valtrain.append(Xb_valtrain[:,[297]])
             X2_valtest.append(Xb_valtest[:,[297]])
             X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5,8]])
@@ -424,10 +427,10 @@ def main(verbose=1):
             if verbose >= 5:
                 print("\tX0_valtrain shape: ", X0_valtrain.shape)
                 print("\tX0_valtest shape: ", X0_valtest.shape)
-                print("\tX0_valtrain shape: ", X1_valtrain.shape)
-                print("\tX0_valtest shape: ", X1_valtest.shape)
-                print("\tX0_valtrain shape: ", X2_valtrain.shape)
-                print("\tX0_valtest shape: ", X2_valtest.shape)
+                print("\tX1_valtrain shape: ", X1_valtrain.shape)
+                print("\tX1_valtest shape: ", X1_valtest.shape)
+                print("\tX2_valtrain shape: ", X2_valtrain.shape)
+                print("\tX2_valtest shape: ", X2_valtest.shape)
 
             ### Train model
             if verbose >= 4: print("Train model...")
