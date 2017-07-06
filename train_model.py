@@ -220,15 +220,17 @@ def main(verbose=1):
             dupe_df["_fake"] = range(len(dupe_df.index))
             dupe_df = dupe_df[dupe_df[[col for col in dupe_df.columns if col!="_fake"]].duplicated(keep=False)]
             dupe_list = dupe_df.groupby([col for col in dupe_df.columns if col!="_fake"]).apply(lambda x: list(x.index)).tolist()
+            drop_rows = []
             for dupes in dupe_list:
                 for ix_dupe, dupe in enumerate(dupes):
                     if ix_dupe == 0:
                         y_valtrain[dupe] = np.mean(y_valtrain[dupes])
                     else:
-                        y_valtrain = np.delete(y_valtrain, dupe)
-                        id_valtrain = np.delete(id_valtrain, dupe)
-                        Xb_valtrain = np.delete(Xb_valtrain, dupe)
-                        Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[dupe])
+                        drop_rows.append(dupe)
+            y_valtrain = np.delete(y_valtrain, dupe)
+            id_valtrain = np.delete(id_valtrain, dupe)
+            Xb_valtrain = np.delete(Xb_valtrain, dupe)
+            Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[dupe])
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
