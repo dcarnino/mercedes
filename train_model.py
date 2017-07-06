@@ -122,9 +122,9 @@ def main(verbose=1):
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
     Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
 
-    # add new X0+X5 feature
+    """# add new X0+X5 feature
     Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
-    Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]
+    Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]"""
 
     # get X0 insights
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
@@ -143,8 +143,12 @@ def main(verbose=1):
         new_feat_dict[cat] = 'c'
     for cat in X0_med.index[30:46]:
         new_feat_dict[cat] = 'd'
-    for cat in X0_med.index[46:]:
+    for cat in X0_med.index[46:47]:
         new_feat_dict[cat] = 'e'
+    for cat in X0_med.index[47:]:
+        new_feat_dict[cat] = 'f'
+    Xc_train["X0_med"] = Xc_train["X0"].apply(lambda x: new_feat_dict[x])
+    Xc_test["X0_med"] = Xc_test["X0"].apply(lambda x: new_feat_dict[x])
 
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
