@@ -338,8 +338,9 @@ def main(verbose=1):
                 print(Xc_valtest.iloc[:,0][mask_test])
 
                 ### change X0 med value based on new value
+                print(Xc_valtest.loc[:,"X0_med"][mask_test])
                 Xc_valtest.loc[:,"X0_med"] = Xc_valtest["X0"].apply(lambda x: X0_to_X0_med_mapping[x])
-
+                print(Xc_valtest.loc[:,"X0_med"][mask_test])
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
