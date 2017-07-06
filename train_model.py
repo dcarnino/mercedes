@@ -171,9 +171,11 @@ def main(verbose=1):
     print(id_train.head(2))
     print(id_train.tail(2))
     print(len(id_train))
+    print(type(id_train))
     print(dupe_count_train.head(2))
     print(dupe_count_train.tail(2))
     print(len(dupe_count_train))
+    print(type(dupe_count_train))
 
 
     # remove outlier
