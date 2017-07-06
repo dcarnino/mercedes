@@ -348,8 +348,8 @@ def main(verbose=1):
             ### Add specific columns
             X2_valtrain.append(Xb_valtrain[:,[297]])
             X2_valtest.append(Xb_valtest[:,[297]])
-            X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5]])
-            X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,5]])
+            X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5,8]])
+            X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,5,8]])
 
             ##### Merge
 

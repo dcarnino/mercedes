@@ -120,7 +120,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                                                           learning_rate=0.02, subsample=0.65,
                                                                                                           colsample_bytree=0.65, max_depth=5,
                                                                                                           nthread=n_jobs),
-                                                                   n_estimators=n_est//20, learning_rate=0.9) ) )
+                                                                   n_estimators=n_est//100, learning_rate=0.9) ) )
 
     ### random forest
     # test all combinations
@@ -243,7 +243,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
     glo = 'glorot_uniform'
     he = 'he_normal'
     k_n_layers_list = np.array((2, 3)) * 1
-    k_n_units_list = np.array((256, 766)) // 2
+    k_n_units_list = np.array((128, 256)) // 2
     k_dropout_list = (0.1, 0.1)
     k_optimizer_list = (add, add)
     k_init_list = (glo, glo)
@@ -336,14 +336,14 @@ def create_layer2(n_jobs=28, objective='reg:logistic', verbose=1):
     """
     #reg_layer = XGBRegressor_ensembling(objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
     #                                    learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs)
-    reg_final_layer = model_selection.GridSearchCV(XGBRegressor_ensembling(objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
+    reg_layer = model_selection.GridSearchCV(XGBRegressor_ensembling(objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
                                                    learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs),
                                                    {'max_depth': [5, 7, 9], 'subsample': [.5, .65, .8], 'colsample_bytree': [.5, .65, .8], 'min_child_weight': [4, 10, 20]},
                                                    scoring=metrics.make_scorer(metrics.r2_score, greater_is_better=True),
                                                    n_jobs=1, cv=5, verbose=verbose, pre_dispatch='n_jobs', error_score='raise')
-    #reg_final_layer = XGBRegressor(n_estimators=n_est, objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
+    #reg_layer = XGBRegressor(n_estimators=n_est, objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
     #                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs)
-    #reg_final_layer = AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs),
+    #reg_layer = AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs),
     #                                    n_estimators=5, learning_rate=0.8)
-    #reg_final_layer = ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs)
+    #reg_layer = ExtraTreesRegressor(n_estimators=1000, bootstrap=False, n_jobs=n_jobs)
     return reg_layer
