@@ -105,7 +105,7 @@ def main(verbose=1):
     id_test = df_test["ID"].astype(int)
     Xb_test = df_test.iloc[:,9:]
     Xc_test = df_test.iloc[:,1:9]
-    # probing
+    """# probing
     df_probing = leaderboard_probing_data()
     df_probing = df_probing.iloc[:13,:]
     id_probing = id_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
@@ -115,24 +115,21 @@ def main(verbose=1):
     id_train = pd.concat([id_train, id_probing], axis=0).reset_index(drop=True)
     y_train = pd.concat([y_train, y_probing], axis=0).reset_index(drop=True)
     Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
-    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
+    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)"""
 
     """# replace test labels
     missing_dict = {"p": "q", "av": "aa", "ae": "ab", "bb": "ab", "an": "c", "ag": "c"}
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
     Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
 
+    ### get Xx insights
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
     y = pd.concat([y_train, y_train.iloc[:len(Xc_test.index)].apply(lambda x: np.nan)])
+
     # get X0 insights
     df_X0 = pd.DataFrame(np.array([Xc["X0"],y]).T, columns=["X0", "y"])
     df_X0["y"] = pd.to_numeric(df_X0["y"])
     X0_med = df_X0.groupby(["X0"])["y"].aggregate([np.nanmedian, 'size']).sort_values(by="nanmedian")
-    # get X5 insights
-    df_X5 = pd.DataFrame(np.array([Xc["X5"],y]).T, columns=["X5", "y"])
-    df_X5["y"] = pd.to_numeric(df_X5["y"])
-    X5_med = df_X5.groupby(["X5"])["y"].aggregate([np.nanmedian, 'size']).sort_values(by="nanmedian")
-
     # X0 grouped feature
     new_feat_dict = {}
     for cat in X0_med.index[:2]:
@@ -150,6 +147,10 @@ def main(verbose=1):
     Xc_train["X0_med"] = Xc_train["X0"].apply(lambda x: new_feat_dict[x])
     Xc_test["X0_med"] = Xc_test["X0"].apply(lambda x: new_feat_dict[x])
 
+    # get X5 insights
+    df_X5 = pd.DataFrame(np.array([Xc["X5"],y]).T, columns=["X5", "y"])
+    df_X5["y"] = pd.to_numeric(df_X5["y"])
+    X5_med = df_X5.groupby(["X5"])["y"].aggregate([np.nanmedian, 'size']).sort_values(by="nanmedian")
     # X5 grouped feature
     new_feat_dict = {}
     for cat in X5_med.index[:2]:
@@ -173,9 +174,9 @@ def main(verbose=1):
     Xc_train["X0_medX5"] = Xc_train["X0_med"] + "_" + Xc_train["X5"]
     Xc_test["X0_medX5"] = Xc_test["X0_med"] + "_" + Xc_test["X5"]"""
 
-    # add new X0_med+X5_med feature
+    """# add new X0_med+X5_med feature
     Xc_train["X0_medX5_med"] = Xc_train["X0_med"] + "_" + Xc_train["X5_med"]
-    Xc_test["X0_medX5_med"] = Xc_test["X0_med"] + "_" + Xc_test["X5_med"]
+    Xc_test["X0_medX5_med"] = Xc_test["X0_med"] + "_" + Xc_test["X5_med"]"""
 
     # string to numerical
     label_dict = defaultdict(LabelEncoder)
