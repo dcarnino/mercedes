@@ -117,8 +117,8 @@ def main(verbose=1):
     Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
     Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
 
-    # replace test labels
-    """missing_dict = {"p": "q", "av": "aa", "ae": "ab", "bb": "ab", "an": "c", "ag": "c"}
+    """# replace test labels
+    missing_dict = {"p": "q", "av": "aa", "ae": "ab", "bb": "ab", "an": "c", "ag": "c"}
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
     Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
 
@@ -242,6 +242,8 @@ def main(verbose=1):
                 Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x]).values
                 Xmeans_valtrain.append(Xm_valtrain.reshape((-1,1)))
                 Xmeans_valtest.append(Xm_valtest.reshape((-1,1)))
+            X0_valtrain.append(np.hstack(Xmeans_valtrain))
+            X0_valtest.append(np.hstack(Xmeans_valtest))
             X1_valtrain.append(np.hstack(Xmeans_valtrain))
             X1_valtest.append(np.hstack(Xmeans_valtest))
 
@@ -305,7 +307,7 @@ def main(verbose=1):
 
             n_components=12
 
-            ### PCA
+            """### PCA
             pca = PCA(n_components=n_components)
             pca.fit(np.hstack(X0_valtrain))
             Xpca_valtrain = pca.transform(np.hstack(X0_valtrain))
@@ -343,7 +345,7 @@ def main(verbose=1):
             Xgrp_valtrain = grp.transform(np.hstack(X0_valtrain))
             Xgrp_valtest = grp.transform(np.hstack(X0_valtest))
             X1_valtrain.append(Xgrp_valtrain)
-            X1_valtest.append(Xgrp_valtest)
+            X1_valtest.append(Xgrp_valtest)"""
 
             ### Add specific columns
             X2_valtrain.append(Xb_valtrain[:,[297]])
