@@ -168,22 +168,12 @@ def main(verbose=1):
     dupe_count_train = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_train.values, Xc_train.values])).itertuples(index=False)]).rename("dupe_count")
     dupe_count_test = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_test.values, Xc_test.values])).itertuples(index=False)]).rename("dupe_count")
 
-    print(id_train.head(2))
-    print(id_train.tail(2))
-    print(len(id_train))
-    print(type(id_train))
-    print(dupe_count_train.head(2))
-    print(dupe_count_train.tail(2))
-    print(len(dupe_count_train))
-    print(type(dupe_count_train))
-
-
     # remove outlier
     Xb_train = Xb_train[y_train < 200]
     Xc_train = Xc_train[y_train < 200]
     id_train = id_train[y_train < 200]
-    y_train = y_train[y_train < 200]
     dupe_count_train = dupe_count_train[y_train < 200]
+    y_train = y_train[y_train < 200]
 
     # check shapes
     if verbose >= 2:
