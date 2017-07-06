@@ -227,12 +227,10 @@ def main(verbose=1):
                         y_valtrain[dupe] = np.mean(y_valtrain[dupes])
                     else:
                         drop_rows.append(dupe)
-            print(Xb_valtrain.shape)
             y_valtrain = np.delete(y_valtrain, drop_rows, axis=0)
             id_valtrain = np.delete(id_valtrain, drop_rows, axis=0)
             Xb_valtrain = np.delete(Xb_valtrain, drop_rows, axis=0)
             Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[drop_rows])
-            print(Xb_valtrain.shape)
 
             ##### Extract features
             if verbose >= 4: print("Extract features...")
@@ -375,8 +373,10 @@ def main(verbose=1):
             print(Xb_valtrain.shape)
             X2_valtrain.append(Xb_valtrain[:,[297]])
             X2_valtest.append(Xb_valtest[:,[297]])
-            X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5,8]])
-            X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,5,8]])
+            X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5]])
+            X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,5]])
+            #X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5,8]])
+            #X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,5,8]])
 
             ##### Merge
 
