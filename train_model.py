@@ -26,6 +26,7 @@ from sklearn.random_projection import GaussianRandomProjection
 from sklearn.random_projection import SparseRandomProjection
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_selection import SelectFromModel
+from sklearn.ensemble import RandomForestClassifier
 from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.stats import rankdata, spearmanr
 import subprocess
@@ -281,6 +282,63 @@ def main(verbose=1):
             Xb_valtrain = np.delete(Xb_valtrain, drop_rows, axis=0)
             Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[drop_rows])"""
 
+            ##### Replace test X0s not in train X0s
+
+            ### save X0 to X0_med mapping
+            Xc = pd.concat([Xc_valtrain, Xc_valtest], axis=0).reset_index(drop=True)
+            X0_to_X0_med_mapping = {}
+            for key, val in zip(Xc["X0"], Xc["X0_med"]):
+                X0_to_X0_med_mapping[key] = val
+
+            ### get training set
+            # means
+            Xmeans_valtrain, Xmeans_valtest = [], []
+            for cat_col in Xc_valtrain.columns[1:]:
+                cat_means = defaultdict(lambda: y_valtrain.mean())
+                diff_cat = set(Xc_valtrain[cat_col])
+                for cat in diff_cat:
+                    cat_means[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].mean()
+                Xm_valtrain = Xc_valtrain[cat_col].apply(lambda x: cat_means[x]).values
+                Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x]).values
+                Xmeans_valtrain.append(Xm_valtrain.reshape((-1,1)))
+                Xmeans_valtest.append(Xm_valtest.reshape((-1,1)))
+            Xmeans_valtrain = np.hstack(Xmeans_valtrain)
+            Xmeans_valtest = np.hstack(Xmeans_valtest)
+            # ohe
+            ohe = OneHotEncoder(handle_unknown='ignore')
+            ohe.fit(Xc_valtrain.values[:,1:])
+            Xohe_valtrain = ohe.transform(Xc_valtrain.values[:,1:]).toarray()
+            Xohe_valtest = ohe.transform(Xc_valtest.values[:,1:]).toarray()
+            # id
+            Xid_valtrain = np.array([id_valtrain]).T
+            Xid_valtest = np.array([id_valtest]).T
+            # merge
+            X_impute_traintrain = np.hstack([Xc_valtrain.values[:,1:], Xohe_valtrain, Xmeans_valtrain, Xb_valtrain, Xid_valtrain])
+            X_impute_traintest = np.hstack([Xc_valtest.values[:,1:], Xohe_valtest, Xmeans_valtest, Xb_valtest, Xid_valtest])
+
+            ### get target values
+            X0_train_labels = set(Xc_valtrain.values[:,0])
+            X0_test_labels = set(Xc_valtest.values[:,0])
+            X0_missing_labels = X0_test_labels - X0_train_labels
+            mask_test = np.array([xc in X0_missing_labels for xc in Xc_valtest.values[:,0]])
+            # truely split train test
+            y_impute_train = np.hstack([Xc_valtrain.values[:,0], Xc_valtest.values[:,0][~mask_test]])
+            X_impute_train = np.vstack([X_impute_traintrain, X_impute_traintest[~mask_test]])
+            X_impute_test = X_impute_traintest[mask_test]
+            id_impute_train = np.hstack(id_valtrain, id_valtest)
+
+            ### classify
+            clf = RandomForestClassifier(n_estimators=1120, n_jobs=28)
+            clf.fit(X_impute_train, y_impute_train)
+            y_impute_pred = clf.predict(X_impute_test)
+
+            ### replace missing values with predicted values
+            Xc_valtest.iloc[:,0][mask_test] = y_impute_pred
+
+            ### change X0 med value based on new value
+            Xc_valtest["X0_med"] = Xc_valtest["X0"].apply(lambda x: X0_to_X0_med_mapping[x])
+
+
             ##### Extract features
             if verbose >= 4: print("Extract features...")
             X0_valtrain, X0_valtest = [], []
@@ -295,10 +353,10 @@ def main(verbose=1):
             X1_valtrain.append(Xb_valtrain)
             X1_valtest.append(Xb_valtest)
 
-            """################################ TO REMOVE
+            ################################ TO REMOVE
             ### add categorical features
             X1_valtrain.append(Xc_valtrain.values)
-            X1_valtest.append(Xc_valtest.values)"""
+            X1_valtest.append(Xc_valtest.values)
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
