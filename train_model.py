@@ -219,7 +219,7 @@ def main(verbose=1):
             dupe_df = pd.DataFrame(np.hstack([Xb_valtrain, Xc_valtrain.values]))
             dupe_df = dupe_df[dupe_df.duplicated(keep=False)]
             print(dupe_df.head())
-            dupe_df = dupe_df.groupby().apply(lambda x: list(x.index))
+            dupe_df = dupe_df.groupby(dupe_df.columns).apply(lambda x: list(x.index))
             print(dupe_df)
             raise(ValueError)
 
