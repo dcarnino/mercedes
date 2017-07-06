@@ -165,8 +165,10 @@ def main(verbose=1):
     dupe_df = pd.DataFrame(np.vstack([np.hstack([Xb_train.values, Xc_train.values]),np.hstack([Xb_test.values, Xc_test.values])]))
     dupe_ser = dupe_df.groupby(list(dupe_df.columns)).size()
     dupe_dict = dupe_ser.to_dict()
-    dupe_count_train = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_train.values, Xc_train.values])).itertuples(index=False)])
-    dupe_count_test = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_test.values, Xc_test.values])).itertuples(index=False)])
+    print(type(y_train))
+    print(type(id_train))
+    dupe_count_train = pd.DataFrame(np.array([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_train.values, Xc_train.values])).itertuples(index=False)]).T)
+    dupe_count_test = pd.DataFrame(np.array([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_test.values, Xc_test.values])).itertuples(index=False)]).T)
 
     # remove outlier
     Xb_train = Xb_train[y_train < 200]
