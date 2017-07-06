@@ -165,7 +165,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = True
+    leaderboard = False
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -215,6 +215,14 @@ def main(verbose=1):
             y_valtrain[y_valtrain < 0] = 0.
             y_valtrain[y_valtrain > 1] = 1.
 
+            ##### Process duplicate rows
+            dupe_df = pd.DataFrame(np.hstack([Xb_valtrain, Xc_valtrain.values]))
+            dupe_df = dupe_df[dupe_df.duplicated(keep=False)]
+            print(dupe_df.head())
+            dupe_df = dupe_df.groupby().apply(lambda x: list(x.index))
+            print(dupe_df)
+            raise(ValueError)
+
             ##### Extract features
             if verbose >= 4: print("Extract features...")
             X0_valtrain, X0_valtest = [], []
@@ -224,12 +232,15 @@ def main(verbose=1):
             ### add binary features
             X0_valtrain.append(Xb_valtrain)
             X0_valtest.append(Xb_valtest)
-            #X1_valtrain.append(Xb_valtrain)
-            #X1_valtest.append(Xb_valtest)
 
+            ################################ TO REMOVE
+            X1_valtrain.append(Xb_valtrain)
+            X1_valtest.append(Xb_valtest)
+
+            ################################ TO REMOVE
             ### add categorical features
-            #X1_valtrain.append(Xc_valtrain.values)
-            #X1_valtest.append(Xc_valtest.values)
+            X1_valtrain.append(Xc_valtrain.values)
+            X1_valtest.append(Xc_valtest.values)
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
@@ -254,8 +265,10 @@ def main(verbose=1):
             Xohe_valtest = ohe.transform(Xc_valtest).toarray()
             X0_valtrain.append(Xohe_valtrain)
             X0_valtest.append(Xohe_valtest)
-            #X1_valtrain.append(Xohe_valtrain)
-            #X1_valtest.append(Xohe_valtest)
+
+            ################################ TO REMOVE
+            X1_valtrain.append(Xohe_valtrain)
+            X1_valtest.append(Xohe_valtest)
 
             """### engineer new features based on correlations
             Xtr = np.hstack(X_valtrain)
@@ -410,6 +423,7 @@ def main(verbose=1):
             ### Train model
             if verbose >= 4: print("Train model...")
             if fold_cnt+n_folds*ix_cv == 1:
+                pass
                 """reg_cv = model_selection.GridSearchCV(XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                                       learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28),
                                                       {'max_depth': [5, 7, 9], 'subsample': [.5, .65, .8], 'colsample_bytree': [.5, .65, .8], 'min_child_weight': [4, 10, 20]},
@@ -420,19 +434,19 @@ def main(verbose=1):
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
+            """reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
-            """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
+            reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg.fit(X1_valtrain, y_valtrain)"""
+            reg.fit(X1_valtrain, y_valtrain)
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
-            #y_valpred = reg.predict(X1_valtest)
+            #y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
+            y_valpred = reg.predict(X1_valtest)
 
 
             ### Append preds and tests
