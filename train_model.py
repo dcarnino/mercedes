@@ -283,6 +283,12 @@ def main(verbose=1):
             Xb_valtrain = np.delete(Xb_valtrain, drop_rows, axis=0)
             Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[drop_rows])"""
 
+            ##### Extract features
+            if verbose >= 4: print("Extract features...")
+            X0_valtrain, X0_valtest = [], []
+            X1_valtrain, X1_valtest = [], []
+            X2_valtrain, X2_valtest = [], []
+
             ### add categorical features
             X1_valtrain.append(Xc_valtrain.values)
             X1_valtest.append(Xc_valtest.values)
@@ -343,11 +349,6 @@ def main(verbose=1):
                 ### change X0 med value based on new value
                 Xc_valtest.loc[:,"X0_med"] = Xc_valtest.loc[:,"X0"].apply(lambda x: X0_to_X0_med_mapping[x])
 
-            ##### Extract features
-            if verbose >= 4: print("Extract features...")
-            X0_valtrain, X0_valtest = [], []
-            X1_valtrain, X1_valtest = [], []
-            X2_valtrain, X2_valtest = [], []
 
             ### add binary features
             X0_valtrain.append(Xb_valtrain)
