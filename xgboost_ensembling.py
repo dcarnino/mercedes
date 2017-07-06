@@ -1,6 +1,6 @@
 from xgboost import XGBRegressor, XGBClassifier
 from sklearn import metrics, model_selection
-from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from scipy import stats
 import numpy as np
