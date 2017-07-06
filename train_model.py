@@ -132,8 +132,6 @@ def main(verbose=1):
     df_X5 = pd.DataFrame(np.array([Xc["X5"],y]).T, columns=["X5", "y"])
     df_X5["y"] = pd.to_numeric(df_X5["y"])
     X5_med = df_X5.groupby(["X5"])["y"].aggregate([np.nanmedian, 'size']).sort_values(by="nanmedian")
-    print(X5_med)
-    raise(ValueError)
 
     # X0 grouped feature
     new_feat_dict = {}
@@ -151,6 +149,21 @@ def main(verbose=1):
         new_feat_dict[cat] = 'f'
     Xc_train["X0_med"] = Xc_train["X0"].apply(lambda x: new_feat_dict[x])
     Xc_test["X0_med"] = Xc_test["X0"].apply(lambda x: new_feat_dict[x])
+
+    # X5 grouped feature
+    new_feat_dict = {}
+    for cat in X5_med.index[:2]:
+        new_feat_dict[cat] = 'a'
+    for cat in X5_med.index[2:6]:
+        new_feat_dict[cat] = 'b'
+    for cat in X5_med.index[6:29]:
+        new_feat_dict[cat] = 'c'
+    for cat in X5_med.index[29:30]:
+        new_feat_dict[cat] = 'd'
+    for cat in X5_med.index[30:]:
+        new_feat_dict[cat] = 'e'
+    Xc_train["X5_med"] = Xc_train["X5"].apply(lambda x: new_feat_dict[x])
+    Xc_test["X5_med"] = Xc_test["X5"].apply(lambda x: new_feat_dict[x])
 
     """# add new X0+X5 feature
     Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
