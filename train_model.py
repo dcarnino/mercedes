@@ -325,7 +325,6 @@ def main(verbose=1):
             y_impute_train = np.hstack([Xc_valtrain.values[:,0], Xc_valtest.values[:,0][~mask_test]])
             X_impute_train = np.vstack([X_impute_traintrain, X_impute_traintest[~mask_test]])
             X_impute_test = X_impute_traintest[mask_test]
-            id_impute_train = np.hstack(id_valtrain, id_valtest)
 
             ### classify
             clf = RandomForestClassifier(n_estimators=1120, n_jobs=28)
