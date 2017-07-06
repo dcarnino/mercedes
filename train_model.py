@@ -122,9 +122,9 @@ def main(verbose=1):
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
     Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
 
-    """# add new X0+X5 feature
+    # add new X0+X5 feature
     Xc_train["X0X5"] = Xc_train["X0"] + "_" + Xc_train["X5"]
-    Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]"""
+    Xc_test["X0X5"] = Xc_test["X0"] + "_" + Xc_test["X5"]
 
     # get X0 insights
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
