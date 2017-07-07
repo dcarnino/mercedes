@@ -42,16 +42,16 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     reg_layer.append( ( "Ridge", Ridge(alpha=.5) ) )
     reg_layer.append( ( "Lasso", Lasso(alpha=.1) ) )
     reg_layer.append( ( "ElasticNet", ElasticNet(alpha=1., l1_ratio=0.5) ) )
-    """reg_layer.append( ( "Huber", HuberRegressor() ) )
+    reg_layer.append( ( "Huber", HuberRegressor() ) )
     reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )
-    reg_layer.append( ( "LinearSVR", LinearSVR() ) )"""
+    reg_layer.append( ( "LinearSVR", LinearSVR() ) )
 
     ### tree
     reg_layer.append( ( "Tree", DecisionTreeRegressor() ) )
 
-    """### gbr
+    ### gbr
     reg_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
-                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )"""
+                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
     """### svr
     kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
     for ix, kernel in enumerate(kernel_list):
@@ -59,7 +59,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
                                          n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )"""
 
-    """### mlp
+    ### mlp
     # function for model
     def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
                      k_optimizer='rmsprop', k_init='glorot_uniform',
@@ -97,7 +97,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=100000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                             k_init=k_init, verbose=0) ) )"""
+                                                             k_init=k_init, verbose=0) ) )
 
     ### knn
     # test all combinations
@@ -112,11 +112,11 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                           algorithm='auto', n_jobs=n_jobs) ) )
                 ix += 1
 
-    """### adaboost
+    ### adaboost
     reg_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
                                                               n_estimators=n_est//20, learning_rate=0.9) ) )
     reg_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
-                                                                      n_estimators=n_est//20, learning_rate=0.9) ) )"""
+                                                                      n_estimators=n_est//20, learning_rate=0.9) ) )
     """reg_layer.append( ( "AdaBoostXGBoost", AdaBoostRegressor(base_estimator=XGBRegressor_ensembling(objective='reg:logistic',
                                                                                                           gamma=0, reg_lambda=1, min_child_weight=4,
                                                                                                           learning_rate=0.02, subsample=0.65,
@@ -127,10 +127,10 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     ### random forest
     # test all combinations
     # test zipped combinations
-    max_depth_list = (4, 5, 6, 8, None)
-    min_samples_split_list = (.1, .01, 8, 4, 2)
-    max_features_list = ('auto', 'auto', 'auto', 'sqrt', 'auto')
-    min_samples_leaf_list = (21, 11, 5, 2, 1)
+    max_depth_list = (4, 5, 6, 8, 10, None, None, None)
+    min_samples_split_list = (.1, .01, 8, 4, 3, 2, .01, 2)
+    max_features_list = ('auto', 'auto', 'auto', 'sqrt', 'auto', 'auto', 'auto', 'sqrt')
+    min_samples_leaf_list = (21, 11, 5, 2, 2, 1, 1, 1)
     for ix, (max_depth, min_samples_split, max_features, min_samples_leaf) \
     in enumerate(zip(max_depth_list, min_samples_split_list, max_features_list, min_samples_leaf_list)):
         reg_layer.append( ( "RF%d"%ix, RandomForestRegressor(n_estimators=n_est, max_depth=max_depth,
@@ -142,13 +142,13 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                    bootstrap=True, max_features=max_features,
                                                                    min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
 
-    """### xgboost
+    ### xgboost
     # test all combinations
-    max_depth_list = (5,)
-    subsample_list = (.5, .8)
-    colsample_bytree_list = (.5, .8)
+    max_depth_list = (5, 7)
+    subsample_list = (.5, .65, .8)
+    colsample_bytree_list = (.5, .65, .8)
     learning_rate_list = (0.02,)
-    min_child_weight_list = (4,)
+    min_child_weight_list = (4, 10)
     # test zipped combinations
     ix = 0
     for max_depth in max_depth_list:
@@ -161,7 +161,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                            learning_rate=learning_rate, subsample=subsample,
                                                                            colsample_bytree=colsample_bytree, max_depth=max_depth,
                                                                            nthread=n_jobs) ) )
-                        ix += 1"""
+                        ix += 1
 
     """### xgboost
     # test all combinations
@@ -207,9 +207,9 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
 
     reg_layer = []
 
-    """### gbr
+    ### gbr
     reg_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
-                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )"""
+                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
     """### svr
     kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
     for ix, kernel in enumerate(kernel_list):
@@ -217,7 +217,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
         reg_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
                                          n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )"""
 
-    """### mlp
+    ### mlp
     # function for model
     def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
                      k_optimizer='rmsprop', k_init='glorot_uniform',
@@ -255,7 +255,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
         reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=100000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                             k_init=k_init, verbose=0) ) )"""
+                                                             k_init=k_init, verbose=0) ) )
 
     """### knn
     # test all combinations
@@ -282,8 +282,8 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                                                           nthread=n_jobs),
                                                                    n_estimators=n_est//20, learning_rate=0.9) ) )"""
 
-    """### ransac rf
-    reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )"""
+    ### ransac rf
+    reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )
 
     ### random forest
     # test all combinations
@@ -305,7 +305,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                          bootstrap=bootstrap, max_features=max_features,
                                                                          min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
 
-    """### xgboost
+    ### xgboost
     # test all combinations
     max_depth_list = (5,)
     subsample_list = (.65, .8)
@@ -324,7 +324,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                            learning_rate=learning_rate, subsample=subsample,
                                                                            colsample_bytree=colsample_bytree, max_depth=max_depth,
                                                                            nthread=n_jobs) ) )
-                        ix += 1"""
+                        ix += 1
 
 
     return reg_layer
