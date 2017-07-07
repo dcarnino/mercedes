@@ -596,6 +596,7 @@ def main(verbose=1):
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
             reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
+                                    combine_features_models=True, combine_features=False, combine_models=False,
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=28, n_est1=56, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
