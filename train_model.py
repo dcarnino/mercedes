@@ -593,7 +593,7 @@ def main(verbose=1):
             ### Evenize the output based on rank
             rank_valpred = rankdata(y_valpred, method='dense')
             rank_valpred = rank_valpred - rank_valpred.min()
-            rank_valpred = rank_valtrain / rank_valpred.max()
+            rank_valpred = rank_valpred / rank_valpred.max()
             y_valpred = rank_valpred
 
 
