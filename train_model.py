@@ -214,7 +214,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = False
+    leaderboard = True
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -375,10 +375,10 @@ def main(verbose=1):
                 Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x]).values
                 Xmeans_valtrain.append(Xm_valtrain.reshape((-1,1)))
                 Xmeans_valtest.append(Xm_valtest.reshape((-1,1)))
-            Xmeans_valtrain.append(Xmeans_valtrain[0]*Xmeans_valtrain[5])
+            """Xmeans_valtrain.append(Xmeans_valtrain[0]*Xmeans_valtrain[5])
             Xmeans_valtest.append(Xmeans_valtest[0]*Xmeans_valtest[5])
             Xmeans_valtrain.append(Xmeans_valtrain[0]+Xmeans_valtrain[5])
-            Xmeans_valtest.append(Xmeans_valtest[0]+Xmeans_valtest[5])
+            Xmeans_valtest.append(Xmeans_valtest[0]+Xmeans_valtest[5])"""
             X0_valtrain.append(np.hstack(Xmeans_valtrain))
             X0_valtest.append(np.hstack(Xmeans_valtest))
             X1_valtrain.append(np.hstack(Xmeans_valtrain))
@@ -548,6 +548,12 @@ def main(verbose=1):
             X_valtrain = selector.transform(X_valtrain)
             X_valtest = selector.transform(X_valtest)"""
 
+            ### replace if all the same
+            X0_valtrain = X1_valtrain
+            X0_valtest = X1_valtest
+            X2_valtrain = X1_valtrain
+            X2_valtest = X1_valtest
+
             if verbose >= 5:
                 print("\tX0_valtrain shape: ", X0_valtrain.shape)
                 print("\tX0_valtest shape: ", X0_valtest.shape)
@@ -570,19 +576,19 @@ def main(verbose=1):
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            """reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
+            reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
-            reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
+            """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg.fit(X1_valtrain, y_valtrain)
+            reg.fit(X1_valtrain, y_valtrain)"""
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            #y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
-            y_valpred = reg.predict(X1_valtest)
+            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
+            #y_valpred = reg.predict(X1_valtest)
 
 
             ### Append preds and tests
