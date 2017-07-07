@@ -355,14 +355,14 @@ def main(verbose=1):
             X2_valtrain, X2_valtest = [], []
 
             ### add categorical features
+            X0_valtrain.append(Xc_valtrain.values)
+            X0_valtest.append(Xc_valtest.values)
             X1_valtrain.append(Xc_valtrain.values)
             X1_valtest.append(Xc_valtest.values)
 
             ### add binary features
             X0_valtrain.append(Xb_valtrain)
             X0_valtest.append(Xb_valtest)
-
-            ################################ TO REMOVE
             X1_valtrain.append(Xb_valtrain)
             X1_valtest.append(Xb_valtest)
 
@@ -393,8 +393,6 @@ def main(verbose=1):
             Xohe_valtest = ohe.transform(Xc_valtest).toarray()
             X0_valtrain.append(Xohe_valtrain)
             X0_valtest.append(Xohe_valtest)
-
-            ################################ TO REMOVE
             X1_valtrain.append(Xohe_valtrain)
             X1_valtest.append(Xohe_valtest)
 
@@ -497,8 +495,8 @@ def main(verbose=1):
             X1_valtest.append(Xgrp_valtest)"""
 
             ### Add specific columns
-            X2_valtrain.append(Xb_valtrain[:,[297]])
-            X2_valtest.append(Xb_valtest[:,[297]])
+            #X2_valtrain.append(Xb_valtrain[:,[297]])
+            #X2_valtest.append(Xb_valtest[:,[297]])
             X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5]])
             X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,5]])
             #X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5,8]])
@@ -550,11 +548,11 @@ def main(verbose=1):
             X_valtrain = selector.transform(X_valtrain)
             X_valtest = selector.transform(X_valtest)"""
 
-            ### replace if all the same
+            """### replace if all the same
             X0_valtrain = X1_valtrain
             X0_valtest = X1_valtest
             X2_valtrain = X1_valtrain
-            X2_valtest = X1_valtest
+            X2_valtest = X1_valtest"""
 
             if verbose >= 5:
                 print("\tX0_valtrain shape: ", X0_valtrain.shape)
@@ -590,15 +588,19 @@ def main(verbose=1):
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            """reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
+            reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
-            reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
+                                    remove_bad0=0., remove_bad1=0.,
+                                    n_folds0=5, n_folds1=5, n_est0=56, n_est1=112, score_func=metrics.r2_score,
+                                    default_y_value=0.5, n_jobs=28)
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
+            """reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg = BaggingRegressor(base_estimator=reg, n_estimators=5, max_samples=0.8, max_features=1.0, bootstrap=True, bootstrap_features=False)
-            reg.fit(X1_valtrain, y_valtrain)
+            reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
+            reg.fit(X1_valtrain, y_valtrain)"""
             """n_est = 500
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                                       learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28) for ix in range(n_est)]
@@ -607,8 +609,8 @@ def main(verbose=1):
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            #y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
-            y_valpred = reg.predict(X1_valtest)
+            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
+            #y_valpred = reg.predict(X1_valtest)
 
             """### Evenize the output based on rank
             rank_valpred = rankdata(y_valpred, method='dense')

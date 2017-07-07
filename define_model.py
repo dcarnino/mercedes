@@ -18,6 +18,8 @@ from xgboost import XGBRegressor
 from sklearn.svm import SVR, LinearSVR
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import Pipeline
 from sklearn import model_selection, metrics
 from keras import backend as K
 from keras.models import Sequential
@@ -40,16 +42,16 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     reg_layer.append( ( "Ridge", Ridge(alpha=.5) ) )
     reg_layer.append( ( "Lasso", Lasso(alpha=.1) ) )
     reg_layer.append( ( "ElasticNet", ElasticNet(alpha=1., l1_ratio=0.5) ) )
-    reg_layer.append( ( "Huber", HuberRegressor() ) )
+    """reg_layer.append( ( "Huber", HuberRegressor() ) )
     reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )
-    reg_layer.append( ( "LinearSVR", LinearSVR() ) )
+    reg_layer.append( ( "LinearSVR", LinearSVR() ) )"""
 
     ### tree
     reg_layer.append( ( "Tree", DecisionTreeRegressor() ) )
 
-    ### gbr
+    """### gbr
     reg_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
-                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
+                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )"""
     """### svr
     kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
     for ix, kernel in enumerate(kernel_list):
@@ -57,7 +59,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
                                          n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )"""
 
-    ### mlp
+    """### mlp
     # function for model
     def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
                      k_optimizer='rmsprop', k_init='glorot_uniform',
@@ -95,7 +97,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
         reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=100000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                             k_init=k_init, verbose=0) ) )
+                                                             k_init=k_init, verbose=0) ) )"""
 
     ### knn
     # test all combinations
@@ -161,7 +163,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                            nthread=n_jobs) ) )
                         ix += 1"""
 
-    ### xgboost
+    """### xgboost
     # test all combinations
     max_depth_list = (3, 3, 3, 5, 5, 5, 10, 10, 10)
     subsample_list = (.5, .8, .65, .5, .8, .65, .5, .8, .65)
@@ -175,7 +177,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                 gamma=0, reg_lambda=1, min_child_weight=min_child_weight,
                                                                 learning_rate=learning_rate, subsample=subsample,
                                                                 colsample_bytree=colsample_bytree, max_depth=max_depth,
-                                                                nthread=n_jobs) ) )
+                                                                nthread=n_jobs) ) )"""
 
     """### lgbm
     # test all combinations
@@ -205,9 +207,9 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
 
     reg_layer = []
 
-    ### gbr
+    """### gbr
     reg_layer.append( ( "GBR", GradientBoostingRegressor(loss='huber', learning_rate=0.02, n_estimators=n_est, subsample=0.65,
-                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )
+                                                               criterion='friedman_mse', min_samples_split=2, min_samples_leaf=2, max_depth=5) ) )"""
     """### svr
     kernel_list = ('sigmoid', 'rbf', 'linear', 'poly')
     for ix, kernel in enumerate(kernel_list):
@@ -215,7 +217,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
         reg_layer.append( ( "BaggingSVR%d"%ix, BaggingRegressor(SVR(C=1.0, kernel=kernel, gamma='auto', shrinking=True, tol=0.001),
                                          n_estimators=n_est//4, max_samples=4./(n_est//4), bootstrap=True, n_jobs=n_jobs) ) )"""
 
-    ### mlp
+    """### mlp
     # function for model
     def create_model(k_n_layers=1, k_n_units=64, k_dropout=0.5,
                      k_optimizer='rmsprop', k_init='glorot_uniform',
@@ -242,18 +244,18 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
     adx = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     glo = 'glorot_uniform'
     he = 'he_normal'
-    k_n_layers_list = np.array((2, 2, 3, 4, 5)) * 1
-    k_n_units_list = np.array((384, 256, 766, 1000, 1500)) // 2
-    k_dropout_list = (0.1, 0.1, 0.1, 0.1, 0.1)
-    k_optimizer_list = (add, add, add, add, add)
-    k_init_list = (glo, glo, glo, glo, glo)
+    k_n_layers_list = np.array((3, 4, 5)) * 1
+    k_n_units_list = np.array((766, 1000, 1500)) // 2
+    k_dropout_list = (0.1, 0.1, 0.1)
+    k_optimizer_list = (add, add, add)
+    k_init_list = (glo, glo, glo)
     # loop
     for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
     in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
         reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=100000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
-                                                             k_init=k_init, verbose=0) ) )
+                                                             k_init=k_init, verbose=0) ) )"""
 
     """### knn
     # test all combinations
@@ -280,8 +282,8 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                                                           nthread=n_jobs),
                                                                    n_estimators=n_est//20, learning_rate=0.9) ) )"""
 
-    ### ransac rf
-    reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )
+    """### ransac rf
+    reg_layer.append( ( "RansacRF", RANSACRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est//4, n_jobs=n_jobs)) ) )"""
 
     ### random forest
     # test all combinations
@@ -303,7 +305,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                          bootstrap=bootstrap, max_features=max_features,
                                                                          min_samples_leaf=min_samples_leaf, n_jobs=n_jobs) ) )
 
-    ### xgboost
+    """### xgboost
     # test all combinations
     max_depth_list = (5,)
     subsample_list = (.65, .8)
@@ -322,7 +324,7 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
                                                                            learning_rate=learning_rate, subsample=subsample,
                                                                            colsample_bytree=colsample_bytree, max_depth=max_depth,
                                                                            nthread=n_jobs) ) )
-                        ix += 1
+                        ix += 1"""
 
 
     return reg_layer
@@ -334,8 +336,10 @@ def create_layer2(n_jobs=28, objective='reg:logistic', verbose=1):
     """
     Create final layer.
     """
-    reg_layer = XGBRegressor_ensembling(objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
-                                        learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs)
+    reg_layer = Pipeline([('poly', PolynomialFeatures(degree=2)),
+                          ('linear', LinearRegression(fit_intercept=False))])
+    #reg_layer = XGBRegressor_ensembling(objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
+    #                                    learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs)
     #reg_layer = model_selection.GridSearchCV(XGBRegressor_ensembling(objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
     #                                               learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs),
     #                                               {'max_depth': [5, 7, 9], 'subsample': [.5, .65, .8], 'colsample_bytree': [.5, .65, .8], 'min_child_weight': [4, 10, 20]},
