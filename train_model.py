@@ -601,14 +601,23 @@ def main(verbose=1):
             y_valpred = np.exp(y_valpred * y_max + y_min) - smoothing_term
 
             ### Rectify values manually
-            y_valpred[(y_valpred < 72) & (y_valpred > 30)] = y_valpred[(y_valpred < 72) & (y_valpred > 30)] + 3.
+            """y_valpred[(y_valpred < 72) & (y_valpred > 30)] = y_valpred[(y_valpred < 72) & (y_valpred > 30)] + 3.
             y_valpred[(y_valpred < 83) & (y_valpred > 80)] = y_valpred[(y_valpred < 83) & (y_valpred > 80)] - 2.
             y_valpred[(y_valpred < 86) & (y_valpred > 83)] = y_valpred[(y_valpred < 86) & (y_valpred > 83)] + 2.
             y_valpred[(y_valpred < 96.8) & (y_valpred > 95)] = y_valpred[(y_valpred < 96.8) & (y_valpred > 95)] - 1.
             y_valpred[(y_valpred < 99) & (y_valpred > 96.8)] = y_valpred[(y_valpred < 99) & (y_valpred > 96.8)] + 1.
             y_valpred[(y_valpred < 106.15) & (y_valpred > 105.2)] = y_valpred[(y_valpred < 106.15) & (y_valpred > 105.2)] - 1.
             y_valpred[(y_valpred < 107) & (y_valpred > 106.15)] = y_valpred[(y_valpred < 107) & (y_valpred > 106.15)] + 1.
-            y_valpred[(y_valpred < 180) & (y_valpred > 120)] = y_valpred[(y_valpred < 180) & (y_valpred > 120)] -3
+            y_valpred[(y_valpred < 180) & (y_valpred > 120)] = y_valpred[(y_valpred < 180) & (y_valpred > 120)] - 3."""
+            fac = 1.5
+            y_valpred[(y_valpred < 72) & (y_valpred > 30)] = y_valpred[(y_valpred < 72) & (y_valpred > 30)] - 3.*fac
+            y_valpred[(y_valpred < 83) & (y_valpred > 80)] = y_valpred[(y_valpred < 83) & (y_valpred > 80)] + 1.*fac
+            y_valpred[(y_valpred < 86) & (y_valpred > 83)] = y_valpred[(y_valpred < 86) & (y_valpred > 83)] - 1.*fac
+            y_valpred[(y_valpred < 96.8) & (y_valpred > 95)] = y_valpred[(y_valpred < 96.8) & (y_valpred > 95)] + 0.5*fac
+            y_valpred[(y_valpred < 99) & (y_valpred > 96.8)] = y_valpred[(y_valpred < 99) & (y_valpred > 96.8)] - 0.5*fac
+            y_valpred[(y_valpred < 106.15) & (y_valpred > 105.2)] = y_valpred[(y_valpred < 106.15) & (y_valpred > 105.2)] + 0.5*fac
+            y_valpred[(y_valpred < 107) & (y_valpred > 106.15)] = y_valpred[(y_valpred < 107) & (y_valpred > 106.15)] - 0.5*fac
+            y_valpred[(y_valpred < 180) & (y_valpred > 120)] = y_valpred[(y_valpred < 180) & (y_valpred > 120)] + 3.*fac
 
             ### Append preds and tests
             y_trainpred.extend(y_valpred)
