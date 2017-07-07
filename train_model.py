@@ -588,8 +588,8 @@ def main(verbose=1):
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            X1_valtrain = None
-            X1_valtest = None
+            """X1_valtrain = None
+            X1_valtest = None"""
             reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,

@@ -336,7 +336,7 @@ def create_layer2(n_jobs=28, objective='reg:logistic', verbose=1):
     """
     Create final layer.
     """
-    reg_layer = Pipeline([('poly', PolynomialFeatures(degree=2)),
+    reg_layer = Pipeline([('poly', PolynomialFeatures(degree=1)),
                           ('linear', LinearRegression(fit_intercept=False))])
     #reg_layer = XGBRegressor_ensembling(objective=objective, gamma=0, reg_lambda=1, min_child_weight=4,
     #                                    learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=n_jobs)
