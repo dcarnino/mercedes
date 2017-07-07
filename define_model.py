@@ -84,15 +84,15 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     adx = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     glo = 'glorot_uniform'
     he = 'he_normal'
-    k_n_layers_list = np.array((2, 2, 3, 4)) * 1
-    k_n_units_list = np.array((512, 256, 766, 1000)) // 2
-    k_dropout_list = (0.2, 0.1, 0.1, 0.1)
-    k_optimizer_list = (add, add, add, add)
-    k_init_list = (glo, glo, glo, glo)
+    k_n_layers_list = np.array((2, 2, 3, 4, 5)) * 1
+    k_n_units_list = np.array((512, 256, 766, 1000, 1500)) // 2
+    k_dropout_list = (0.2, 0.1, 0.1, 0.1, 0.1)
+    k_optimizer_list = (add, add, add, add, add)
+    k_init_list = (glo, glo, glo, glo, glo)
     # loop
     for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
     in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
-        reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
+        reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=100000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
                                                              k_init=k_init, verbose=0) ) )
@@ -242,15 +242,15 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
     adx = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     glo = 'glorot_uniform'
     he = 'he_normal'
-    k_n_layers_list = np.array((2, 2, 3, 4)) * 1
-    k_n_units_list = np.array((384, 256, 766, 1000)) // 2
-    k_dropout_list = (0.1, 0.1, 0.1, 0.1)
-    k_optimizer_list = (add, add, add, add)
-    k_init_list = (glo, glo, glo, glo)
+    k_n_layers_list = np.array((2, 2, 3, 4, 5)) * 1
+    k_n_units_list = np.array((384, 256, 766, 1000, 1500)) // 2
+    k_dropout_list = (0.1, 0.1, 0.1, 0.1, 0.1)
+    k_optimizer_list = (add, add, add, add, add)
+    k_init_list = (glo, glo, glo, glo, glo)
     # loop
     for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
     in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
-        reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=10000, batch_size=101,
+        reg_layer.append( ( "MLP%d"%ix, KerasRegressor(build_fn=create_model, epochs=100000, batch_size=101,
                                                              k_n_layers=k_n_layers, k_n_units=k_n_units,
                                                              k_dropout=k_dropout, k_optimizer=k_optimizer,
                                                              k_init=k_init, verbose=0) ) )
