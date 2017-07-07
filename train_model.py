@@ -19,6 +19,7 @@ from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import model_selection, metrics
+from sklearn.mixture import GaussianMixture
 from scipy import sparse
 from xgboost import XGBRegressor
 from xgboost_ensembling import XGBRegressor_ensembling, XGBClassifier_ensembling
@@ -215,7 +216,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = True
+    leaderboard = False
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -563,6 +564,17 @@ def main(verbose=1):
                 print("\tX2_valtrain shape: ", X2_valtrain.shape)
                 print("\tX2_valtest shape: ", X2_valtest.shape)
 
+
+            ### Define prior
+            gmm = GaussianMixture(n_components=5, n_init=100)
+            gmm.fit(y_valtrain.reshape((-1, 1)))
+            def gmm_prior(y_pred):
+                y_pred = y_pred.reshape((-1, 1))
+                y_score = gmm.score_samples(y_pred)
+                y_score = y_score + y_score.min()
+                return y_score
+
+
             ### Train model
             if verbose >= 4: print("Train model...")
             if fold_cnt+n_folds*ix_cv == 1:
@@ -582,14 +594,14 @@ def main(verbose=1):
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
             reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
-            """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg.fit(X1_valtrain, y_valtrain)"""
-            n_est = 500
+            reg.fit(X1_valtrain, y_valtrain)
+            """n_est = 500
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                                       learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28) for ix in range(n_est)]
             reg = correlation_ensembling(estimator_list, keep_p=0.05)
-            reg.fit(X1_valtrain, y_valtrain)
+            reg.fit(X1_valtrain, y_valtrain)"""
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")

@@ -10,7 +10,7 @@ import numpy as np
 class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
 
 
-    def __init__(self, n_folds=5, early_stopping_rounds=10, eval_metric=metrics.r2_score, greater_is_better=True, predict_median=False,
+    def __init__(self, n_folds=5, early_stopping_rounds=10, eval_metric=metrics.r2_score, greater_is_better=True, predict_median=False, prior=None,
                  max_depth=3, learning_rate=0.1, n_estimators=100000, silent=True,
                  objective='reg:linear', nthread=None,
                  gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
@@ -40,6 +40,7 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         self.eval_metric = eval_metric
         self.greater_is_better = greater_is_better
         self.predict_median = predict_median
+        self.prior = prior
 
 
     def custom_eval(self, y_pred, dtest):
@@ -84,10 +85,13 @@ class XGBRegressor_ensembling(BaseEstimator, RegressorMixin):
         X = check_array(X)
 
         y_pred = [estimator.predict(X) for estimator in self.estimator_list_]
-        if self.predict_median:
-            y_pred = np.median(y_pred, axis=0)
+        if self.prior is not None:
+            y_pred = np.average(y_pred, weights=np.array([self.prior(yp) for yp in y_pred]), axis=0)
         else:
-            y_pred = np.mean(y_pred, axis=0)
+            if self.predict_median:
+                y_pred = np.median(y_pred, axis=0)
+            else:
+                y_pred = np.mean(y_pred, axis=0)
 
         return y_pred
 
