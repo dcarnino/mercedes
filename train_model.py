@@ -17,7 +17,7 @@ import json
 from collections import defaultdict
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.feature_selection import VarianceThreshold
-from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.ensemble import ExtraTreesRegressor, BaggingRegressor
 from sklearn import model_selection, metrics
 from sklearn.mixture import GaussianMixture
 from scipy import sparse
@@ -566,13 +566,14 @@ def main(verbose=1):
 
 
             ### Define prior
-            gmm = GaussianMixture(n_components=5, n_init=100)
+            gmm_prior = None
+            """gmm = GaussianMixture(n_components=5, n_init=100)
             gmm.fit(y_valtrain.reshape((-1, 1)))
             def gmm_prior(y_pred):
                 y_pred = y_pred.reshape((-1, 1))
                 y_score = gmm.score_samples(y_pred)
                 y_score = y_score + y_score.min()
-                return y_score**4
+                return y_score**4"""
 
 
             ### Train model
@@ -596,6 +597,7 @@ def main(verbose=1):
             reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
             reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
+            reg = BaggingRegressor(base_estimator=reg, n_estimators=5, max_samples=0.8, max_features=1.0, bootstrap=True, bootstrap_features=False)
             reg.fit(X1_valtrain, y_valtrain)
             """n_est = 500
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
