@@ -32,6 +32,7 @@ from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.stats import rankdata, spearmanr
 import subprocess
 from stacked_regressor import stacked_regressor
+from decorrelating_estimator import correlation_ensembling
 #==============================================
 #                   Files
 #==============================================
@@ -581,9 +582,13 @@ def main(verbose=1):
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
             reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
-            reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            """reg = XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg.fit(X1_valtrain, y_valtrain)
+            reg.fit(X1_valtrain, y_valtrain)"""
+            n_est = 5
+            estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+                                                      learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28) for ix in range(n_est)]
+            reg = correlation_ensembling(estimator_list, keep_p=0.3)
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
@@ -602,14 +607,14 @@ def main(verbose=1):
 
             ### Rectify values manually
             fac = 2.
-            y_valpred[(y_valpred < 72) & (y_valpred > 30)] = y_valpred[(y_valpred < 72) & (y_valpred > 30)] + 3.*fac
+            """y_valpred[(y_valpred < 72) & (y_valpred > 30)] = y_valpred[(y_valpred < 72) & (y_valpred > 30)] + 3.*fac
             y_valpred[(y_valpred < 83) & (y_valpred > 80)] = y_valpred[(y_valpred < 83) & (y_valpred > 80)] - 2.*fac
             y_valpred[(y_valpred < 86) & (y_valpred > 83)] = y_valpred[(y_valpred < 86) & (y_valpred > 83)] + 2.*fac
             y_valpred[(y_valpred < 96.8) & (y_valpred > 95)] = y_valpred[(y_valpred < 96.8) & (y_valpred > 95)] - 1.*fac
             y_valpred[(y_valpred < 99) & (y_valpred > 96.8)] = y_valpred[(y_valpred < 99) & (y_valpred > 96.8)] + 1.*fac
             y_valpred[(y_valpred < 106.15) & (y_valpred > 105.2)] = y_valpred[(y_valpred < 106.15) & (y_valpred > 105.2)] - 1.*fac
             y_valpred[(y_valpred < 107) & (y_valpred > 106.15)] = y_valpred[(y_valpred < 107) & (y_valpred > 106.15)] + 1.*fac
-            y_valpred[(y_valpred < 180) & (y_valpred > 120)] = y_valpred[(y_valpred < 180) & (y_valpred > 120)] - 3.*fac
+            y_valpred[(y_valpred < 180) & (y_valpred > 120)] = y_valpred[(y_valpred < 180) & (y_valpred > 120)] - 3.*fac"""
             """y_valpred[(y_valpred < 72) & (y_valpred > 30)] = y_valpred[(y_valpred < 72) & (y_valpred > 30)] - 3.*fac
             y_valpred[(y_valpred < 83) & (y_valpred > 80)] = y_valpred[(y_valpred < 83) & (y_valpred > 80)] + 1.*fac
             y_valpred[(y_valpred < 86) & (y_valpred > 83)] = y_valpred[(y_valpred < 86) & (y_valpred > 83)] - 1.*fac
