@@ -2,6 +2,7 @@ from xgboost import XGBRegressor
 from sklearn import metrics, model_selection
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from itertools import combinations
 import numpy as np
 import sys
 
@@ -10,13 +11,19 @@ import sys
 class stacked_regressor(BaseEstimator, RegressorMixin):
 
 
-    def __init__(self, layer0_func, layer1_func, layer2_func, remove_bad0=0.2, remove_bad1=0.1,
+    def __init__(self, layer0_func, layer1_func, layer2_func,
+                 combine_features_models=False, combine_features=False, combine_models=False,
+                 remove_bad0=0.2, remove_bad1=0.1,
                  n_folds0=5, n_folds1=5, n_est0=448, n_est1=11200, score_func=metrics.r2_score,
                  default_y_value=0.5, n_jobs=1):
 
         self.layer0_func = layer0_func
         self.layer1_func = layer1_func
         self.layer2_func = layer2_func
+
+        self.combine_features_models = combine_features_models
+        self.combine_features = combine_features
+        self.combine_models = combine_models
 
         self.remove_bad0 = remove_bad0
         self.remove_bad1 = remove_bad1
@@ -183,9 +190,21 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
         ########## LAYER 2 ##########
 
         if X2 is not None:
+            additional_features=True
             X2 = np.hstack([X1_2, X2_1])
         else:
+            additional_features=False
             X2 = X2_1
+
+        if self.combine_models:
+            X2_1_combined = np.array([col1 * col2 for col1, col2 in combinations(X2_1.T, 2)]).T
+            X2 = np.hstack([X2, X2_1_combined])
+        if self.combine_features and additional_features:
+            X1_2_combined = np.array([col1 * col2 for col1, col2 in combinations(X1_2.T, 2)]).T
+            X2 = np.hstack([X2, X1_2_combined])
+        if self.combine_features_models and additional_features:
+            X_cross_combined = np.array([col1 * col2 for col1 in X1_2.T for col2 in X2_1.T]).T
+            X2 = np.hstack([X2, X_cross_combined])
 
         ### Init final layer
         self.reg_final_ = self.layer2_func(n_jobs=self.n_jobs, verbose=verbose)
@@ -228,9 +247,21 @@ class stacked_regressor(BaseEstimator, RegressorMixin):
         X2_1 = np.hstack(X2_1)
         # layer 2
         if X2 is not None:
+            additional_features = True
+            X1_2 = np.copy(X2)
             X2 = np.hstack([X2, X2_1])
         else:
+            additional_features = False
             X2 = X2_1
+        if self.combine_models:
+            X2_1_combined = np.array([col1 * col2 for col1, col2 in combinations(X2_1.T, 2)]).T
+            X2 = np.hstack([X2, X2_1_combined])
+        if self.combine_features and additional_features:
+            X1_2_combined = np.array([col1 * col2 for col1, col2 in combinations(X1_2.T, 2)]).T
+            X2 = np.hstack([X2, X1_2_combined])
+        if self.combine_features_models and additional_features:
+            X_cross_combined = np.array([col1 * col2 for col1 in X1_2.T for col2 in X2_1.T]).T
+            X2 = np.hstack([X2, X_cross_combined])
         if verbose >= 1: print("Predictions of layer 2...")
         y_pred = self.reg_final_.predict(X2)
 
