@@ -244,7 +244,7 @@ def main(verbose=1):
                 id_valtest, dupe_count_valtest, y_valtest, Xb_valtest, Xc_valtest = id_test.values, dupe_count_test.values, id_test.values, Xb_test.values, Xc_test
 
             ##### Transform target y
-            # with rank
+            """# with rank
             rank_valtrain = rankdata(y_valtrain, method='dense')
             rank_valtrain = rank_valtrain - rank_valtrain.min()
             rank_valtrain = rank_valtrain / rank_valtrain.max()
@@ -254,8 +254,8 @@ def main(verbose=1):
             y_to_rank_func = InterpolatedUnivariateSpline(sorted_y_valtrain, sorted_rank_valtrain, k=3, ext='const')
             y_valtrain = y_to_rank_func(y_valtrain)
             y_valtrain[y_valtrain < 0] = 0.
-            y_valtrain[y_valtrain > 1] = 1.
-            """# in log space
+            y_valtrain[y_valtrain > 1] = 1."""
+            # in log space
             smoothing_term = 10
             y_valtrain = np.log(y_valtrain+smoothing_term)
             y_min = np.min(y_valtrain)
@@ -263,7 +263,7 @@ def main(verbose=1):
             y_max = np.max(y_valtrain)
             y_valtrain = y_valtrain / y_max
             y_valtrain[y_valtrain < 0] = 0.
-            y_valtrain[y_valtrain > 1] = 1."""
+            y_valtrain[y_valtrain > 1] = 1.
 
             """##### Process duplicate rows
             dupe_df = pd.DataFrame(np.hstack([Xb_valtrain, Xc_valtrain.values]))
@@ -590,18 +590,27 @@ def main(verbose=1):
             #y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
             y_valpred = reg.predict(X1_valtest)
 
-            ### Evenize the output based on rank
+            """### Evenize the output based on rank
             rank_valpred = rankdata(y_valpred, method='dense')
             rank_valpred = rank_valpred - rank_valpred.min()
-            rank_valpred = rank_valpred / rank_valpred.max()
-            y_valpred = rank_valpred
-            y_valpred[y_valpred < 0] = 0.
-            y_valpred[y_valpred > 1] = 1.
+            rank_valpred = rank_valtrain / rank_valpred.max()
+            y_valpred = rank_valpred"""
 
+            ### Inverse transform y
+            #y_valpred = rank_to_y_func(y_valpred)
+            y_valpred = np.exp(y_valpred * y_max + y_min) - smoothing_term
+
+            ### Rectify values manually
+            y_valpred[(y_valpred < 72) & (y_valpred > 30)] = y_valpred[(y_valpred < 72) & (y_valpred > 30)] + 3.
+            y_valpred[(y_valpred < 83) & (y_valpred > 80)] = y_valpred[(y_valpred < 83) & (y_valpred > 80)] - 2.
+            y_valpred[(y_valpred < 86) & (y_valpred > 83)] = y_valpred[(y_valpred < 86) & (y_valpred > 83)] + 2.
+            y_valpred[(y_valpred < 96.8) & (y_valpred > 95)] = y_valpred[(y_valpred < 96.8) & (y_valpred > 95)] - 1.
+            y_valpred[(y_valpred < 99) & (y_valpred > 96.8)] = y_valpred[(y_valpred < 99) & (y_valpred > 96.8)] + 1.
+            y_valpred[(y_valpred < 106.15) & (y_valpred > 105.2)] = y_valpred[(y_valpred < 106.15) & (y_valpred > 105.2)] - 1.
+            y_valpred[(y_valpred < 107) & (y_valpred > 106.15)] = y_valpred[(y_valpred < 107) & (y_valpred > 106.15)] + 1.
+            y_valpred[(y_valpred < 180) & (y_valpred > 120)] = y_valpred[(y_valpred < 180) & (y_valpred > 120)] -3
 
             ### Append preds and tests
-            y_valpred = rank_to_y_func(y_valpred)
-            #y_valpred = np.exp(y_valpred * y_max + y_min) - smoothing_term
             y_trainpred.extend(y_valpred)
             y_traintest.extend(y_valtest)
 
