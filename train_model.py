@@ -572,7 +572,7 @@ def main(verbose=1):
                 y_pred = y_pred.reshape((-1, 1))
                 y_score = gmm.score_samples(y_pred)
                 y_score = y_score + y_score.min()
-                return y_score
+                return y_score**4
 
 
             ### Train model
