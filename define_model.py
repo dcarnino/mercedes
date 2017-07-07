@@ -86,11 +86,11 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     adx = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     glo = 'glorot_uniform'
     he = 'he_normal'
-    k_n_layers_list = np.array((2, 2, 3, 4, 5)) * 1
-    k_n_units_list = np.array((512, 256, 766, 1000, 1500)) // 2
-    k_dropout_list = (0.2, 0.1, 0.1, 0.1, 0.1)
-    k_optimizer_list = (add, add, add, add, add)
-    k_init_list = (glo, glo, glo, glo, glo)
+    k_n_layers_list = np.array((2, 2, 3, 4, 5, 2, 2, 3, 4, 5, 2, 2, 3, 4, 5, 6)) * 1
+    k_n_units_list = np.array((512, 256, 766, 1000, 1500, 512, 256, 766, 1000, 1500, 512, 256, 766, 1000, 1500, 2000)) // 2
+    k_dropout_list = (0.2, 0.1, 0.1, 0.1, 0.1, 0.4, 0.2, 0.2, 0.2, 0.2, 0.6, 0.4, 0.4, 0.4, 0.4, 0.1)
+    k_optimizer_list = (add, add, add, add, add, add, add, add, add, add, add, add, add, add, add, add)
+    k_init_list = (glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo, glo)
     # loop
     for ix, (k_n_layers, k_n_units, k_dropout, k_optimizer, k_init) \
     in enumerate(zip(k_n_layers_list, k_n_units_list, k_dropout_list, k_optimizer_list, k_init_list)):
@@ -113,10 +113,10 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                 ix += 1
 
     ### adaboost
-    reg_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
+    """reg_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
                                                               n_estimators=n_est//20, learning_rate=0.9) ) )
     reg_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
-                                                                      n_estimators=n_est//20, learning_rate=0.9) ) )
+                                                                      n_estimators=n_est//20, learning_rate=0.9) ) )"""
     """reg_layer.append( ( "AdaBoostXGBoost", AdaBoostRegressor(base_estimator=XGBRegressor_ensembling(objective='reg:logistic',
                                                                                                           gamma=0, reg_lambda=1, min_child_weight=4,
                                                                                                           learning_rate=0.02, subsample=0.65,
@@ -127,10 +127,10 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     ### random forest
     # test all combinations
     # test zipped combinations
-    max_depth_list = (4, 5, 6, 8, 10, None, None, None)
-    min_samples_split_list = (.1, .01, 8, 4, 3, 2, .01, 2)
-    max_features_list = ('auto', 'auto', 'auto', 'sqrt', 'auto', 'auto', 'auto', 'sqrt')
-    min_samples_leaf_list = (21, 11, 5, 2, 2, 1, 1, 1)
+    max_depth_list = (4, 5, 6, 8, 10, None, None, None, 4, 5, 6, 8, 10, None, None, None)
+    min_samples_split_list = (.1, .01, 8, 4, 3, 2, .01, 2, .1, .01, 8, 4, 3, 2, .01, 2)
+    max_features_list = ('auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'sqrt', 'sqrt', 'sqrt', 'sqrt', 'sqrt', 'sqrt', 'sqrt', 'sqrt')
+    min_samples_leaf_list = (21, 11, 5, 2, 2, 1, 1, 1, 21, 11, 5, 2, 2, 1, 1, 1)
     for ix, (max_depth, min_samples_split, max_features, min_samples_leaf) \
     in enumerate(zip(max_depth_list, min_samples_split_list, max_features_list, min_samples_leaf_list)):
         reg_layer.append( ( "RF%d"%ix, RandomForestRegressor(n_estimators=n_est, max_depth=max_depth,
@@ -148,7 +148,7 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     subsample_list = (.5, .65, .8)
     colsample_bytree_list = (.5, .65, .8)
     learning_rate_list = (0.02,)
-    min_child_weight_list = (4, 10)
+    min_child_weight_list = (4, 10, 30)
     # test zipped combinations
     ix = 0
     for max_depth in max_depth_list:
