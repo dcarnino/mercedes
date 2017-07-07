@@ -33,9 +33,9 @@ class correlation_ensembling(BaseEstimator, RegressorMixin):
 
         X = check_array(X)
 
-        y_pred = [estimator.predict(X) for estimator in self.estimator_list_]
+        y_pred = np.array([estimator.predict(X) for estimator in self.estimator_list_])
 
-        df_pred = pd.DataFrame(y_pred)
+        df_pred = pd.DataFrame(y_pred.T)
         Y_corr = df_pred.corr().abs().values
         y_corr = np.sum(Y_corr, axis=1)
         pred_list = [np.argmin(y_corr)]
@@ -43,7 +43,7 @@ class correlation_ensembling(BaseEstimator, RegressorMixin):
             y_corr = np.sum(Y_corr[:,pred_list], axis=1)
             pred_list.append(np.argmin(y_corr))
 
-        y_pred = np.array(y_pred)[pred_list, :]
+        y_pred = y_pred[pred_list, :]
 
         if self.predict_median:
             y_pred = np.median(y_pred, axis=0)
