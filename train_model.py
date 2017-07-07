@@ -120,9 +120,9 @@ def main(verbose=1):
     Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
 
     # replace test labels
-    """missing_dict = {"p": "q", "av": "ac", "ae": "d", "bb": "aw", "an": "c", "ag": "c"}
+    missing_dict = {"p": "q", "av": "ac", "ae": "d", "bb": "aw", "an": "c", "ag": "c"}
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
-    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
+    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
 
     ### get Xx insights
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
@@ -214,7 +214,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = True
+    leaderboard = False
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
@@ -375,6 +375,10 @@ def main(verbose=1):
                 Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x]).values
                 Xmeans_valtrain.append(Xm_valtrain.reshape((-1,1)))
                 Xmeans_valtest.append(Xm_valtest.reshape((-1,1)))
+            Xmeans_valtrain.append(Xmeans_valtrain[0]*Xmeans_valtrain[5])
+            Xmeans_valtest.append(Xmeans_valtest[0]*Xmeans_valtest[5])
+            Xmeans_valtrain.append(Xmeans_valtrain[0]+Xmeans_valtrain[5])
+            Xmeans_valtest.append(Xmeans_valtest[0]+Xmeans_valtest[5])
             X0_valtrain.append(np.hstack(Xmeans_valtrain))
             X0_valtest.append(np.hstack(Xmeans_valtest))
             X1_valtrain.append(np.hstack(Xmeans_valtrain))
