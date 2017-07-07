@@ -594,7 +594,7 @@ def main(verbose=1):
                                     default_y_value=0.5, n_jobs=28)
             reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
                                     remove_bad0=0., remove_bad1=0.,
-                                    n_folds0=5, n_folds1=5, n_est0=56, n_est1=112, score_func=metrics.r2_score,
+                                    n_folds0=5, n_folds1=5, n_est0=28, n_est1=56, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
             reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
             """reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,

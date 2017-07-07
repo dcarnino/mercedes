@@ -112,11 +112,11 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
                                                                           algorithm='auto', n_jobs=n_jobs) ) )
                 ix += 1
 
-    ### adaboost
+    """### adaboost
     reg_layer.append( ( "AdaBoostRF", AdaBoostRegressor(base_estimator=RandomForestRegressor(n_estimators=n_est, n_jobs=n_jobs),
                                                               n_estimators=n_est//20, learning_rate=0.9) ) )
     reg_layer.append( ( "AdaBoostExtraTrees", AdaBoostRegressor(base_estimator=ExtraTreesRegressor(n_estimators=n_est//2, bootstrap=True, n_jobs=n_jobs),
-                                                                      n_estimators=n_est//20, learning_rate=0.9) ) )
+                                                                      n_estimators=n_est//20, learning_rate=0.9) ) )"""
     """reg_layer.append( ( "AdaBoostXGBoost", AdaBoostRegressor(base_estimator=XGBRegressor_ensembling(objective='reg:logistic',
                                                                                                           gamma=0, reg_lambda=1, min_child_weight=4,
                                                                                                           learning_rate=0.02, subsample=0.65,
