@@ -119,10 +119,10 @@ def main(verbose=1):
     Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
     Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
 
-    """# replace test labels
-    missing_dict = {"p": "q", "av": "aa", "ae": "ab", "bb": "ab", "an": "c", "ag": "c"}
+    # replace test labels
+    missing_dict = {"p": "q", "av": "ac", "ae": "d", "bb": "aw", "an": "c", "ag": "c"}
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
-    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
+    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
 
     ### get Xx insights
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
@@ -283,7 +283,7 @@ def main(verbose=1):
             Xb_valtrain = np.delete(Xb_valtrain, drop_rows, axis=0)
             Xc_valtrain = Xc_valtrain.drop(Xc_valtrain.index[drop_rows])"""
 
-            ##### Replace test X0s not in train X0s
+            """##### Replace test X0s not in train X0s
 
             ### save X0 to X0_med mapping
             Xc = pd.concat([Xc_valtrain, Xc_valtest], axis=0).reset_index(drop=True)
@@ -343,7 +343,7 @@ def main(verbose=1):
                 Xc_valtest.iloc[:,0][mask_test] = y_impute_pred
 
                 ### change X0 med value based on new value
-                Xc_valtest.loc[:,"X0_med"] = Xc_valtest.loc[:,"X0"].apply(lambda x: X0_to_X0_med_mapping[x])
+                Xc_valtest.loc[:,"X0_med"] = Xc_valtest.loc[:,"X0"].apply(lambda x: X0_to_X0_med_mapping[x])"""
 
 
             ##### Extract features
@@ -419,13 +419,13 @@ def main(verbose=1):
             X1_valtrain.append(Xid_valtrain)
             X1_valtest.append(Xid_valtest)
 
-            """### Add dupe_count
+            ### Add dupe_count
             Xdpc_valtrain = np.array([dupe_count_valtrain]).T
             Xdpc_valtest = np.array([dupe_count_valtest]).T
             X0_valtrain.append(Xdpc_valtrain)
             X0_valtest.append(Xdpc_valtest)
             X1_valtrain.append(Xdpc_valtrain)
-            X1_valtest.append(Xdpc_valtest)"""
+            X1_valtest.append(Xdpc_valtest)
 
             """### MCA
             Xbool_valtrain = np.hstack([Xb_valtrain, Xohe_valtrain])
