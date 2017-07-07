@@ -216,7 +216,7 @@ def main(verbose=1):
         print("\tXb_test shape: ", Xb_test.shape)
 
 
-    leaderboard = False
+    leaderboard = True
     ##### Make several cross-validation k-folds
     y_trainpred, y_traintest = [], []
     if leaderboard:
