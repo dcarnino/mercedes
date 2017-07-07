@@ -14,7 +14,7 @@ class correlation_ensembling(BaseEstimator, RegressorMixin):
 
         self.estimator_list_ = estimator_list
         self.keep_p = keep_p
-        self.keep_n = int(round(len(self.list_estimators)*self.keep_p))
+        self.keep_n = int(round(len(self.estimator_list_)*self.keep_p))
         self.predict_median = predict_median
 
     def fit(self, X, y, verbose=0):
