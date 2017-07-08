@@ -696,14 +696,10 @@ def main(verbose=1):
             r2_score = metrics.r2_score(y_valtest, y_valpred)
             if verbose >= 1: print(" (R2-score: %.04f)"%(metrics.r2_score(y_valtest, y_valpred)))
 
-            """print(y_valpred[id_valtest == 733])
-            print(y_valtest[id_valtest == 733])
-            print(y_valpred[id_valtest == 1957])
-            print(y_valtest[id_valtest == 1957])
-            print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == 733])
-            print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == 1957])
-            2140
-            2903"""
+            for track_id in [2903]:
+                if track_id in id_valtest:
+                    print(y_valpred[id_valtest == track_id], y_valtest[id_valtest == track_id])
+                    print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == track_id])
 
             for idte, ypte, ytte in zip(id_valtest, y_valpred, y_valtest):
                 outlier_test[idte].append((ypte - ytte)**2)
