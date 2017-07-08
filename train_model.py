@@ -412,21 +412,27 @@ def main(verbose=1):
             X1_valtrain.append(Xemac_valtrain)
             X1_valtest.append(Xemac_valtest)"""
 
-            ### add means of categorical
+            ### add means, std and count of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
             for cat_col in Xc_valtrain.columns:
                 cat_means = defaultdict(lambda: y_valtrain.mean())
                 diff_cat = set(Xc_valtrain[cat_col])
                 for cat in diff_cat:
                     cat_means[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].mean()
+                    cat_stds[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].std()
+                    cat_cnts[cat] = len(y_valtrain[Xc_valtrain[cat_col] == cat])
                 Xm_valtrain = Xc_valtrain[cat_col].apply(lambda x: cat_means[x]).values
                 Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x]).values
+                Xstd_valtrain = Xc_valtrain[cat_col].apply(lambda x: cat_stds[x]).values
+                Xstd_valtest = Xc_valtest[cat_col].apply(lambda x: cat_stds[x]).values
+                Xcnt_valtrain = Xc_valtrain[cat_col].apply(lambda x: cat_cnts[x]).values
+                Xcnt_valtest = Xc_valtest[cat_col].apply(lambda x: cat_cnts[x]).values
                 Xmeans_valtrain.append(Xm_valtrain.reshape((-1,1)))
                 Xmeans_valtest.append(Xm_valtest.reshape((-1,1)))
-            """Xmeans_valtrain.append(Xmeans_valtrain[0]*Xmeans_valtrain[5])
-            Xmeans_valtest.append(Xmeans_valtest[0]*Xmeans_valtest[5])
-            Xmeans_valtrain.append(Xmeans_valtrain[0]+Xmeans_valtrain[5])
-            Xmeans_valtest.append(Xmeans_valtest[0]+Xmeans_valtest[5])"""
+                Xmeans_valtrain.append(Xstd_valtrain.reshape((-1,1)))
+                Xmeans_valtest.append(Xstd_valtest.reshape((-1,1)))
+                Xmeans_valtrain.append(Xcnt_valtrain.reshape((-1,1)))
+                Xmeans_valtest.append(Xcnt_valtest.reshape((-1,1)))
             X0_valtrain.append(np.hstack(Xmeans_valtrain))
             X0_valtest.append(np.hstack(Xmeans_valtest))
             X1_valtrain.append(np.hstack(Xmeans_valtrain))
