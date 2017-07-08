@@ -416,6 +416,8 @@ def main(verbose=1):
             Xmeans_valtrain, Xmeans_valtest = [], []
             for cat_col in Xc_valtrain.columns:
                 cat_means = defaultdict(lambda: y_valtrain.mean())
+                cat_stds = defaultdict(lambda: y_valtrain.std())
+                cat_cnts = defaultdict(lambda: 0)
                 diff_cat = set(Xc_valtrain[cat_col])
                 for cat in diff_cat:
                     cat_means[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].mean()
