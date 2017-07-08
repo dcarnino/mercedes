@@ -647,10 +647,8 @@ def main(verbose=1):
             #reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
             #                              learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             #reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
-            reg = lgb.LGBMRegressor(objective='regression', n_estimators=112,
-                                                                     num_leaves=31, subsample=.65,
-                                                                     colsample_bytree=.65, max_depth=5,
-                                                                     nthread=28)
+            reg = XGBRegressor(n_estimators=224, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+                                          learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             reg.fit(X1_valtrain, y_valtrain)
             """n_est = 500
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
