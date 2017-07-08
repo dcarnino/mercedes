@@ -608,8 +608,8 @@ def main(verbose=1):
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
-            #y_valpred = reg.predict(X1_valtest)
+            #y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
+            y_valpred = reg.predict(X1_valtest)
 
             """### Evenize the output based on rank
             rank_valpred = rankdata(y_valpred, method='dense')
