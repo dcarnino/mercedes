@@ -14,6 +14,7 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import urllib
 import json
+from operator import itemgetter
 from collections import defaultdict
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.feature_selection import VarianceThreshold
@@ -244,6 +245,9 @@ def main(verbose=1):
         print("\tXemac_test shape: ", Xemac_test.shape)
         print("\tXemab_test shape: ", Xemab_test.shape)
 
+    # outliers
+    outlier_train = defaultdict(list)
+    outlier_test = defaultdict(list)
 
     leaderboard = False
     ##### Make several cross-validation k-folds
@@ -251,7 +255,7 @@ def main(verbose=1):
     if leaderboard:
         n_total = 1
     else:
-        n_total = 20
+        n_total = 200
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
@@ -397,7 +401,7 @@ def main(verbose=1):
             X1_valtrain.append(Xb_valtrain)
             X1_valtest.append(Xb_valtest)
 
-            ### add ema features
+            """### add ema features
             X0_valtrain.append(Xemab_valtrain)
             X0_valtest.append(Xemab_valtest)
             X1_valtrain.append(Xemab_valtrain)
@@ -405,7 +409,7 @@ def main(verbose=1):
             X0_valtrain.append(Xemac_valtrain)
             X0_valtest.append(Xemac_valtest)
             X1_valtrain.append(Xemac_valtrain)
-            X1_valtest.append(Xemac_valtest)
+            X1_valtest.append(Xemac_valtest)"""
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
@@ -633,14 +637,15 @@ def main(verbose=1):
             """X1_valtrain = None
             X1_valtest = None
             reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
-                                    combine_features_models=True, combine_features=False, combine_models=False,
+                                    combine_features_models=True, combine_features=True, combine_models=False,
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
             reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
-            reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
-                                          learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
+            #reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            #                              learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             #reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
+            reg = RandomForestRegressor(n_estimators=112, n_jobs=28)
             reg.fit(X1_valtrain, y_valtrain)
             """n_est = 500
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
@@ -686,14 +691,25 @@ def main(verbose=1):
             y_trainpred.extend(y_valpred)
             y_traintest.extend(y_valtest)
 
+            r2_score = metrics.r2_score(y_valtest, y_valpred)
             if verbose >= 1: print(" (R2-score: %.04f)"%(metrics.r2_score(y_valtest, y_valpred)))
+
+            for idtr in id_valtrain:
+                outlier_train[idtr].append(r2_score)
+                for idte in id_valtest:
+                    outlier_test[idte].append(r2_score)
+
             if leaderboard:
                 break
-
 
     ##### Compute R2-score
     r2_score = metrics.r2_score(y_traintest, y_trainpred)
     print("FINAL CV R2: ", r2_score)
+
+    sorted_outlier_train = sorted([(key,np.mean(val)) for key,val in outlier_train.items()], key=itemgetter(1))
+    sorted_outlier_test = sorted([(key,np.mean(val)) for key,val in outlier_test.items()], key=itemgetter(1))
+    print(sorted_outlier_train[:10])
+    print(sorted_outlier_test[:10])
 
     if verbose >= 1: print("Save predictions...")
     trainpred_csv_name = "../data/mercedes/trainpred.csv"
