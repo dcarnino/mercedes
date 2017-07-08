@@ -197,7 +197,7 @@ def main(verbose=1):
     dupe_count_test = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_test.values, Xc_test.values])).itertuples(index=False)]).rename("dupe_count")
 
     ### EMA
-    alpha = .7
+    alpha = .3
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
     Xb = pd.concat([Xb_train, Xb_test], axis=0).reset_index(drop=True)
     id_ = pd.concat([id_train, id_test])
@@ -385,7 +385,7 @@ def main(verbose=1):
             X1_valtrain, X1_valtest = [], []
             X2_valtrain, X2_valtest = [], []
 
-            """### add categorical features
+            ### add categorical features
             X0_valtrain.append(Xc_valtrain.values)
             X0_valtest.append(Xc_valtest.values)
             X1_valtrain.append(Xc_valtrain.values)
@@ -395,7 +395,7 @@ def main(verbose=1):
             X0_valtrain.append(Xb_valtrain)
             X0_valtest.append(Xb_valtest)
             X1_valtrain.append(Xb_valtrain)
-            X1_valtest.append(Xb_valtest)"""
+            X1_valtest.append(Xb_valtest)
 
             ### add ema features
             X0_valtrain.append(Xemab_valtrain)
