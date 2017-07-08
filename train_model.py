@@ -551,8 +551,8 @@ def main(verbose=1):
             ### Add specific columns
             #X2_valtrain.append(Xb_valtrain[:,[297]])
             #X2_valtest.append(Xb_valtest[:,[297]])
-            X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5]])
-            X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,5]])
+            X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,15]])
+            X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,15]])
             #X2_valtrain.append(np.hstack(Xmeans_valtrain)[:,[0,5,8]])
             #X2_valtest.append(np.hstack(Xmeans_valtest)[:,[0,5,8]])
 
@@ -704,7 +704,7 @@ def main(verbose=1):
             r2_score = metrics.r2_score(y_valtest, y_valpred)
             if verbose >= 1: print(" (R2-score: %.04f)"%(metrics.r2_score(y_valtest, y_valpred)))
 
-            for track_id in [2903]:
+            for track_id in [2903, 6273, 2511, 681, 505, 1784]:
                 if track_id in id_valtest:
                     print(y_valpred[id_valtest == track_id], y_valtest[id_valtest == track_id])
                     print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == track_id])
