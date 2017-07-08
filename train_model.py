@@ -257,7 +257,7 @@ def main(verbose=1):
     if leaderboard:
         n_total = 1
     else:
-        n_total = 200
+        n_total = 20
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
