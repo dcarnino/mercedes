@@ -415,13 +415,13 @@ def main(verbose=1):
             X_valtrain.append(np.hstack(Xcorr_valtrain))
             X_valtest.append(np.hstack(Xcorr_valtest))"""
 
-            """### Add id
+            ### Add id
             Xid_valtrain = np.array([id_valtrain]).T
             Xid_valtest = np.array([id_valtest]).T
             X0_valtrain.append(Xid_valtrain)
             X0_valtest.append(Xid_valtest)
             X1_valtrain.append(Xid_valtrain)
-            X1_valtest.append(Xid_valtest)"""
+            X1_valtest.append(Xid_valtest)
 
             ### Add dupe_count
             Xdpc_valtrain = np.array([dupe_count_valtrain]).T
@@ -565,14 +565,14 @@ def main(verbose=1):
 
             ### Define prior
             gmm_prior = None
-            gmm = GaussianMixture(n_components=5, n_init=100)
+            """gmm = GaussianMixture(n_components=5, n_init=100)
             gmm.fit(y_valtrain.reshape((-1, 1)))
             def gmm_prior(y_pred):
                 y_pred = y_pred.reshape((-1, 1))
                 y_score = gmm.score_samples(y_pred)
                 y_score = y_score + y_score.min()
-                y_score = y_score.max() - y_score
-                return y_score**.5
+                #y_score = y_score.max() - y_score
+                return y_score"""
 
 
             ### Train model
