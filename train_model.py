@@ -572,7 +572,7 @@ def main(verbose=1):
                 y_score = gmm.score_samples(y_pred)
                 y_score = y_score + y_score.min()
                 y_score = y_score.max() - y_score
-                return y_score**2
+                return y_score**.5
 
 
             ### Train model
