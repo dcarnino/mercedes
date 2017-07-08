@@ -196,9 +196,36 @@ def main(verbose=1):
     dupe_count_train = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_train.values, Xc_train.values])).itertuples(index=False)]).rename("dupe_count")
     dupe_count_test = pd.Series([dupe_dict[dupe_tuple] for dupe_tuple in pd.DataFrame(np.hstack([Xb_test.values, Xc_test.values])).itertuples(index=False)]).rename("dupe_count")
 
+    ### EMA
+    alpha = .7
+    Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
+    Xb = pd.concat([Xb_train, Xb_test], axis=0).reset_index(drop=True)
+    id_ = pd.concat([id_train, id_test])
+    sort_mask = np.argsort(id_.values)
+    inverse_sort_mask = np.argsort(sort_mask)
+    sorted_Xc = Xc.iloc[sort_mask,:].values
+    sorted_Xb = Xb.iloc[sort_mask,:].values
+    for ix, (rowc, rowb) in enumerate(zip(sorted_Xc, sorted_Xb)):
+        if ix == 0:
+            curc = rowc
+            curb = rowb
+        else:
+            curc = alpha * rowc + (1 - alpha) * curc
+            curb = alpha * rowb + (1 - alpha) * curb
+        sorted_Xc[ix,:] = curc
+        sorted_Xb[ix,:] = curb
+    Xemac = sorted_Xc[inverse_sort_mask, :]
+    Xemab = sorted_Xb[inverse_sort_mask, :]
+    Xemac_train = pd.DataFrame(Xemac[:len(Xc_train), :])
+    Xemac_test = pd.DataFrame(Xemac[len(Xc_train):, :])
+    Xemab_train = pd.DataFrame(Xemab[:len(Xb_train), :])
+    Xemab_test = pd.DataFrame(Xemab[len(Xb_train):, :])
+
     # remove outlier
     Xb_train = Xb_train[y_train < 200]
     Xc_train = Xc_train[y_train < 200]
+    Xemab_train = Xemab_train[y_train < 200]
+    Xemac_train = Xemac_train[y_train < 200]
     id_train = id_train[y_train < 200]
     dupe_count_train = dupe_count_train[y_train < 200]
     y_train = y_train[y_train < 200]
@@ -210,10 +237,12 @@ def main(verbose=1):
         print("\ty_train shape: ", y_train.shape)
         print("\tXc_train shape: ", Xc_train.shape)
         print("\tXb_train shape: ", Xb_train.shape)
+        print("\tXemac_train shape: ", Xemac_train.shape)
+        print("\tXemab_train shape: ", Xemab_train.shape)
         print("\tid_test shape: ", id_test.shape)
         print("\tdupe_count_test shape: ", dupe_count_test.shape)
-        print("\tXc_test shape: ", Xc_test.shape)
-        print("\tXb_test shape: ", Xb_test.shape)
+        print("\tXemac_test shape: ", Xemac_test.shape)
+        print("\tXemab_test shape: ", Xemab_test.shape)
 
 
     leaderboard = False
@@ -240,10 +269,12 @@ def main(verbose=1):
             y_valtrain, y_valtest = y_train.iloc[valtrain_index].values, y_train.iloc[valtest_index].values
             Xb_valtrain, Xb_valtest = Xb_train.iloc[valtrain_index].values, Xb_train.iloc[valtest_index].values
             Xc_valtrain, Xc_valtest = Xc_train.iloc[valtrain_index], Xc_train.iloc[valtest_index]
+            Xemab_valtrain, Xemab_valtest = Xemab_train.iloc[valtrain_index].values, Xemab_train.iloc[valtest_index].values
+            Xemac_valtrain, Xemac_valtest = Xemac_train.iloc[valtrain_index].values, Xemac_train.iloc[valtest_index].values
 
             if leaderboard:
-                id_valtrain, dupe_count_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain = id_train.values, dupe_count_train.values, y_train.values, Xb_train.values, Xc_train
-                id_valtest, dupe_count_valtest, y_valtest, Xb_valtest, Xc_valtest = id_test.values, dupe_count_test.values, id_test.values, Xb_test.values, Xc_test
+                id_valtrain, dupe_count_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain, Xemab_valtrain, Xemac_valtrain = id_train.values, dupe_count_train.values, y_train.values, Xb_train.values, Xc_train, Xemab_train, Xemac_train
+                id_valtest, dupe_count_valtest, y_valtest, Xb_valtest, Xc_valtest, Xemab_valtest, Xemac_valtest = id_test.values, dupe_count_test.values, id_test.values, Xb_test.values, Xc_test, Xemab_test, Xemac_test
 
             ##### Transform target y
             """# with rank
@@ -365,6 +396,16 @@ def main(verbose=1):
             X0_valtest.append(Xb_valtest)
             X1_valtrain.append(Xb_valtrain)
             X1_valtest.append(Xb_valtest)
+
+            ### add ema features
+            X0_valtrain.append(Xemab_valtrain)
+            X0_valtest.append(Xemab_valtest)
+            X1_valtrain.append(Xemab_valtrain)
+            X1_valtest.append(Xemab_valtest)
+            X0_valtrain.append(Xemac_valtrain)
+            X0_valtest.append(Xemac_valtest)
+            X1_valtrain.append(Xemac_valtrain)
+            X1_valtest.append(Xemac_valtest)
 
             ### add means of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
