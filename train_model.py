@@ -121,10 +121,10 @@ def main(verbose=1):
     Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
     Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)"""
 
-    # replace test labels
+    """# replace test labels
     missing_dict = {"p": "q", "av": "ac", "ae": "d", "bb": "aw", "an": "c", "ag": "c"}
     Xc_train["X0"] = Xc_train["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
-    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)
+    Xc_test["X0"] = Xc_test["X0"].apply(lambda x: missing_dict[x] if x in missing_dict.keys() else x)"""
 
     ### get Xx insights
     Xc = pd.concat([Xc_train, Xc_test], axis=0).reset_index(drop=True)
@@ -588,18 +588,18 @@ def main(verbose=1):
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            X1_valtrain = None
+            """X1_valtrain = None
             X1_valtest = None
             reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
                                     combine_features_models=True, combine_features=False, combine_models=False,
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
-            """reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
+            reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
-            reg.fit(X1_valtrain, y_valtrain)"""
+            #reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
+            reg.fit(X1_valtrain, y_valtrain)
             """n_est = 500
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                                       learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28) for ix in range(n_est)]
