@@ -697,10 +697,17 @@ def main(verbose=1):
             r2_score = metrics.r2_score(y_valtest, y_valpred)
             if verbose >= 1: print(" (R2-score: %.04f)"%(metrics.r2_score(y_valtest, y_valpred)))
 
+            print(y_valpred[id_valtest == 733])
+            print(y_valtest[id_valtest == 733])
+            print(y_valpred[id_valtest == 1957])
+            print(y_valtest[id_valtest == 1957])
+            print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == 1957])
+            print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == 733])
+
             for idtr in id_valtrain:
                 outlier_train[idtr].append(r2_score)
-                for idte in id_valtest:
-                    outlier_test[idte].append(r2_score)
+            for idte in id_valtest:
+                outlier_test[idte].append(r2_score)
 
             if leaderboard:
                 break
