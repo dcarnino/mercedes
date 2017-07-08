@@ -18,7 +18,7 @@ from operator import itemgetter
 from collections import defaultdict
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.feature_selection import VarianceThreshold
-from sklearn.ensemble import ExtraTreesRegressor, BaggingRegressor
+from sklearn.ensemble import ExtraTreesRegressor, BaggingRegressor, RandomForestRegressor
 from sklearn import model_selection, metrics
 from sklearn.mixture import GaussianMixture
 from scipy import sparse
