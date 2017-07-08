@@ -385,7 +385,7 @@ def main(verbose=1):
             X1_valtrain, X1_valtest = [], []
             X2_valtrain, X2_valtest = [], []
 
-            ### add categorical features
+            """### add categorical features
             X0_valtrain.append(Xc_valtrain.values)
             X0_valtest.append(Xc_valtest.values)
             X1_valtrain.append(Xc_valtrain.values)
@@ -395,7 +395,7 @@ def main(verbose=1):
             X0_valtrain.append(Xb_valtrain)
             X0_valtest.append(Xb_valtest)
             X1_valtrain.append(Xb_valtrain)
-            X1_valtest.append(Xb_valtest)
+            X1_valtest.append(Xb_valtest)"""
 
             ### add ema features
             X0_valtrain.append(Xemab_valtrain)
