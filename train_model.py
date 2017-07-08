@@ -248,7 +248,6 @@ def main(verbose=1):
         print("\tXemab_test shape: ", Xemab_test.shape)
 
     # outliers
-    outlier_train = defaultdict(list)
     outlier_test = defaultdict(list)
 
     leaderboard = False
@@ -697,17 +696,17 @@ def main(verbose=1):
             r2_score = metrics.r2_score(y_valtest, y_valpred)
             if verbose >= 1: print(" (R2-score: %.04f)"%(metrics.r2_score(y_valtest, y_valpred)))
 
-            print(y_valpred[id_valtest == 733])
+            """print(y_valpred[id_valtest == 733])
             print(y_valtest[id_valtest == 733])
             print(y_valpred[id_valtest == 1957])
             print(y_valtest[id_valtest == 1957])
-            print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == 1957])
             print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == 733])
+            print(Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == 1957])
+            2140
+            2903"""
 
-            for idtr in id_valtrain:
-                outlier_train[idtr].append(r2_score)
-            for idte in id_valtest:
-                outlier_test[idte].append(r2_score)
+            for idte, ypte, ytte in zip(id_valtest, y_valpred, y_valtest):
+                outlier_test[idte].append((ypte - ytte)**2)
 
             if leaderboard:
                 break
@@ -716,10 +715,8 @@ def main(verbose=1):
     r2_score = metrics.r2_score(y_traintest, y_trainpred)
     print("FINAL CV R2: ", r2_score)
 
-    sorted_outlier_train = sorted([(key,np.mean(val)) for key,val in outlier_train.items()], key=itemgetter(1))
-    sorted_outlier_test = sorted([(key,np.mean(val)) for key,val in outlier_test.items()], key=itemgetter(1))
-    print(sorted_outlier_train[:10])
-    print(sorted_outlier_test[:10])
+    sorted_outlier_test = sorted([(key,np.mean(val)) for key,val in outlier_test.items()], key=itemgetter(1), reverse=True)
+    print(sorted_outlier_test[:30])
 
     if verbose >= 1: print("Save predictions...")
     trainpred_csv_name = "../data/mercedes/trainpred.csv"
