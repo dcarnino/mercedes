@@ -113,7 +113,7 @@ def main(verbose=1):
     Xb_test = df_test.iloc[:,9:]
     Xc_test = df_test.iloc[:,1:9]
     # probing
-    df_probing = leaderboard_probing_data()
+    """df_probing = leaderboard_probing_data()
     df_probing = df_probing.iloc[:13,:]
     id_probing = id_test[id_test.apply(lambda x: x in df_probing["ID"].values)]
     y_probing = df_probing["y"]
@@ -122,7 +122,7 @@ def main(verbose=1):
     id_train = pd.concat([id_train, id_probing], axis=0).reset_index(drop=True)
     y_train = pd.concat([y_train, y_probing], axis=0).reset_index(drop=True)
     Xb_train = pd.concat([Xb_train, Xb_probing], axis=0).reset_index(drop=True)
-    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)
+    Xc_train = pd.concat([Xc_train, Xc_probing], axis=0).reset_index(drop=True)"""
 
     """# replace test labels
     missing_dict = {"p": "q", "av": "ac", "ae": "d", "bb": "aw", "an": "c", "ag": "c"}
@@ -469,13 +469,13 @@ def main(verbose=1):
             X_valtrain.append(np.hstack(Xcorr_valtrain))
             X_valtest.append(np.hstack(Xcorr_valtest))"""
 
-            ### Add id
+            """### Add id
             Xid_valtrain = np.array([id_valtrain]).T
             Xid_valtest = np.array([id_valtest]).T
             X0_valtrain.append(Xid_valtrain)
             X0_valtest.append(Xid_valtest)
             X1_valtrain.append(Xid_valtrain)
-            X1_valtest.append(Xid_valtest)
+            X1_valtest.append(Xid_valtest)"""
 
             ### Add dupe_count
             Xdpc_valtrain = np.array([dupe_count_valtrain]).T
