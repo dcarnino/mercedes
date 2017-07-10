@@ -305,7 +305,8 @@ def main(verbose=1):
             y_valtrain[y_valtrain > 1] = 1.
 
             ##### Drop spotted useless outliers
-            mask_no_outliers = (id_valtrain == 2511) | (id_valtrain == 681) | (id_valtrain == 505) | (id_valtrain == 1784) | (id_valtrain == 2396) | (id_valtrain == 5820) | (id_valtrain == 7500)
+            #mask_no_outliers = (id_valtrain == 2511) | (id_valtrain == 681) | (id_valtrain == 505) | (id_valtrain == 1784) | (id_valtrain == 2396) | (id_valtrain == 5820) | (id_valtrain == 7500)
+            mask_no_outliers = (y_valtrain < 137.5)
             y_valtrain = y_valtrain[~mask_no_outliers]
             id_valtrain = id_valtrain[~mask_no_outliers]
             dupe_count_valtrain = dupe_count_valtrain[~mask_no_outliers]
