@@ -282,6 +282,23 @@ def main(verbose=1):
                 id_valtrain, dupe_count_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain, Xemab_valtrain, Xemac_valtrain = id_train.values, dupe_count_train.values, y_train.values, Xb_train.values, Xc_train, Xemab_train, Xemac_train
                 id_valtest, dupe_count_valtest, y_valtest, Xb_valtest, Xc_valtest, Xemab_valtest, Xemac_valtest = id_test.values, dupe_count_test.values, id_test.values, Xb_test.values, Xc_test, Xemab_test, Xemac_test
 
+            print(Xb_valtrain.shape)
+            print(Xc_valtrain.shape)
+            print(y_valtrain.shape)
+
+            ##### Drop spotted useless outliers
+            #mask_no_outliers = (id_valtrain == 2511) | (id_valtrain == 681) | (id_valtrain == 505) | (id_valtrain == 1784) | (id_valtrain == 2396) | (id_valtrain == 5820) | (id_valtrain == 7500)
+            mask_no_outliers = (y_valtrain > 137.5)
+            y_valtrain = y_valtrain[~mask_no_outliers]
+            id_valtrain = id_valtrain[~mask_no_outliers]
+            dupe_count_valtrain = dupe_count_valtrain[~mask_no_outliers]
+            Xb_valtrain = Xb_valtrain[~mask_no_outliers]
+            Xc_valtrain = Xc_valtrain[~mask_no_outliers]
+
+            print(Xb_valtrain.shape)
+            print(Xc_valtrain.shape)
+            print(y_valtrain.shape)
+
             ##### Transform target y
             """# with rank
             rank_valtrain = rankdata(y_valtrain, method='dense')
@@ -303,23 +320,6 @@ def main(verbose=1):
             y_valtrain = y_valtrain / y_max
             y_valtrain[y_valtrain < 0] = 0.
             y_valtrain[y_valtrain > 1] = 1.
-
-            print(Xb_valtrain.shape)
-            print(Xc_valtrain.shape)
-            print(y_valtrain.shape)
-
-            ##### Drop spotted useless outliers
-            #mask_no_outliers = (id_valtrain == 2511) | (id_valtrain == 681) | (id_valtrain == 505) | (id_valtrain == 1784) | (id_valtrain == 2396) | (id_valtrain == 5820) | (id_valtrain == 7500)
-            mask_no_outliers = (y_valtrain > 137.5)
-            y_valtrain = y_valtrain[~mask_no_outliers]
-            id_valtrain = id_valtrain[~mask_no_outliers]
-            dupe_count_valtrain = dupe_count_valtrain[~mask_no_outliers]
-            Xb_valtrain = Xb_valtrain[~mask_no_outliers]
-            Xc_valtrain = Xc_valtrain[~mask_no_outliers]
-
-            print(Xb_valtrain.shape)
-            print(Xc_valtrain.shape)
-            print(y_valtrain.shape)
 
             ##### Process duplicate rows
             drop_dupes = False
