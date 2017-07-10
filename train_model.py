@@ -678,7 +678,7 @@ def main(verbose=1):
             reg = XGBRegressor(n_estimators=224, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             reg.fit(X1_valtrain, y_valtrain)"""
-            n_est = 500
+            n_est = 250
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                                       learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28) for ix in range(n_est)]
             reg = correlation_ensembling(estimator_list, keep_p=0.1)
