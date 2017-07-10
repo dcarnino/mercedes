@@ -23,7 +23,6 @@ class correlation_ensembling(BaseEstimator, RegressorMixin):
         X, y = check_X_y(X, y)
 
         for ix, estimator in tqdm(enumerate(self.estimator_list_)):
-            if verbose >= 1: print("Fitting estimator", ix+1)
             estimator.fit(X, y)
 
         self.is_fitted_ = True
