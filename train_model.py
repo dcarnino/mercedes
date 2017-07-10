@@ -282,8 +282,6 @@ def main(verbose=1):
                 id_valtrain, dupe_count_valtrain, y_valtrain, Xb_valtrain, Xc_valtrain, Xemab_valtrain, Xemac_valtrain = id_train.values, dupe_count_train.values, y_train.values, Xb_train.values, Xc_train, Xemab_train, Xemac_train
                 id_valtest, dupe_count_valtest, y_valtest, Xb_valtest, Xc_valtest, Xemab_valtest, Xemac_valtest = id_test.values, dupe_count_test.values, id_test.values, Xb_test.values, Xc_test, Xemab_test, Xemac_test
 
-            print(Xb_valtrain.shape)
-            print(Xc_valtrain.shape)
             print(y_valtrain.shape)
 
             ##### Drop spotted useless outliers
@@ -295,8 +293,6 @@ def main(verbose=1):
             Xb_valtrain = Xb_valtrain[~mask_no_outliers]
             Xc_valtrain = Xc_valtrain[~mask_no_outliers]
 
-            print(Xb_valtrain.shape)
-            print(Xc_valtrain.shape)
             print(y_valtrain.shape)
 
             ##### Transform target y
