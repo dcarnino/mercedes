@@ -39,17 +39,17 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     ridge = True
     lasso = True
     elasticnet = True
-    linearsvr = False
+    linearsvr = True
     tree = True
-    knn = False
+    knn = True
     rf = True
     et = True
 
-    gbr = False
-    huber = False
-    ransac = False
-    mlp = False
-    xgboo = False
+    gbr = True
+    huber = True
+    ransac = True
+    mlp = True
+    xgboo = True
 
     svr = False
     adarf = False
@@ -219,10 +219,10 @@ def create_layer1(input_dim=551, n_jobs=28, n_est=1120, verbose=1):
     rf = True
     et = True
 
-    gbr = False
-    ransac = False
-    mlp = False
-    xgboo = False
+    gbr = True
+    ransac = True
+    mlp = True
+    xgboo = True
 
     svr = False
     adarf = False
