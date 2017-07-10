@@ -257,7 +257,7 @@ def main(verbose=1):
     if leaderboard:
         n_total = 1
     else:
-        n_total = 20
+        n_total = 3
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
@@ -672,7 +672,7 @@ def main(verbose=1):
                                     #n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     n_folds0=3, n_folds1=3, n_est0=28, n_est1=56, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=0)
             """reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             #reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
@@ -687,7 +687,7 @@ def main(verbose=1):
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
+            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=0)
             #y_valpred = reg.predict(X1_valtest)
 
             """### Evenize the output based on rank

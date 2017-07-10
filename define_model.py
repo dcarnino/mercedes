@@ -39,9 +39,9 @@ def create_layer0(input_dim=551, n_jobs=28, n_est=224, verbose=1):
     ridge = True
     lasso = True
     elasticnet = True
-    linearsvr = True
+    linearsvr = False
     tree = True
-    knn = True
+    knn = False
     rf = True
     et = True
 
