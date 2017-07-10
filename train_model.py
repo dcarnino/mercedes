@@ -418,7 +418,7 @@ def main(verbose=1):
             X1_valtrain.append(Xemac_valtrain)
             X1_valtest.append(Xemac_valtest)"""
 
-            def reject_outliers(data, m=2.):
+            def reject_outliers(data, m=6.):
                 d = np.abs(data - np.median(data))
                 mdev = np.median(d)
                 s = d/mdev if mdev else 0.
