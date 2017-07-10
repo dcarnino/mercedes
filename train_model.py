@@ -304,6 +304,14 @@ def main(verbose=1):
             y_valtrain[y_valtrain < 0] = 0.
             y_valtrain[y_valtrain > 1] = 1.
 
+            ##### Drop spotted useless outliers
+            mask_no_outliers = (id_valtrain == 2511) | (id_valtrain == 681) | (id_valtrain == 505) | (id_valtrain == 1784) | (id_valtrain == 2396) | (id_valtrain == 5820) | (id_valtrain == 7500)
+            y_valtrain = y_valtrain[~mask_no_outliers]
+            id_valtrain = id_valtrain[~mask_no_outliers]
+            dupe_count_valtrain = dupe_count_valtrain[~mask_no_outliers]
+            Xb_valtrain = Xb_valtrain[~mask_no_outliers]
+            Xc_valtrain = Xc_valtrain[~mask_no_outliers]
+
             ##### Process duplicate rows
             drop_dupes = False
             dupe_df = pd.DataFrame(np.hstack([Xb_valtrain, Xc_valtrain.values]))
@@ -711,8 +719,13 @@ def main(verbose=1):
 
             ### Drastic suppositions
             """Xc_valtest_ori = Xc_valtest.apply(lambda x: label_dict[x.name].inverse_transform(x))[id_valtest == track_id]
-            y_valpred[[(Xc_valtest_ori.X0 == "ai") & (df_tmp.X8 == "m")]] = 167.45"""
-
+            # missing X0s
+            y_valpred[(Xc_valtest_ori.X0 == "ag")] = 109
+            y_valpred[(Xc_valtest_ori.X0 == "p")] = 112.5
+            y_valpred[(Xc_valtest_ori.X0 == "ae")] = 112.5
+            y_valpred[(Xc_valtest_ori.X0 == "an")] = 112.5
+            # outliers
+            y_valpred[(Xc_valtest_ori.X0 == "ai") & (Xc_valtest_ori.X8 == "m")] = 167.45"""
 
             ### Append preds and tests
             y_trainpred.extend(y_valpred)
