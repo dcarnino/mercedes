@@ -37,6 +37,7 @@ import subprocess
 from stacked_regressor import stacked_regressor
 from decorrelating_estimator import correlation_ensembling
 import lightgbm as lgb
+from keras import backend as K
 #==============================================
 #                   Files
 #==============================================
@@ -716,6 +717,8 @@ def main(verbose=1):
 
             for idte, ypte, ytte in zip(id_valtest, y_valpred, y_valtest):
                 outlier_test[idte].append((ypte - ytte)**2)
+
+            K.clear_session()
 
             if leaderboard:
                 break
