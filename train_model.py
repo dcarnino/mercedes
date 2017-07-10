@@ -257,7 +257,7 @@ def main(verbose=1):
     if leaderboard:
         n_total = 1
     else:
-        n_total = 2
+        n_total = 20
     for ix_cv in range(n_total):
 
         ### Init cross-validation K-folds
@@ -644,20 +644,20 @@ def main(verbose=1):
                 reg = reg_cv.best_estimator_"""
             """reg = XGBRegressor(n_estimators=448, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)"""
-            X1_valtrain = None
+            """X1_valtrain = None
             X1_valtest = None
             reg = stacked_regressor(define_model.create_layer0, define_model.create_layer1, define_model.create_layer2,
                                     combine_features_models=True, combine_features=True, combine_models=False,
                                     remove_bad0=0.2, remove_bad1=0.1,
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
-            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)
+            reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
             #reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
             #                              learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             #reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
-            """reg = XGBRegressor(n_estimators=224, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg = XGBRegressor(n_estimators=224, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            reg.fit(X1_valtrain, y_valtrain)"""
+            reg.fit(X1_valtrain, y_valtrain)
             """n_est = 500
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                                       learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28) for ix in range(n_est)]
@@ -666,8 +666,8 @@ def main(verbose=1):
 
             ### Predict with model
             if verbose >= 4: print("Predict with model...")
-            y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
-            #y_valpred = reg.predict(X1_valtest)
+            #y_valpred = reg.predict(X0_valtest, X1_valtest, X2_valtest, verbose=verbose)
+            y_valpred = reg.predict(X1_valtest)
 
             """### Evenize the output based on rank
             rank_valpred = rankdata(y_valpred, method='dense')
@@ -728,7 +728,7 @@ def main(verbose=1):
     print("FINAL CV R2: ", r2_score)
 
     sorted_outlier_test = sorted([(key,np.mean(val)) for key,val in outlier_test.items()], key=itemgetter(1), reverse=True)
-    print(sorted_outlier_test[:30])
+    print(sorted_outlier_test[:60])
 
     if verbose >= 1: print("Save predictions...")
     trainpred_csv_name = "../data/mercedes/trainpred.csv"
