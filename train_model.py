@@ -698,6 +698,8 @@ def main(verbose=1):
 
             ### Inverse transform y
             #y_valpred = rank_to_y_func(y_valpred)
+            y_valpred[y_valpred > 1.] = 1.
+            y_valpred[y_valpred < 0.] = 0.
             y_valpred = np.exp(y_valpred * y_max + y_min) - smoothing_term
 
             ### Rectify values manually
