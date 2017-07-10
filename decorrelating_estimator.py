@@ -4,6 +4,7 @@ from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from scipy import stats
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 
 
@@ -21,7 +22,7 @@ class correlation_ensembling(BaseEstimator, RegressorMixin):
 
         X, y = check_X_y(X, y)
 
-        for ix, estimator in enumerate(self.estimator_list_):
+        for ix, estimator in tqdm(enumerate(self.estimator_list_)):
             if verbose >= 1: print("Fitting estimator", ix+1)
             estimator.fit(X, y)
 
