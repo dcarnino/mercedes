@@ -283,8 +283,8 @@ def main(verbose=1):
                 id_valtest, dupe_count_valtest, y_valtest, Xb_valtest, Xc_valtest, Xemab_valtest, Xemac_valtest = id_test.values, dupe_count_test.values, id_test.values, Xb_test.values, Xc_test, Xemab_test, Xemac_test
 
             ##### Drop spotted useless outliers
-            #mask_no_outliers = (id_valtrain == 2511) | (id_valtrain == 681) | (id_valtrain == 505) | (id_valtrain == 1784) | (id_valtrain == 2396) | (id_valtrain == 5820) | (id_valtrain == 7500)
-            mask_no_outliers = (y_valtrain > 137.5)
+            mask_no_outliers = (id_valtrain == 2511) | (id_valtrain == 681) | (id_valtrain == 505) | (id_valtrain == 1784) | (id_valtrain == 2396) | (id_valtrain == 5820) | (id_valtrain == 7500)
+            #mask_no_outliers = (y_valtrain > 137.5)
             y_valtrain = y_valtrain[~mask_no_outliers]
             id_valtrain = id_valtrain[~mask_no_outliers]
             dupe_count_valtrain = dupe_count_valtrain[~mask_no_outliers]
@@ -672,11 +672,11 @@ def main(verbose=1):
                                     n_folds0=5, n_folds1=5, n_est0=892, n_est1=2240, score_func=metrics.r2_score,
                                     default_y_value=0.5, n_jobs=28)
             reg.fit(X0_valtrain, y_valtrain, X1_valtrain, X2_valtrain, verbose=verbose)"""
-            #reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
-            #                              learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
-            #reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
-            reg = XGBRegressor(n_estimators=224, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            reg = XGBRegressor_ensembling(prior=gmm_prior, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
                                           learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
+            #reg = BaggingRegressor(base_estimator=reg, n_estimators=5)
+            #reg = XGBRegressor(n_estimators=224, objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
+            #                              learning_rate=0.02, subsample=0.65, colsample_bytree=0.65, max_depth=5, nthread=28)
             reg.fit(X1_valtrain, y_valtrain)
             """n_est = 500
             estimator_list = [XGBRegressor_ensembling(objective='reg:logistic', gamma=0, reg_lambda=1, min_child_weight=4,
