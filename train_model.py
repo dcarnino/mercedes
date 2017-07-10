@@ -418,6 +418,12 @@ def main(verbose=1):
             X1_valtrain.append(Xemac_valtrain)
             X1_valtest.append(Xemac_valtest)"""
 
+            def reject_outliers(data, m=2.):
+                d = np.abs(data - np.median(data))
+                mdev = np.median(d)
+                s = d/mdev if mdev else 0.
+                return data[s<m]
+
             ### add means, std and count of categorical
             Xmeans_valtrain, Xmeans_valtest = [], []
             for cat_col in Xc_valtrain.columns:
@@ -426,8 +432,8 @@ def main(verbose=1):
                 cat_cnts = defaultdict(lambda: 0)
                 diff_cat = set(Xc_valtrain[cat_col])
                 for cat in diff_cat:
-                    cat_means[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].mean()
-                    cat_stds[cat] = y_valtrain[Xc_valtrain[cat_col] == cat].std()
+                    cat_means[cat] = reject_outliers(y_valtrain[Xc_valtrain[cat_col] == cat]).mean()
+                    cat_stds[cat] = reject_outliers(y_valtrain[Xc_valtrain[cat_col] == cat]).std()
                     cat_cnts[cat] = len(y_valtrain[Xc_valtrain[cat_col] == cat])
                 Xm_valtrain = Xc_valtrain[cat_col].apply(lambda x: cat_means[x]).values
                 Xm_valtest = Xc_valtest[cat_col].apply(lambda x: cat_means[x]).values
